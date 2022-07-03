@@ -5,7 +5,7 @@
 #
 # Copyright (c) 1998-2009 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
-# License Version 3. See  http://www.webfetch.org/GPLv3.txt
+# License Version 3. See  https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
 package WebFetch;
 
@@ -1663,10 +1663,8 @@ sponsored by Twiki Inc (formerly TWiki.Net).
 
 =head1 LICENSE
 
-WebFetch is Open Source software distributed via the
-Comprehensive Perl Archive Network (CPAN),
-a worldwide network of Perl web mirror sites.
-WebFetch may be copied under the same terms and licensing as Perl itelf.
+WebFetch is Open Source software licensed under the GNU General Public License Version 3.
+See L<https://www.gnu.org/licenses/gpl-3.0-standalone.html>.
 
 =head1 SEE ALSO
 
