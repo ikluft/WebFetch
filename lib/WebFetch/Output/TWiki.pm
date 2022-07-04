@@ -534,12 +534,6 @@ or http://twiki.net/ for enterprise support.
 
 WebFetch::Output::TWiki was developed for TWiki Inc (formerly TWiki.Net).
 
-=head1 AUTHOR
-
-WebFetch was written by Ian Kluft
-Send patches, bug reports, suggestions and questions to
-C<maint@webfetch.org>.
-
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-webfetch-output-twiki at rt.cpan.org>, or through
@@ -548,14 +542,14 @@ automatically be notified of progress on your bug as I make changes.
 
 =head1 SEE ALSO
 
-=for html
-<a href="WebFetch.html">WebFetch</a>
+L<WebFetch>
+L<https://github.com/ikluft/WebFetch>
 
-=for text
-WebFetch
+=head1 BUGS AND LIMITATIONS
 
-=for man
-WebFetch
+Please report bugs via GitHub at L<https://github.com/ikluft/WebFetch/issues>
+
+Patches and enhancements may be submitted via a pull request at L<https://github.com/ikluft/WebFetch/pulls>
 
 =cut
 

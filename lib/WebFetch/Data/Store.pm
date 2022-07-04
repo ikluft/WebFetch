@@ -352,12 +352,13 @@ sub wk2fnum
 
 1;
 __END__
-=head1 AUTHOR
-
-WebFetch was written by Ian Kluft
-Send patches, bug reports, suggestions and questions to
-C<maint@webfetch.org>.
-
 =head1 SEE ALSO
 
 L<WebFetch>, L<WebFetch::Data::Record>
+L<https://github.com/ikluft/WebFetch>
+
+=head1 BUGS AND LIMITATIONS
+
+Please report bugs via GitHub at L<https://github.com/ikluft/WebFetch/issues>
+
+Patches and enhancements may be submitted via a pull request at L<https://github.com/ikluft/WebFetch/pulls>

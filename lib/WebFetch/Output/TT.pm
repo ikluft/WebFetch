@@ -96,22 +96,15 @@ sub fmt_handler_tt
 __END__
 # POD docs follow
 
-=head1 AUTHOR
-
-WebFetch was written by Ian Kluft
-Send patches, bug reports, suggestions and questions to
-C<maint@webfetch.org>.
-
 =head1 SEE ALSO
 
-=for html
-<a href="WebFetch.html">WebFetch</a>,
-<a href="http://www.template-toolkit.org/>Perl Template Toolkit</a>
+L<WebFetch>
+L<https://github.com/ikluft/WebFetch>
 
-=for text
-WebFetch, Perl Template Toolkit
+=head1 BUGS AND LIMITATIONS
 
-=for man
-WebFetch, Perl Template Toolkit
+Please report bugs via GitHub at L<https://github.com/ikluft/WebFetch/issues>
+
+Patches and enhancements may be submitted via a pull request at L<https://github.com/ikluft/WebFetch/pulls>
 
 =cut

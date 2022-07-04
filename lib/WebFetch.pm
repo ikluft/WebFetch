@@ -1643,9 +1643,8 @@ http://www.cpan.org/doc/manual/html/pod/perlpod.html
 
 =item authors
 
-Add yourself as an author if you added any significant functionality.
-But if you used anyone else's code, retain the existing author credits
-in any module you modify to make a new one.
+Do not modify the names unless instructed to do so.
+The maintainers have discretion whether one's contributions are significant enough to qualify as a co-author.
 
 =back
 
@@ -1668,38 +1667,14 @@ See L<https://www.gnu.org/licenses/gpl-3.0-standalone.html>.
 
 =head1 SEE ALSO
 
-=for html
-A current copy of the source code and documentation may be found at
-<a href="http://www.webfetch.org/">http://www.webfetch.org/</a>
-
-=for text
-A current copy of the source code and documentation may be found at
-http://www.webfetch.org/
-
-=for man
-A current copy of the source code and documentation may be found at
-http://www.webfetch.org/
-
-TODO: fill in these lists
-
-=for html
-<a href="http://www.perl.org/">perl</a>(1),
-<a href="WebFetch::Input::PerlStruct.html">WebFetch::Input::PerlStruct</a>,
-<a href="WebFetch::Input::SiteNews.html">WebFetch::Input::SiteNews</a>,
-<a href="WebFetch::Input::Atom.html">WebFetch::Input::Atom</a>,
-<a href="WebFetch::Input::RSS.html">WebFetch::Input::RSS</a>,
-<a href="WebFetch::Input::Dump.html">WebFetch::Input::Dump</a>,
-<a href="WebFetch::Output::TT.html">WebFetch::Output::TT</a>,
-<a href="WebFetch::Output::Dump.html">WebFetch::Output::Dump</a>,
-
-=for text
-perl(1), WebFetch::Input::PerlStruct, WebFetch::Input::SiteNews, 
-WebFetch::Input::Atom, WebFetch::Input::RSS, WebFetch::Input::Dump,
-WebFetch::Output::TT, WebFetch::Output::Dump
-
-=for man
-perl(1), WebFetch::Input::PerlStruct, WebFetch::Input::SiteNews,
-WebFetch::Input::Atom, WebFetch::Input::RSS, WebFetch::Input::Dump,
-WebFetch::Output::TT, WebFetch::Output::Dump
+L<WebFetch::Input::PerlStruct.html">WebFetch::Input::PerlStruct>,
+L<WebFetch::Input::SiteNews.html">WebFetch::Input::SiteNews>,
+L<WebFetch::Input::Atom.html">WebFetch::Input::Atom>,
+L<WebFetch::Input::RSS.html">WebFetch::Input::RSS>,
+L<WebFetch::Input::Dump.html">WebFetch::Input::Dump>,
+L<WebFetch::Output::TT.html">WebFetch::Output::TT>,
+L<WebFetch::Output::Dump.html">WebFetch::Output::Dump>,
+L<https://github.com/ikluft/WebFetch>,
+L<http://www.perl.org/>
 
 =cut
