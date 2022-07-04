@@ -597,9 +597,8 @@ Make sure to change all of the following:
 
 - authors
 
-    Add yourself as an author if you added any significant functionality.
-    But if you used anyone else's code, retain the existing author credits
-    in any module you modify to make a new one.
+    Do not modify the names unless instructed to do so.
+    The maintainers have discretion whether one's contributions are significant enough to qualify as a co-author.
 
 Please consider contributing any useful changes back to the WebFetch
 project at `maint@webfetch.org`.
@@ -615,29 +614,17 @@ sponsored by Twiki Inc (formerly TWiki.Net).
 
 # LICENSE
 
-WebFetch is Open Source software distributed via the
-Comprehensive Perl Archive Network (CPAN),
-a worldwide network of Perl web mirror sites.
-WebFetch may be copied under the same terms and licensing as Perl itelf.
+WebFetch is Open Source software licensed under the GNU General Public License Version 3.
+See [https://www.gnu.org/licenses/gpl-3.0-standalone.html](https://www.gnu.org/licenses/gpl-3.0-standalone.html).
 
 # SEE ALSO
 
-<div>
-
-    A current copy of the source code and documentation may be found at
-    <a href="http://www.webfetch.org/">http://www.webfetch.org/</a>
-</div>
-
-TODO: fill in these lists
-
-<div>
-
-    <a href="http://www.perl.org/">perl</a>(1),
-    <a href="WebFetch::Input::PerlStruct.html">WebFetch::Input::PerlStruct</a>,
-    <a href="WebFetch::Input::SiteNews.html">WebFetch::Input::SiteNews</a>,
-    <a href="WebFetch::Input::Atom.html">WebFetch::Input::Atom</a>,
-    <a href="WebFetch::Input::RSS.html">WebFetch::Input::RSS</a>,
-    <a href="WebFetch::Input::Dump.html">WebFetch::Input::Dump</a>,
-    <a href="WebFetch::Output::TT.html">WebFetch::Output::TT</a>,
-    <a href="WebFetch::Output::Dump.html">WebFetch::Output::Dump</a>,
-</div>
+[WebFetch::Input::PerlStruct.html"](https://metacpan.org/pod/WebFetch%3A%3AInput%3A%3APerlStruct.html%22)WebFetch::Input::PerlStruct>,
+[WebFetch::Input::SiteNews.html"](https://metacpan.org/pod/WebFetch%3A%3AInput%3A%3ASiteNews.html%22)WebFetch::Input::SiteNews>,
+[WebFetch::Input::Atom.html"](https://metacpan.org/pod/WebFetch%3A%3AInput%3A%3AAtom.html%22)WebFetch::Input::Atom>,
+[WebFetch::Input::RSS.html"](https://metacpan.org/pod/WebFetch%3A%3AInput%3A%3ARSS.html%22)WebFetch::Input::RSS>,
+[WebFetch::Input::Dump.html"](https://metacpan.org/pod/WebFetch%3A%3AInput%3A%3ADump.html%22)WebFetch::Input::Dump>,
+[WebFetch::Output::TT.html"](https://metacpan.org/pod/WebFetch%3A%3AOutput%3A%3ATT.html%22)WebFetch::Output::TT>,
+[WebFetch::Output::Dump.html"](https://metacpan.org/pod/WebFetch%3A%3AOutput%3A%3ADump.html%22)WebFetch::Output::Dump>,
+[https://github.com/ikluft/WebFetch](https://github.com/ikluft/WebFetch),
+[http://www.perl.org/](http://www.perl.org/)
