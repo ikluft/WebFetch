@@ -5,6 +5,14 @@
 # redistribute it and/or modify it under the terms of the GNU General Public
 # License Version 3. See  https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
+# pragmas to silence some warnings from Perl::Critic
+## no critic (Modules::RequireExplicitPackage)
+# This solves a catch-22 where parts of Perl::Critic want both package and use-strict to be first
+use strict;
+use warnings;
+use utf8;
+## use critic (Modules::RequireExplicitPackage)
+
 package WebFetch::Input::Atom;
 
 use strict;
@@ -18,6 +26,8 @@ use LWP::UserAgent;
 
 use Exception::Class (
 );
+
+=encoding utf8
 
 =head1 NAME
 

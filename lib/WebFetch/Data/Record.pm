@@ -6,6 +6,14 @@
 # License Version 3. See  https://www.gnu.org/licenses/gpl-3.0-standalone.html
 #
 
+# pragmas to silence some warnings from Perl::Critic
+## no critic (Modules::RequireExplicitPackage)
+# This solves a catch-22 where parts of Perl::Critic want both package and use-strict to be first
+use strict;
+use warnings;
+use utf8;
+## use critic (Modules::RequireExplicitPackage)
+
 package WebFetch::Data::Record;
 
 use strict;
@@ -23,6 +31,7 @@ use Exception::Class (
 );
 
 # no user-servicable parts beyond this point
+=encoding utf8
 
 =head1 NAME
 

@@ -5,10 +5,16 @@
 # redistribute it and/or modify it under the terms of the GNU General Public
 # License Version 3. See  https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
+# pragmas to silence some warnings from Perl::Critic
+## no critic (Modules::RequireExplicitPackage)
+# This solves a catch-22 where parts of Perl::Critic want both package and use-strict to be first
+use strict;
+use warnings;
+use utf8;
+## use critic (Modules::RequireExplicitPackage)
+
 package WebFetch::Output::TWiki;
 
-use warnings;
-use strict;
 use WebFetch;
 use base "WebFetch";
 use DB_File;
@@ -56,6 +62,8 @@ use Exception::Class (
 		description => "a required field was not defined or found",
 	},
 );
+
+=encoding utf8
 
 =head1 NAME
 
