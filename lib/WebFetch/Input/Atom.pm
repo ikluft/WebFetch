@@ -105,6 +105,7 @@ sub fetch
 	$self->parse_input();
 
 	# return and let WebFetch handle the data
+    return;
 }
 
 # extract a string value from a scalar/ref if possible
@@ -112,19 +113,19 @@ sub extract_value
 {
         my $thing = shift;
 
-        ( defined $thing ) or return undef;
+        ( defined $thing ) or return;
         if ( ref $thing ) {
                 if ( !blessed $thing ) {
                         # it's a HASH/ARRAY/etc, not an object
-                        return undef;
+                        return;
                 }
                 if ( $thing->can( "as_string" )) {
                         return $thing->as_string;
                 }
-                return undef;
+                return;
         } else {
                 $thing =~ s/\s+$//s;
-                length $thing > 0 or return undef;
+                length $thing > 0 or return;
                 return $thing;
         }
 }

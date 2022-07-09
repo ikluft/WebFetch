@@ -119,12 +119,12 @@ sub byname
 	my $f;
 
 	WebFetch::debug "byname ".(( defined $fname ) ? $fname : "undef");
-	( defined $fname ) or return undef;
+	( defined $fname ) or return;
 	if ( exists $obj->{findex}{$fname}) {
 		$f = $obj->{findex}{$fname};
 		return $self->{recref}[$f];
 	}
-	return undef;
+	return;
 }
 
 =item $class->mk_field_accessor( $field_name, ... );
@@ -171,7 +171,7 @@ sub mk_field_accessor
 					return $recref->[$f];
 				}
 			} else {
-				return undef;
+				return;
 			}
 		};
 	}

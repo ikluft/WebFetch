@@ -361,7 +361,7 @@ sub singular_handler
 			my $entry_count = scalar @{$modules{$group}{$entry}};
 			$count += $entry_count;
 			if ( $count > 1 ) {
-				return undef;
+				return;
 			}
 			if ( $entry_count == 1 ) {
 				$last = $entry;

@@ -296,8 +296,8 @@ sub next_record
 		.scalar @{$self->{records}};
 
 	# return undef if position is out of bounds
-	( $self->{pos} < 0 ) and return undef;
-	( $self->{pos} > scalar @{$self->{records}} - 1 ) and return undef;
+	( $self->{pos} < 0 ) and return;
+	( $self->{pos} > scalar @{$self->{records}} - 1 ) and return;
 	
 	# get record
 	return $self->get_record( $self->{pos}++ );
