@@ -195,7 +195,6 @@ use Exception::Class (
 );
 
 # initialize class variables
-our $VERSION = '0.13';
 our %default_modules = (
 	"input" => {
 		"rss" => "WebFetch::Input::RSS",
