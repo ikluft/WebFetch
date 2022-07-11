@@ -217,7 +217,9 @@ my $debug;
 
 sub debug
 {
-	$debug and print STDERR "debug: ".join( " ", @_ )."\n";
+    my @args = @_;
+	$debug and print STDERR "debug: ".join( " ", @args )."\n";
+    return;
 }
 
 =item WebFetch::module_register( $module, @capabilities );
@@ -247,14 +249,13 @@ output format handler for the "tt" format, the Perl Template Toolkit.
 
 sub module_register
 {
-	my $module = shift;
-	my @capabilities = @_;
+	my ( $module, @capabilities ) = @_;
 
 	# each string provided is a capability the module provides
 	foreach my $capability ( @capabilities ) {
 		# A ":" if present delimits a group of capabilities
 		# such as "input:rss" for and "input" capability of "rss"
-		if ( $capability =~ /([^:]+):([^:]+)/ ) {
+		if ( $capability =~ /([^:]+):([^:]+)/x ) {
 			# A ":" was found so process a 2nd-level group entry
 			my $group = $1;
 			my $subcap = $2;
@@ -273,6 +274,7 @@ sub module_register
 			push @{$modules{$capability}}, $module;
 		}
 	}
+    return;
 }
 
 # module selection - choose WebFetch module based on selected file format
@@ -285,7 +287,7 @@ sub module_select
 	debug "module_select($capability,$is_optional)";
 	# parse the capability string
 	my ( $group, $topic );
-	if ( $capability =~ /([^:]*):(.*)/ ) {
+	if ( $capability =~ /([^:]*):(.*)/x ) {
 		$group = $1;
 		$topic = $2
 	} else {
@@ -293,7 +295,7 @@ sub module_select
 	}
 	
 	# check for modules to handle the specified source_format
-	my ( @handlers, %handlers, $handler );
+	my ( @handlers, %handlers );
 
 	# consider whether a group is in use (single or double-level scan)
 	if ( $group ) {
@@ -304,7 +306,7 @@ sub module_select
 			and ( ref $modules{$group}{$topic} eq "ARRAY" ))
 		{
 			# search group for topic
-			foreach $handler (@{$modules{$group}{$topic}})
+			foreach my $handler (@{$modules{$group}{$topic}})
 			{
 				if ( !exists $handlers{$handler}) {
 					push @handlers, $handler;
@@ -315,10 +317,10 @@ sub module_select
 		# otherwise check the defaults
 		} elsif ( exists $default_modules{$group}{$topic} ) {
 			# check default handlers
-			$handler = $default_modules{$group}{$topic};
-			if ( !exists $handlers{$handler}) {
-				push @handlers, $handler;
-				$handlers{$handler} = 1;
+			my $def_handler = $default_modules{$group}{$topic};
+			if ( !exists $handlers{$def_handler}) {
+				push @handlers, $def_handler;
+				$handlers{$def_handler} = 1;
 			}
 		}
 	} else {
@@ -333,7 +335,7 @@ sub module_select
 	}
 	
 	# check if any handlers were found for this format
-	if ( ! @handlers and ! $is_optional ) {
+	if ( not @handlers and not $is_optional ) {
 		throw_no_handler( "handler not found for $capability" );
 	}
 
@@ -354,8 +356,8 @@ sub singular_handler
 
 	debug "singular_handler($group)";
 	my $count = 0;
-	my ( $entry, $last );
-	foreach $entry ( keys %{$modules{$group}} ) {
+	my $last_entry;
+	foreach my $entry ( keys %{$modules{$group}} ) {
 		if ( ref $modules{$group}{$entry} eq "ARRAY" ) {
 			my $entry_count = scalar @{$modules{$group}{$entry}};
 			$count += $entry_count;
@@ -363,14 +365,14 @@ sub singular_handler
 				return;
 			}
 			if ( $entry_count == 1 ) {
-				$last = $entry;
+				$last_entry = $entry;
 			}
 		}
 	}
 
 	# if there's only one registered, that's the one to use
-	debug "singular_handler: count=$count last=$last";
-	return $count == 1 ? $last : undef;
+	debug "singular_handler: count=$count last_entry=$last_entry";
+	return $count == 1 ? $last_entry : undef;
 }
 
 
@@ -392,7 +394,7 @@ behalf of each of the packages.
 sub main::fetch_main
 {
 	# run fetch_main2 in an eval so we can catch exceptions
-	my $result = eval { &WebFetch::fetch_main2; };
+	eval { &WebFetch::fetch_main2; };
 
 	# process any error/exception that we may have gotten
 	if ( $@ ) {
@@ -429,16 +431,16 @@ sub main::fetch_main
 	exit 0;
 }
 
-
+# mainline which fetch_main() calls in an exception catching wrapper
 sub fetch_main2
 {
 	# search for modules which have registered "cmdline" capability
 	# collect their command line options
-	my ( $cli_mod, @mod_options, @mod_usage );
+	my ( @mod_options, @mod_usage );
 	if (( exists $modules{cmdline} )
 		and ( ref $modules{cmdline} eq "ARRAY" ))
 	{
-		foreach $cli_mod ( @{$modules{cmdline}}) {
+		foreach my $cli_mod ( @{$modules{cmdline}}) {
 			if ( eval "defined \@{".$cli_mod."::Options}" ) {
 				eval "push \@mod_options,"
 					."\@{".$cli_mod."::Options}";
@@ -466,7 +468,7 @@ sub fetch_main2
 		@mod_options ) };
 	if ( $@ ) {
 		throw_getopt_error ( "command line processing failed: $@" );
-	} elsif ( ! $result ) {
+	} elsif ( not $result ) {
 		throw_cli_usage ( "usage: $0 --dir dirpath "
 			."[--group group] [--mode mode] "
 			."[--source file] [--source_format fmt-string] "
@@ -479,8 +481,7 @@ sub fetch_main2
 	if (( exists $options{debug}) and $options{debug}) {
 		$debug = 1;
 	}
-	debug "fetch_main";
-
+	debug "fetch_main2";
 
 	# if either source/input or dest/output formats were not provided,
 	# check if only one handler is registered - if so that's the default
@@ -541,6 +542,7 @@ sub fetch_main2
 		throw_no_run( "no handlers were able or available to process "
 			." source format" );
 	}
+    return;
 }
 
 =item $obj = WebFetch::new( param => "value", [...] )
