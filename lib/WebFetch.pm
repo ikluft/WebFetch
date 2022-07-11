@@ -259,16 +259,16 @@ sub module_register
 			# A ":" was found so process a 2nd-level group entry
 			my $group = $1;
 			my $subcap = $2;
-			if ( !exists $modules{$group}) {
+			if ( not exists $modules{$group}) {
 				$modules{$group} = {};
 			}
-			if ( !exists $modules{$group}{$subcap}) {
+			if ( not exists $modules{$group}{$subcap}) {
 				$modules{$group}{$subcap} = [];
 			}
 			push @{$modules{$group}{$subcap}}, $module;
 		} else {
 			# just a simple capbility name so store it
-			if ( !exists $modules{$capability}) {
+			if ( not exists $modules{$capability}) {
 				$modules{$capability} = [];
 			}
 			push @{$modules{$capability}}, $module;
@@ -308,7 +308,7 @@ sub module_select
 			# search group for topic
 			foreach my $handler (@{$modules{$group}{$topic}})
 			{
-				if ( !exists $handlers{$handler}) {
+				if ( not exists $handlers{$handler}) {
 					push @handlers, $handler;
 					$handlers{$handler} = 1;
 				}
@@ -318,7 +318,7 @@ sub module_select
 		} elsif ( exists $default_modules{$group}{$topic} ) {
 			# check default handlers
 			my $def_handler = $default_modules{$group}{$topic};
-			if ( !exists $handlers{$def_handler}) {
+			if ( not exists $handlers{$def_handler}) {
 				push @handlers, $def_handler;
 				$handlers{$def_handler} = 1;
 			}
@@ -394,7 +394,7 @@ behalf of each of the packages.
 sub main::fetch_main
 {
 	# run fetch_main2 in an eval so we can catch exceptions
-	eval { &WebFetch::fetch_main2; };
+	my $result = eval { &WebFetch::fetch_main2; };
 
 	# process any error/exception that we may have gotten
 	if ( $@ ) {
@@ -485,12 +485,12 @@ sub fetch_main2
 
 	# if either source/input or dest/output formats were not provided,
 	# check if only one handler is registered - if so that's the default
-	if ( !exists $options{source_format}) {
+	if ( not exists $options{source_format}) {
 		if ( my $fmt = singular_handler( "input" )) {
 			$options{source_format} = $fmt;
 		}
 	}
-	if ( !exists $options{dest_format}) {
+	if ( not exists $options{dest_format}) {
 		if ( my $fmt = singular_handler( "output" )) {
 			$options{dest_format} = $fmt;
 		}
@@ -502,10 +502,9 @@ sub fetch_main2
 		and ( ref $modules{input}{ $options{source_format}}
 			eq "ARRAY" ))
 	{
-		my $handler;
-		foreach $handler (@{$modules{input}{$options{source_format}}})
+		foreach my $handler (@{$modules{input}{$options{source_format}}})
 		{
-			if ( !exists $handlers{$handler}) {
+			if ( not exists $handlers{$handler}) {
 				push @handlers, $handler;
 				$handlers{$handler} = 1;
 			}
@@ -513,22 +512,21 @@ sub fetch_main2
 	}
 	if ( exists $default_modules{ $options{source_format}} ) {
 		my $handler = $default_modules{ $options{source_format}};
-		if ( !exists $handlers{$handler}) {
+		if ( not exists $handlers{$handler}) {
 			push @handlers, $handler;
 			$handlers{$handler} = 1;
 		}
 	}
 	
 	# check if any handlers were found for this input format
-	if ( ! @handlers ) {
+	if ( not @handlers ) {
 		throw_no_handler( "input handler not found for "
 			.$options{source_format});
 	}
 
 	# run the available handlers until one succeeds or none are left
-	my $pkgname;
 	my $run_count = 0;
-	foreach $pkgname ( @handlers ) {
+	foreach my $pkgname ( @handlers ) {
 		debug "running for $pkgname";
 		eval { &WebFetch::run( $pkgname, \%options )};
 		if ( $@ ) {
@@ -542,7 +540,7 @@ sub fetch_main2
 		throw_no_run( "no handlers were able or available to process "
 			." source format" );
 	}
-    return;
+    return 1;
 }
 
 =item $obj = WebFetch::new( param => "value", [...] )
@@ -562,17 +560,17 @@ this way as if the WebFetch object had become a member of that class.
 # allocate a new object
 sub new
 {
-	my $class = shift;
+	my ($class, @args) = @_;
 	my $self = {};
 	bless $self, $class;
 
 	# initialize the object parameters
-	$self->init(@_);
+	$self->init(@args);
 
 	# go fetch the data
 	# this function must be provided by a derived module
 	# non-fetching modules (i.e. data) must define $self->{no_fetch}=1
-	if (( ! exists $self->{no_fetch}) or ! $self->{no_fetch}) {
+	if (( not exists $self->{no_fetch}) or not $self->{no_fetch}) {
 		require WebFetch::Data::Store;
 		if ( exists $self->{data}) {
 			$self->{data}->isa( "WebFetch::Data::Store" )
@@ -600,11 +598,12 @@ attributes in C<$obj>.
 # initialize attributes of new objects
 sub init
 {
-	my $self = shift;
-	if ( @_ ) {
+	my ($self, @args) = @_;
+	if ( @args ) {
 		my %params = @_;
 		@$self{keys %params} = values %params;
 	}
+    return;
 }
 
 =item WebFetch::mod_load ( $class )
@@ -715,12 +714,12 @@ sub run
 	# (This externalizes the data for other software to capture it.)
 	debug "run before output";
 	my $dest_format = $obj->{dest_format};
-	if ( !exists $obj->{actions}) {
+	if ( not exists $obj->{actions}) {
 		$obj->{actions} = {};
 	}
 	if (( exists $obj->{data})) {
 		if ( exists $obj->{dest}) {
-			if ( !exists $obj->{actions}{$dest_format}) {
+			if ( not exists $obj->{actions}{$dest_format}) {
 				$obj->{actions}{$dest_format} = [];
 			}
 			push @{$obj->{actions}{$dest_format}}, [ $obj->{dest} ];
@@ -736,17 +735,16 @@ sub run
 	my $result = $obj->save();
 
 	# check for errors, throw exception to report errors per savable item
-	if ( ! $result ) {
-		my $savable;
+	if (not $result) {
 		my @errors;
-		foreach $savable ( @{$obj->{savable}}) {
+		foreach my $savable ( @{$obj->{savable}}) {
 			(ref $savable eq "HASH") or next;
 			if ( exists $savable->{error}) {
 				push @errors, "file: ".$savable->{file}
 					."error: " .$savable->{error};
 			}
 		}
-		if ( @errors ) {
+		if (@errors) {
 			throw_save_error( "error saving results in "
 				.$obj->{dir}
 				."\n".join( "\n", @errors )."\n" );
@@ -978,22 +976,19 @@ sub do_actions
 	# we *really* need the data and actions to be set!
 	# otherwise assume we're in WebFetch 0.09 compatibility mode and
 	# $self->fetch() better have created its own savables already
-	if (( !exists $self->{data}) or ( !exists $self->{actions})) {
-
+	if ((not exists $self->{data}) or (not exists $self->{actions})) {
 		return
 	}
 
 	# loop through all the actions
-	my $action_spec;
-	foreach $action_spec ( keys %{$self->{actions}} ) {
+	foreach my $action_spec ( keys %{$self->{actions}} ) {
 		my $handler_ref;
 
 		# check for modules to handle the specified dest_format
 		my ( @handlers, %handlers );
 		my $action_handler = "fmt_handler_".$action_spec;
 		if ( exists $modules{output}{$action_spec}) {
-			my $class;
-			foreach $class ( @{$modules{output}{$action_spec}}) {
+			foreach my $class ( @{$modules{output}{$action_spec}}) {
 				if ( $class->can( $action_handler )) {
 					$handler_ref = \&{$class."::".$action_handler};
 					last;
@@ -1004,8 +999,7 @@ sub do_actions
 		if ( defined $handler_ref )
 		{
 			# loop through action spec entries (parameter lists)
-			my $entry;
-			foreach $entry ( @{$self->{actions}{$action_spec}}) {
+			foreach my $entry (@{$self->{actions}{$action_spec}}) {
 				# parameters must be in an ARRAY ref
 				if (ref $entry ne "ARRAY" ) {
 					warn "warning: entry in action spec "
@@ -1031,6 +1025,7 @@ sub do_actions
 				.(ref $self)." - ignored\n";
 		}
 	}
+    return;
 }
 
 =item $obj->fetch
@@ -1169,7 +1164,7 @@ sub get
 {
         my ( $self, $source ) = @_;
 
-	if ( ! defined $source ) {
+	if (not defined $source) {
 		$source = $self->{source};
 	}
 	if ( $self->{debug}) {
@@ -1225,6 +1220,7 @@ sub html_savable
 		.$content
 		."<!--- end text generated by "
 		."Perl5 WebFetch $WebFetch::VERSION - do not manually edit --->\n" );
+    return;
 }
 
 =item $obj->raw_savable( $filename, $content )
@@ -1256,6 +1252,7 @@ sub raw_savable
 		(( exists $self->{group}) ? ('group' => $self->{group}) : ()),
 		(( exists $self->{mode}) ? ('mode' => $self->{mode}) : ())
                 });
+    return;
 }
 
 =item $obj->direct_fetch_savable( $filename, $source )
@@ -1277,8 +1274,8 @@ sub direct_fetch_savable
 		$self->{savable} = [];
 	}
 	my $filename = $url;
-	$filename =~ s=[;?].*==;
-	$filename =~ s=^.*/==;
+	$filename =~ s=[;?].*==x;
+	$filename =~ s=^.*/==x;
 	push ( @{$self->{savable}}, {
 		'url' => $url,
 		'file' => $filename,
@@ -1286,6 +1283,7 @@ sub direct_fetch_savable
 		(( exists $self->{group}) ? ('group' => $self->{group}) : ()),
 		(( exists $self->{mode}) ? ('mode' => $self->{mode}) : ())
 		});
+    return;
 }
 
 =item $obj->no_savables_ok
@@ -1304,6 +1302,7 @@ sub no_savables_ok
 	push ( @{$self->{savable}}, {
 		'ok_empty' => 1,
 		});
+    return;
 }
 
 =item $obj->save
@@ -1371,24 +1370,23 @@ sub save
 	}
 
 	# loop through "savable" (grouped content and filename destination)
-	my $savable;
-	foreach $savable ( @{$self->{savable}}) {
+	foreach my $savable ( @{$self->{savable}}) {
 
-		if ( exists $savable->{file}) {
+		if (exists $savable->{file}) {
 			debug "saving ".$savable->{file}."\n";
 		}
 
 		# an output module may have handled a more intricate operation
-		if ( exists $savable->{ok_empty}) {
+		if (exists $savable->{ok_empty}) {
 			last;
 		}
 
 		# verify contents of savable record
-		if ( !exists $savable->{file}) {
+		if (not exists $savable->{file}) {
 			$savable->{error} = "missing file name - skipped";
 			next;
 		}
-		if (( !exists $savable->{content})
+		if ((not exists $savable->{content})
 			and ( !exists $savable->{url}))
 		{
 			$savable->{error} = "missing content or URL - skipped";
@@ -1402,7 +1400,7 @@ sub save
 
 		# make sure the Nxx "new content" file does not exist yet
 		if ( -f $new_content ) {
-			if ( !unlink $new_content ) {
+			if (not unlink $new_content ) {
 				$savable->{error} = "cannot unlink "
 					.$new_content.": $!";
 				next;
@@ -1418,10 +1416,10 @@ sub save
 			require DB_File;
 			tie %id_index, 'DB_File',
 				$self->{dir}."/id_index.db",
-				&DB_File::O_CREAT|&DB_File::O_RDWR, 0640;
+				&DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
 			if ( exists $id_index{$savable->{url}}) {
 				( $timestamp, $filename ) =
-					split /#/, $id_index{$savable->{url}};
+					split /#/x, $id_index{$savable->{url}};
 				$was_in_index = 1;
 			} else {
 				$timestamp = time;
@@ -1449,26 +1447,29 @@ sub save
 		}
 
 		# write content to the "new content" file
-		if ( ! open ( new_content, ">:utf8", "$new_content" )) {
-			$savable->{error} = "cannot open $new_content: $!";
-			next;
-		}
-		if ( !print new_content $savable->{content}) {
-			$savable->{error} = "failed to write to "
-				.$new_content.": $!";
-			close new_content;
-			next;
-		}
-		if ( !close new_content ) {
-			# this can happen with NFS errors
-			$savable->{error} = "failed to close "
-				.$new_content.": $!";
-			next;
-		}
+        {
+            ## no critic (InputOutput::RequireBriefOpen)
+            my $new_file;
+            if (not open($new_file, ">:encoding(UTF-8)", "$new_content")) {
+                $savable->{error} = "cannot open $new_content: $!";
+                next;
+            }
+            if (not print $new_file $savable->{content}) {
+                $savable->{error} = "failed to write to ".$new_content.": $!";
+                close $new_file;
+                next;
+            }
+            if (not close $new_file) {
+                # this can happen with NFS errors
+                $savable->{error} = "failed to close "
+                    .$new_content.": $!";
+                next;
+            }
+        }
 
 		# remove the "old content" file to get it out of the way
 		if ( -f $old_content ) {
-			if ( !unlink $old_content ) {
+			if (not unlink $old_content ) {
 				$savable->{error} = "cannot unlink "
 					.$old_content.": $!";
 				next;
@@ -1477,7 +1478,7 @@ sub save
 
 		# move the main content to the old content - now it's a backup
 		if ( -f $main_content ) {
-			if ( !rename $main_content, $old_content ) {
+			if (not rename $main_content, $old_content ) {
 				$savable->{error} = "cannot rename "
 					.$main_content." to "
 					.$old_content.": $!";
@@ -1488,7 +1489,7 @@ sub save
 		# chgrp the "new content" before final installation
 		if ( exists $savable->{group}) {
 			my $gid = $savable->{group};
-			if ( $gid !~ /^[0-9]+$/o ) {
+			if ( $gid !~ /^[0-9]+$/ox ) {
 				$gid = (getgrnam($gid))[2];
 				if ( ! defined $gid ) {
 					$savable->{error} = "cannot chgrp "
@@ -1508,7 +1509,7 @@ sub save
 
 		# chmod the "new content" before final installation
 		if ( exists $savable->{mode}) {
-			if ( ! chmod oct($savable->{mode}), $new_content ) {
+			if (not chmod oct($savable->{mode}), $new_content ) {
 				$savable->{error} = "cannot chmod "
 					.$new_content." to "
 					.$savable->{mode}.": $!";
@@ -1529,7 +1530,7 @@ sub save
 
 	# loop through savable to report any errors
 	my $err_count = 0;
-	foreach $savable ( @{$self->{savable}}) {
+	foreach my $savable ( @{$self->{savable}}) {
 		if ( exists $savable->{error}) {
 			print STDERR "WebFetch: failed to save "
 				.$savable->{file}.": "
@@ -1550,9 +1551,9 @@ sub save
 #
 
 sub data { my $self = shift; return $self->{data}; }
-sub wk2fname { my $self = shift; return $self->{data}->wk2fname( @_ )};
-sub fname2fnum { my $self = shift; return $self->{data}->fname2fnum( @_ )};
-sub wk2fnum { my $self = shift; return $self->{data}->wk2fnum( @_ )};
+sub wk2fname { my ($self, @args) = @_; return $self->{data}->wk2fname(@args)};
+sub fname2fnum { my ($self, @args) = @_; return $self->{data}->fname2fnum(@args)};
+sub wk2fnum { my ($self, @args) = @_; return $self->{data}->wk2fnum(@args)};
 
 =item AUTOLOAD functionality
 
@@ -1572,15 +1573,15 @@ be redirected there.
 ## no critic (ClassHierarchies::ProhibitAutoloading Subroutines::RequireFinalReturn)
 sub AUTOLOAD
 {
-	my $self = shift;
+	my ($self, @args) = @_;
 	my $type = ref($self) or throw_autoload_fail "self is not an object";
 
 	my $name = $AUTOLOAD;
-	$name =~ s/.*://;   # strip fully-qualified portion, just want function
+	$name =~ s/.*://x;   # strip fully-qualified portion, just want function
 
 	# decline all-caps names - reserved for special Perl functions
 	my ( $package, $filename, $line ) = caller;
-	( $name =~ /^[A-Z]+$/ ) and return;
+	( $name =~ /^[A-Z]+$/x ) and return;
 	debug __PACKAGE__."::AUTOLOAD $name";
 
 	# check for function in caller package
@@ -1592,8 +1593,8 @@ sub AUTOLOAD
 			no strict 'refs';
 			*{__PACKAGE__."::".$name} = \&{$package."::".$name};
 		}
-		#my $retval = eval $package."::".$name."( \$self, \@_ )";
-		my $retval = eval { $self->$name( @_ ); };
+		#my $retval = eval $package."::".$name."( \$self, \@args )";
+		my $retval = eval { $self->$name( @args ); };
 		if ( $@ ) {
 			my $e = Exception::Class->caught();
 			ref $e ? $e->rethrow
