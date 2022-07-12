@@ -124,7 +124,7 @@ sub extract_value
                 }
                 return;
         } else {
-                $thing =~ s/\s+$//s;
+                $thing =~ s/\s+$//xs;
                 length $thing > 0 or return;
                 return $thing;
         }
@@ -138,9 +138,9 @@ sub parse_input
 	my $atom_feed = $atom_api->getFeed( $self->{source} );
 
 	# parse values from top of structure
-	my ( %feed, @entries, $entry );
+	my @entries;
 	@entries = $atom_feed->entries;
-	foreach $entry ( @entries ) {
+	foreach my $entry ( @entries ) {
 		# save the data record
 		my $id = extract_value( $entry->id() );
 		my $title = extract_value( $entry->title() );
@@ -154,6 +154,7 @@ sub parse_input
 		$self->data->add_record( $id, $updated, $title,
 			$author, $link, $summary, $content, $xml );
 	}
+    return;
 }
 
 1;
