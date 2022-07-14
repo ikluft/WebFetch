@@ -97,7 +97,7 @@ sub extract_value
 		}
 		return;
 	} else {
-		$thing =~ s/\s+$//s;
+		$thing =~ s/\s+$//xs;
 		length $thing > 0 or return;
 		return $thing;
 	}
@@ -107,12 +107,12 @@ sub extract_value
 sub parse_rss
 {
 	my $text = shift;
-	my $rss = new XML::RSS;
+	my $rss = XML::RSS->new();
 	$rss->parse($text);
 
 	# parse values from top of structure
-	my ( %feed, $field, $item, @buckets );
-	foreach $field ( keys %$rss ) {
+	my ( %feed, @buckets );
+	foreach my $field ( keys %$rss ) {
 		if ( ref $rss->{$field} eq "HASH" ) {
 			push @buckets, $field;
 		}
@@ -122,11 +122,10 @@ sub parse_rss
 	}
 
 	# parse hashes, i.e. channel parameters, XML/RSS modeules, etc
-	my $bucket;
-	foreach $bucket ( @buckets ) {
+	foreach my $bucket ( @buckets ) {
 		( defined $rss->{$bucket}) or next;
 		$feed{$bucket} = {};
-		foreach $field ( keys %{$rss->{$bucket}} ) {
+		foreach my $field ( keys %{$rss->{$bucket}} ) {
 			my $value = extract_value( $rss->{$bucket}{$field});
 			( defined $value ) or next;
 			$feed{$bucket}{$field} = $value;
@@ -135,9 +134,9 @@ sub parse_rss
 
 	# parse each item from the news feed
 	$feed{items} = [];
-	foreach $item ( @{$rss->{items}}) {
+	foreach my $item ( @{$rss->{items}}) {
 		my $f_item = {};
-		foreach $field ( keys %$item ) {
+		foreach my $field ( keys %$item ) {
 			my $value = extract_value( $item->{$field});
 			( defined $value ) or next;
 			$f_item->{$field} = $value;
@@ -158,10 +157,8 @@ sub parse_input
 	my $feed = parse_rss( $$raw_rss );
 
 	# translate parsed RSS feed into the WebFetch Embedding API data table
-	my ( $item, %label_hash, $pos );
-	$pos = 0;
-	foreach $item ( @{$feed->{items}} ) {
-
+	my $pos = 0;
+	foreach my $item ( @{$feed->{items}} ) {
 		# save the data record
 		my $title = ( defined $item->{title}) ? $item->{title} : "";
 		my $link = ( defined $item->{link}) ? $item->{link} : "";
@@ -175,6 +172,7 @@ sub parse_input
 			$category, $description );
 		$pos++;
 	}
+    return;
 }
 
 1;
