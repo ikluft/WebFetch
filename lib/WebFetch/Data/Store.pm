@@ -101,13 +101,12 @@ Add the field names in the order their values will appear in the data table.
 # add field names
 sub add_fields
 {
-	my $self = shift;
-	my @fields = @_;
-	my $field;
-	foreach $field ( @fields ) {
+	my ($self, @fields) = @_;
+	foreach my $field ( @fields ) {
 		$self->{findex}{$field} = scalar @{$self->{fields}};
 		push @{$self->{fields}}, $field;
 	}
+    return;
 }
 
 =item $num = $obj->num_fields;
@@ -174,6 +173,7 @@ sub add_wk_names
 		$self->{wk_names}{$wk_name} = $field;
 		$self->{wkindex}{$wk_name} = $self->{findex}{$field};
 	}
+    return;
 }
 
 =item $value = $obj->get_feed( $name );
@@ -218,8 +218,9 @@ positions of the field names that were provided earlier.
 # this adds the field values in the same order the field names were added
 sub add_record
 {
-	my $self = shift;
-	push @{$self->{records}}, [ @_ ];
+	my ($self, @args) = @_;
+	push @{$self->{records}}, [ @args ];
+    return;
 }
 
 # TODO: add a function add_record_unordered( name => value, ... )
@@ -271,6 +272,7 @@ sub reset_pos
 
 	WebFetch::debug "reset_pos";
 	delete $self->{pos};
+    return;
 }
 
 =item $record = $obj->next_record;
