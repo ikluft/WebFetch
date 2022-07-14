@@ -83,7 +83,7 @@ sub fmt_handler_dump
 	my ( $self, $filename ) = @_;
 
 	$self->raw_savable( $filename, Dumper( $self->{data}));
-	1;
+	return 1;
 }
 
 1;
