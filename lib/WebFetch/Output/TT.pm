@@ -99,7 +99,7 @@ sub fmt_handler_tt
 		or throw_template $template->error();
 
 	$self->raw_savable( $filename, $output );
-	1;
+	return 1;
 }
 
 1;
