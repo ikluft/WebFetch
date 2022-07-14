@@ -163,10 +163,13 @@ sub get_twiki_config
 	# load the TWiki modules
 	WebFetch::debug "loading TWiki modules";
 	push @INC, $self->{twiki_root}."/lib";
-	eval { require TWiki; require TWiki::Func; };
+	my $result = eval { require TWiki and require TWiki::Func; };
 	if ( $@ ) {
 		throw_twiki_require ( $@ );
 	}
+    if (not $result) {
+		throw_twiki_require ( "require failed" );
+    }
 
 	# initiate TWiki library, create session as user "WebFetch"
 	$self->{twiki_obj} = TWiki->new( "WebFetch" );
@@ -176,7 +179,7 @@ sub get_twiki_config
 		throw_twiki_no_config( "TWiki configuration page for WebFetch "
 			."not defined" );
 	}
-	my ( $web, $topic ) = split /\./, $self->{config_topic};
+	my ( $web, $topic ) = split /\./x, $self->{config_topic};
 	WebFetch::debug "config_topic: ".$self->{config_topic}
 		." -> $web, $topic";
 	if (( ! defined $web ) or ( ! defined $topic )) {
@@ -194,27 +197,26 @@ sub get_twiki_config
 	my $config = TWiki::Func::readTopic( $web, $topic );
 
 	# if STARTINCLUDE and STOPINCLUDE are present, use only what's between
-	if ( $config =~ /%STARTINCLUDE%\s*(.*)\s*%STOPINCLUDE%/s ) {
+	if ( $config =~ /%STARTINCLUDE%\s*(.*)\s*%STOPINCLUDE%/xs ) {
 		$config = $1;
 	}
 
 	# parse the configuration
 	WebFetch::debug "parsing configuration";
-	my ( @fnames, $line );
+	my @fnames;
 	$self->{twiki_config_all} = [];
 	$self->{twiki_keys} = {};
-	foreach $line ( split /\r*\n+/s, $config ) {
-		if ( $line =~ /^\|\s*(.*)\s*\|\s*$/ ) {
-			my @entries = split /\s*\|\s*/, $1;
+	foreach my $line ( split /\r*\n+/xs, $config ) {
+		if ( $line =~ /^\|\s*(.*)\s*\|\s*$/x ) {
+			my @entries = split /\s*\|\s*/x, $1;
 			WebFetch::debug "read entries: ".join( ', ', @entries );
 
 			# first line contains field headings
 			if ( ! @fnames) {
 				# save table headings as field names
-				my $field;
-				foreach $field ( @entries ) {
+				foreach my $field ( @entries ) {
 					my $tmp = lc($field);
-					$tmp =~ s/\W//g;
+					$tmp =~ s/\W//xg;
 					push @fnames, $tmp;
 				}
 				next;
@@ -251,6 +253,7 @@ sub get_twiki_config
 	}
 	$self->{twiki_config} = $self->{twiki_config_all}[$self->{twiki_keys}{$self->{config_key}}];
 	WebFetch::debug "twiki_config: ".join( " ", %{$self->{twiki_config}});
+    return;
 }
 
 # write to a TWiki page
@@ -263,10 +266,9 @@ sub write_to_twiki
 	$config = $self->{twiki_config};
 
 	# parse options
-	my ( $option );
 	$self->{twiki_options} = {};
-	foreach $option ( split /\s+/, $self->{twiki_config}{options}) {
-		if ( $option =~ /^([^=]+)=(.*)/ ) {
+	foreach my $option ( split /\s+/x, $self->{twiki_config}{options}) {
+		if ( $option =~ /^([^=]+)=(.*)/x ) {
 			$self->{twiki_options}{$1} = $2;
 		} else {
 			$self->{twiki_options}{$option} = 1;
@@ -298,6 +300,7 @@ sub write_to_twiki
 	} else {
 		$self->write_to_twiki_metadata;
 	}
+    return;
 }
 
 # write to separate TWiki topics
@@ -307,8 +310,7 @@ sub write_to_twiki_topics
 
 	# get config variables
 	my $config = $self->{twiki_config};
-	my $name;
-	foreach $name ( qw( key web parent prefix template form )) {
+	foreach my $name ( qw( key web parent prefix template form )) {
 		if ( !exists $self->{twiki_config}{$name}) {
 			throw_twiki_config_missing( "missing config parameter "
 				.$name );
@@ -323,7 +325,7 @@ sub write_to_twiki_topics
 	my %id_index;
 	tie %id_index, 'DB_File',
 		$self->{dir}."/".$config->{key}."_id_index.db",
-		&DB_File::O_CREAT|&DB_File::O_RDWR, 0640;
+		&DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
 
 	# determine initial topic name
 	my ( %topics, @topics );
@@ -379,11 +381,11 @@ sub write_to_twiki_topics
 
 		# save a special title field for TWiki indexes
 		my $index_title = $entry->title;
-		$index_title =~ s/[\t\r\n\|]+/ /gs;
-		$index_title =~ s/^\s*//;
-		$index_title =~ s/\s*$//;
+		$index_title =~ s/[\t\r\n\|]+/ /xgs;
+		$index_title =~ s/^\s*//x;
+		$index_title =~ s/\s*$//x;
 		if ( length($index_title) > 60 ) {
-			substr( $index_title, 56 ) = "...";
+			substr( $index_title, 56, -1, "...");
 		}
 		WebFetch::debug "title: $index_title";
 		$meta->putKeyed( "FIELD", {
@@ -406,6 +408,7 @@ sub write_to_twiki_topics
 	if ( @oopses ) {
 		throw_twiki_oops( "TWiki saves failed:\n".join "\n", @oopses );
 	}
+    return;
 }
 
 # write to successive items of TWiki metadata
@@ -415,8 +418,7 @@ sub write_to_twiki_metadata
 
 	# get config variables
 	my $config = $self->{twiki_config};
-	my $name;
-	foreach $name ( qw( key web parent )) {
+	foreach my $name ( qw( key web parent )) {
 		if ( !exists $self->{twiki_config}{$name}) {
 			throw_twiki_config_missing( "missing config parameter "
 				.$name );
@@ -451,7 +453,7 @@ sub write_to_twiki_metadata
 	my %id_index;
 	tie %id_index, 'DB_File',
 		$self->{dir}."/".$config->{key}."_id_index.db",
-		&DB_File::O_CREAT|&DB_File::O_RDWR, 0640;
+		&DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
 
 	# get text of topic
 	my ($meta, $text) = TWiki::Func::readTopic( $config->{web},
@@ -498,6 +500,7 @@ sub write_to_twiki_metadata
 		throw_twiki_oops "TWiki saves failed: "
 			.$config->{parent}." ".$oopsurl;
 	}
+    return;
 }
 
 # TWiki format handler
@@ -514,7 +517,7 @@ sub fmt_handler_twiki
 
 	# no savables - mark it OK so WebFetch::save won't call it an error
 	$self->no_savables_ok;
-        1;
+    return 1;
 }
 
 =head1 METHODS
