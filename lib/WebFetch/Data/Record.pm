@@ -70,12 +70,11 @@ sub init
 	$self->SUPER::init( @_ );
 
 	# make accessor functions
-	my $field;
 	my $class = ref( $self );
-	foreach $field ( @{$self->{obj}{fields}}) {
+	foreach my $field ( @{$self->{obj}{fields}}) {
 		$class->mk_field_accessor( $field );
 	}
-	foreach $field ( keys %{$self->{obj}{wk_names}}) {
+	foreach my $field ( keys %{$self->{obj}{wk_names}}) {
 		$class->mk_field_accessor( $field );
 	}
 	
@@ -83,7 +82,7 @@ sub init
 }
 
 # shortcut function to top-level WebFetch object data
-sub data { return $_[0]->{obj}; }
+sub data { my @args = @_; return $args[0]->{obj}; }
 
 =over 4
 
@@ -136,15 +135,14 @@ Creates accessor functions for each field name provided.
 # make field accessor/mutator functions
 sub mk_field_accessor
 {
-	my $class = shift;
-	my $name;
-	
-	foreach $name ( @_ ) {
-		no strict 'refs';
+	my ($class, @args) = @_;
+	foreach my $name ( @args ) {
 		$class->can( $name ) and next; # skip if function exists!
 
 		# make a closure which keeps value of $name from this call
 		# keep generic so code can use more than one data type per run
+        ## no critic (TestingAndDebugging::ProhibitNoStrict)
+		no strict 'refs';
 		*{$class."::".$name} = sub {
 			my $self = shift;
 			my $value = shift;
@@ -175,6 +173,7 @@ sub mk_field_accessor
 			}
 		};
 	}
+    return;
 }
 
 =item accessor functions
@@ -190,23 +189,24 @@ name, like $obj->title .
 =cut
 
 # AUTOLOAD function to provide field accessors/mutators
+## no critic (ClassHierarchies::ProhibitAutoloading)
 sub AUTOLOAD
 {
-	my $self = shift;
+	my ($self, @args) = @_;
 	my $type = ref($self) or throw_autoload_fail "self is not an object";
 
 	my $name = $AUTOLOAD;
-	$name =~ s/.*://;   # strip fully-qualified portion, just want function
+	$name =~ s/.*://x;   # strip fully-qualified portion, just want function
 
 	# decline all-caps names - reserved for special Perl functions
-	( $name =~ /^[A-Z]+$/ ) and return;
+	( $name =~ /^[A-Z]+$/x ) and return;
 
 	WebFetch::debug __PACKAGE__."::AUTOLOAD $name";
 	if (( exists $self->{obj}{findex}{$name})
 		or ( exists $self->{obj}{wk_names}{$name}))
 	{
 		$type->mk_field_accessor( $name );
-                return $self->$name(@_);
+                return $self->$name(@args);
 	} else {
 		throw_autoload_fail "no such function or field $name";
 	}
