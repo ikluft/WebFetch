@@ -20,6 +20,7 @@ use base "WebFetch";
 use DB_File;
 
 # define exceptions/errors
+use Try::Tiny;
 use Exception::Class (
 	"WebFetch::Output::TWiki::Exception::NoRoot" => {
 		isa => "WebFetch::Exception",
@@ -163,10 +164,12 @@ sub get_twiki_config
 	# load the TWiki modules
 	WebFetch::debug "loading TWiki modules";
 	push @INC, $self->{twiki_root}."/lib";
-	my $result = eval { require TWiki and require TWiki::Func; };
-	if ( $@ ) {
+	my $result;
+    try {
+        $result = ( require TWiki and require TWiki::Func );
+    } catch {
 		throw_twiki_require ( $@ );
-	}
+	};
     if (not $result) {
 		throw_twiki_require ( "require failed" );
     }
