@@ -1,33 +1,52 @@
 #!perl -T
 
-use Test::More tests => 10;
+use strict;
+use warnings;
+use Test::More;
+use Try::Tiny;
 
-BEGIN {
-	use_ok( 'WebFetch' );
-	use_ok( 'WebFetch::Data::Store' );
-	use_ok( 'WebFetch::Data::Record' );
-	use_ok( 'WebFetch::Input::PerlStruct' );
-	use_ok( 'WebFetch::Input::SiteNews' );
-	use_ok( 'WebFetch::Output::Dump' );
-	use_ok( 'WebFetch::Output::TWiki' );
+# always test these modules can load
+my @modules = qw(
+    WebFetch
+    WebFetch::Data::Store
+    WebFetch::Data::Record
+    WebFetch::Input::PerlStruct
+    WebFetch::Input::SiteNews
+    WebFetch::Output::Dump
+);
 
-    eval "use XML::Atom::Client";
-    SKIP: {
-        skip "Optional module 'XML::Atom::Client' not installed",1 if($@);
-        use_ok( 'WebFetch::Input::Atom' );
-    };
+# only test these modules can load if their dependency exists on the system
+my %dependencies = (
+    "WebFetch::Input::Atom" => "XML::Atom::Client",
+    "WebFetch::Input::RSS" => "XML::RSS",
+    "WebFetch::Output::TT" => "Template",
+    "WebFetch::Output::TWiki" => "TWiki",
+);
 
-    eval "use XML::RSS";
-    SKIP: {
-        skip "Optional module 'XML::RSS' not installed",1 if($@);
-	    use_ok( 'WebFetch::Input::RSS' );
-    };
+# count tests
+plan tests => (int(@modules) + int(keys %dependencies));
 
-    eval "use Template";
-    SKIP: {
-        skip "Optional module 'Template' not installed",1 if($@);
-        use_ok( 'WebFetch::Output::TT' );
-    };
+# test loading modules
+foreach my $mod (@modules) {
+    use_ok($mod);
 }
 
+# check conditional module dependencies - skip module load test if not present
+my %dep_found;
+foreach my $mod (sort keys %dependencies) {
+    $dep_found{$mod} = 1;
+    try {
+        ## no critic (BuiltinFunctions::ProhibitStringyEval)
+        eval "use $dependencies{$mod}";
+    } catch {
+        $dep_found{$mod} = 0;
+    };
+
+    SKIP: {
+        skip "Optional module '$dependencies{$mod}' not installed", 1 unless $dep_found{$mod};
+        use_ok($mod);
+    }
+}
+
+require WebFetch;
 diag( "Testing WebFetch $WebFetch::VERSION, Perl $], $^X" );
