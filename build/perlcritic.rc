@@ -1,4 +1,4 @@
-severity  = harsh
+severity  = gentle
 verbose = [%p] %m at line %l, column %c. %e (Severity: %s)\n
 include   = RequirePodSections
 color-severity-lowest = bright_blue

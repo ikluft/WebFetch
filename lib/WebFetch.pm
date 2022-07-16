@@ -114,6 +114,7 @@ use HTTP::Request;
 use Date::Calc;
 
 # define exceptions/errors
+use Try::Tiny;
 use Exception::Class (
 	'WebFetch::Exception',
 	'WebFetch::TracedException' => {
@@ -390,14 +391,14 @@ behalf of each of the packages.
 # fetch_main(), which users found conflicted with each other when
 # loading more than one WebFetch-derived module.
 
-# fetch_main - eval wrapper for fetch_main2 to catch and display errors
+# fetch_main - try/catch wrapper for fetch_main2 to catch and display errors
 sub main::fetch_main
 {
-	# run fetch_main2 in an eval so we can catch exceptions
-	my $result = eval { &WebFetch::fetch_main2; };
-
-	# process any error/exception that we may have gotten
-	if ( $@ ) {
+	# run fetch_main2 in a try/catch wrapper to handle exceptions
+	try {
+        &WebFetch::fetch_main2;
+    } catch {
+        # process any error/exception that we may have gotten
 		my $ex = $@;
 
 		# determine if there's an error message available to display
@@ -441,34 +442,32 @@ sub fetch_main2
 		and ( ref $modules{cmdline} eq "ARRAY" ))
 	{
 		foreach my $cli_mod ( @{$modules{cmdline}}) {
-			if ( eval "defined \@{".$cli_mod."::Options}" ) {
-				eval "push \@mod_options,"
-					."\@{".$cli_mod."::Options}";
+            my $symtab;
+            {
+                ## no critic (TestingAndDebugging::ProhibitNoStrict)
+                no strict 'refs';
+                $symtab = \%{$cli_mod."::"};
+            }
+            if ((exists $symtab->{Options}) and @{$symtab->{Options}}) {
+				push @mod_options, @{$symtab->{Options}};
 			}
-			if ( eval "defined \@{".$cli_mod."::Usage}" ) {
-				eval "push \@mod_options, \@{"
-					.$cli_mod."::Usage}";
+            if ((exists $symtab->{Usage}) and @{$symtab->{Usage}}) {
+				push @mod_usage, @{$symtab->{Usage}};
 			}
 		}
 	}
 
 	# process command line
-	my ( $result, %options );
-	$result = eval { GetOptions ( \%options,
-		"dir:s",
-		"group:s",
-		"mode:s",
-		"source=s",
-		"source_format:s",
-		"dest=s",
-		"dest_format:s",
-		"fetch_urls",
-		"quiet",
-		"debug",
-		@mod_options ) };
-	if ( $@ ) {
+	my ($options_result, %options);
+	try {
+        $options_result = GetOptions ( \%options,
+            "dir:s", "group:s", "mode:s", "source=s", "source_format:s", "dest=s",
+            "dest_format:s", "fetch_urls", "quiet", "debug",
+            @mod_options )
+    } catch {
 		throw_getopt_error ( "command line processing failed: $@" );
-	} elsif ( not $result ) {
+	};
+    if ( not $options_result ) {
 		throw_cli_usage ( "usage: $0 --dir dirpath "
 			."[--group group] [--mode mode] "
 			."[--source file] [--source_format fmt-string] "
@@ -528,12 +527,15 @@ sub fetch_main2
 	my $run_count = 0;
 	foreach my $pkgname ( @handlers ) {
 		debug "running for $pkgname";
-		eval { &WebFetch::run( $pkgname, \%options )};
-		if ( $@ ) {
-			print STDERR "WebFetch: run eval error: $@\n";
-		} else {
-			$run_count++;
-			last;
+		try {
+            &WebFetch::run( $pkgname, \%options )
+        } catch {
+			print STDERR "WebFetch: run exception: $@\n";
+		} finally {
+            if (not @_) {
+                $run_count++;
+                last;
+            }
 		}
 	}
 	if ( $run_count == 0 ) {
@@ -618,10 +620,12 @@ sub mod_load
 	my $pkg = shift;
 
 	# make sure we have the run package loaded
-	eval "require $pkg";
-	if ( $@ ) {
+	try {
+        require $pkg;
+    } catch {
 		throw_mod_load_failure( "failed to load $pkg: $@" );
 	}
+    return;
 }
 
 =item WebFetch::run
@@ -704,10 +708,11 @@ sub run
 	# this also calls the $obj->fetch() routine for the module which
 	# has inherited from WebFetch to do this
 	debug "run before new";
-	$obj = eval $run_pkg."->new( \%\$options_ref )";
-	if ( $@ ) {
+    try {
+        $obj = $run_pkg->new(%$options_ref);
+    } catch {
 		throw_mod_run_failure( "module run failure: ".$@ );
-	}
+	};
 
 	# if the object had data for the WebFetch-embedding API,
 	# then data processing is external to the fetch routine
@@ -1439,9 +1444,9 @@ sub save
 		if (( ! exists $savable->{content})
 			and ( exists $savable->{url}))
 		{
-			$savable->{content} =
-				eval { ${$self->get($savable->{url})} }; 
-			if ( $@ ) {
+            try {
+                $savable->{content} = ${$self->get($savable->{url})}; 
+            } catch {
 				next;
 			}
 		}
@@ -1593,14 +1598,15 @@ sub AUTOLOAD
 			no strict 'refs';
 			*{__PACKAGE__."::".$name} = \&{$package."::".$name};
 		}
-		#my $retval = eval $package."::".$name."( \$self, \@args )";
-		my $retval = eval { $self->$name( @args ); };
-		if ( $@ ) {
+		my $retval;
+        try {
+            $retval = $self->$name( @args );
+        } catch {
 			my $e = Exception::Class->caught();
 			ref $e ? $e->rethrow
 				: throw_autoload_fail "failure in "
 					."autoloaded function: ".$e;
-		}
+		};
 		return $retval;
 	}
 
