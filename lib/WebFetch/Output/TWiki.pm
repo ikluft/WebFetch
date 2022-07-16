@@ -86,12 +86,6 @@ __PACKAGE__->module_register( "cmdline", "output:twiki" );
 
 =head1 SYNOPSIS
 
-This is an output module for WebFetch which places the data in pages
-on a TWiki web site.  Some of its configuration information is read from
-a TWiki page.  Calling or command-line parameters point to the TWiki page
-which has the configuration and a search key to locate the correct line
-in a table.
-
 From the command line...
 
     perl -w -I$libdir -MWebFetch::Input::Atom -MWebFetch::Output::TWiki -e "&fetch_main" -- --dir "/path/to/fetch/worskspace" --source "http://search.twitter.com/search.atom?q=%23twiki" --dest=twiki --twiki_root=/var/www/twiki --config_topic=Feeds.WebFetchConfig --config_key=twiki
@@ -112,6 +106,14 @@ From Perl code...
     );
     $obj->do_actions; # process output
     $obj->save; # save results
+
+=head1 DESCRIPTION
+
+This is an output module for WebFetch which places the data in pages
+on a TWiki web site.  Some of its configuration information is read from
+a TWiki page.  Calling or command-line parameters point to the TWiki page
+which has the configuration and a search key to locate the correct line
+in a table.
 
 =head1 configuration from TWiki topic
 

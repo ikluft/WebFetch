@@ -1696,4 +1696,10 @@ L<WebFetch::Output::Dump.html">WebFetch::Output::Dump>,
 L<https://github.com/ikluft/WebFetch>,
 L<http://www.perl.org/>
 
+=head1 BUGS AND LIMITATIONS
+
+Please report bugs via GitHub at L<https://github.com/ikluft/WebFetch/issues>
+
+Patches and enhancements may be submitted via a pull request at L<https://github.com/ikluft/WebFetch/pulls>
+
 =cut
