@@ -18,6 +18,7 @@ Revision history for WebFetch
  [REVISION]
  - code modernization: fix Perl::Critic warnings
  - retroactively add .0 to prior versions in Changes so Dist::Zilla can parse them as x.y.z semantic versioning
+ - reorg separate modules to partition dependencies: WebFetch::Input::Atom WebFetch::Input::RSS WebFetch::Output::TT WebFetch::Output::TWiki
 
  [SECURITY]
 
@@ -28,7 +29,7 @@ Revision history for WebFetch
 0.12.0 2009-08-26T14:39:37-0700 America/Los_Angeles
  - minor reorg/cleanup/fixes
 
-0.11.0 Aug 2009
+0.11.0 2009-08-01T00:00:00-0700 America/Los_Angeles
  - converted the following modules to support Embedding API: DebianNews, General
  - removed fetch_main function from the derived modules; WebFetch.pm now handles this for all of them. (This is a partial fix for a problem with embedding more than one WebFetch module at a time, reported by Joey Hess of the Debian Project.)
  - fixed pod formatting problem in Embedding API docs

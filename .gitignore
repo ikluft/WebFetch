@@ -16,6 +16,8 @@ nytprof.out
 
 # Dizt::Zilla
 /.build/
+main/.build/
+submodules/*/.build/
 
 # Module::Build
 _build/

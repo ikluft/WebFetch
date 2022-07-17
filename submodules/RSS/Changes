@@ -1,0 +1,20 @@
+Revision history for WebFetch::Input::RSS
+
+{{$NEXT}}
+ [API CHANGE]
+
+ [BUG FIXES]
+
+ [DOCS]
+
+ [ENHANCEMENTS]
+
+ [MAJOR]
+
+ [MINOR]
+ - reorg out from WebFetch distro to new module to separate its dependencies
+
+ [REVISION]
+
+ [SECURITY]
+

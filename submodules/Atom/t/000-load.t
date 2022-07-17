@@ -7,12 +7,7 @@ use Try::Tiny;
 
 # always test these modules can load
 my @modules = qw(
-    WebFetch
-    WebFetch::Data::Store
-    WebFetch::Data::Record
-    WebFetch::Input::PerlStruct
-    WebFetch::Input::SiteNews
-    WebFetch::Output::Dump
+    WebFetch::Input::Atom
 );
 
 # count tests
@@ -23,5 +18,5 @@ foreach my $mod (@modules) {
     use_ok($mod);
 }
 
-require WebFetch;
-diag( "Testing WebFetch $WebFetch::VERSION, Perl $], $^X" );
+require WebFetch::Input::Atom;
+diag( "Testing WebFetch::Input::Atom $WebFetch::Input::Atom::VERSION, Perl $], $^X" );

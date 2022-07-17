@@ -1,0 +1,20 @@
+Revision history for WebFetch::Output::TWiki
+
+{{$NEXT}}
+ [API CHANGE]
+
+ [BUG FIXES]
+
+ [DOCS]
+
+ [ENHANCEMENTS]
+
+ [MAJOR]
+
+ [MINOR]
+ - reorg out from WebFetch distro to new module to separate its dependencies
+
+ [REVISION]
+
+ [SECURITY]
+
