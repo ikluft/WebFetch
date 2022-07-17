@@ -265,7 +265,7 @@ sub get_twiki_config
 sub write_to_twiki
 {
 	my $self = shift;
-	my ( $config, $name );
+	my $config;
 
 	# get config variables
 	$config = $self->{twiki_config};
@@ -470,7 +470,6 @@ sub write_to_twiki_metadata
 
 	# create metadata lines for each entry
 	my $entry;
-	my @oopses;
 	my $id_field = $self->{id_field};
 	$self->data->reset_pos;
 	while ( $entry = $self->data->next_record ) {
@@ -511,8 +510,7 @@ sub write_to_twiki_metadata
 # TWiki format handler
 sub fmt_handler_twiki
 {
-        my $self = shift;
-        my $filename = shift;
+    my $self = shift;
 
 	# get configuration from TWiki
 	$self->get_twiki_config;

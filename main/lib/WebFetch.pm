@@ -990,7 +990,6 @@ sub do_actions
 		my $handler_ref;
 
 		# check for modules to handle the specified dest_format
-		my ( @handlers, %handlers );
 		my $action_handler = "fmt_handler_".$action_spec;
 		if ( exists $modules{output}{$action_spec}) {
 			foreach my $class ( @{$modules{output}{$action_spec}}) {
@@ -1363,7 +1362,6 @@ sub save
 
 	# if fetch_urls is defined, turn link fields in the data to savables
 	if (( exists $self->{fetch_urls}) and $self->{fetch_urls}) {
-		my $url_fnum = $self->wk2fnum( "url" );
 		my $entry;
 		$self->data->reset_pos;
 		while ( $entry = $self->data->next_record()) {
