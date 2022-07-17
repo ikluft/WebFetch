@@ -3,7 +3,7 @@
 # present them for display, or to export local information to other sites
 # on the Internet
 #
-# Copyright (c) 1998-2009,2022 Ian Kluft. This program is free software; you can
+# Copyright (c) 1998-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
 # License Version 3. See  https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
