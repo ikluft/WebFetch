@@ -602,7 +602,7 @@ sub init
 {
 	my ($self, @args) = @_;
 	if ( @args ) {
-		my %params = @_;
+		my %params = @args;
 		@$self{keys %params} = values %params;
 	}
     return;
@@ -620,8 +620,9 @@ sub mod_load
 	my $pkg = shift;
 
 	# make sure we have the run package loaded
-	try {
-        require $pkg;
+    ## no critic (BuiltinFunctions::ProhibitStringyEval)
+    try {
+        eval "require $pkg" or die $@;
     } catch {
 		throw_mod_load_failure( "failed to load $pkg: $@" );
 	}

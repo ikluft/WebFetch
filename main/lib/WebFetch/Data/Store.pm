@@ -42,25 +42,24 @@ WebFetch::Data::Store - Object for management of WebFetch data
 
 =head1 SYNOPSIS
 
-C<use WebFetch::Data::Store;>
+    use WebFetch::Data::Store;
 
-C<$data = webfetch_obj-E<gt>data;
-$data-E<gt>add_fields( "field1", "field2", ... );
-$num = $data-E<gt>num_fields;
-@field_names = $data-E<gt>get_fields;
-$name = $data-E<gt>field_bynum( 3 );
-$data-E<gt>add_wk_names( "title" =E<gt> "heading", "url" =E<gt> "link", ... );
-$value = $data-E<gt>get_feed( $name );
-$data-E<gt>set_feed( $name, $value );
-$data-E<gt>add_record( $field1, $field2, ... ); # order corresponds to add_fields
-$num = $data-E<gt>num_records;
-$record = $data-E<gt>get_record( $n );
-$data-E<gt>reset_pos;
-$record = $data-E<gt>next_record;
-$name = $data-E<gt>wk2fname( $wk_name );
-$num = $data-E<gt>fname2fnum( $field_name );
-$num = $data-E<gt>wk2fnum( $wk_name );
->
+    $data = webfetch_obj->data;
+    $data->add_fields( "field1", "field2", ... );
+    $num = $data->num_fields;
+    @field_names = $data->get_fields;
+    $name = $data->field_bynum( 3 );
+    $data->add_wk_names( "title" => "heading", "url" => "link", ... );
+    $value = $data->get_feed( $name );
+    $data->set_feed( $name, $value );
+    $data->add_record( $field1, $field2, ... ); # order corresponds to add_fields
+    $num = $data->num_records;
+    $record = $data->get_record( $n );
+    $data->reset_pos;
+    $record = $data->next_record;
+    $name = $data->wk2fname( $wk_name );
+    $num = $data->fname2fnum( $field_name );
+    $num = $data->wk2fnum( $wk_name );
 
 =head1 DESCRIPTION
 
@@ -72,10 +71,19 @@ produce its output object/format.
 
 =cut
 
+# instantiate new object
+sub new {
+    my ($class, @params) = @_;
+    my $self = {};
+    bless $self, $class;
+    $self->init(@params);
+    return $self;
+}
+
 # initialization
 sub init
 {
-	my $self = shift;
+	my ($self, @params) = @_;
 	$self->{fields} = [];
 	$self->{findex} = {};
 	$self->{records} = [];
@@ -85,7 +93,7 @@ sub init
 
 	# signal WebFetch that Data subclasses do not provide a fetch function
 	$self->{no_fetch} = 1;
-	$self->SUPER::init( @_ );
+	$self->SUPER::init( @params );
 
 	return $self;
 }

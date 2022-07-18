@@ -81,16 +81,16 @@ WebFetch::Input::PerlStruct - accepts a Perl structure with pre-parsed news
 
 In perl scripts:
 
-C<use WebFetch::Input::PerlStruct;>
+    use WebFetch::Input::PerlStruct;
 
-C<$obj = new WebFetch::Input::PerlStruct (
-	"content" => content_struct,
-	"dir" => output_dir,
-	"dest" => output_file,
-	"dest_format" => output_format,	# used to select WebFetch output module
-	[ "group" => file_group_id, ]
-	[ "mode" => file_mode_perms, ]
-	[ "quiet" => 1 ]);>
+    $obj = WebFetch::Input::PerlStruct->new(
+        "content" => content_struct,
+        "dir" => output_dir,
+        "dest" => output_file,
+        "dest_format" => output_format,	# used to select WebFetch output module
+        [ "group" => file_group_id, ]
+        [ "mode" => file_mode_perms, ]
+        [ "quiet" => 1 ]);
 
 I<Note: WebFetch::Input::PerlStruct is a Perl interface only.
 It does not support usage from the command-line.>
