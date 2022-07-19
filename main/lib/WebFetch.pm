@@ -399,7 +399,7 @@ sub main::fetch_main
         &WebFetch::fetch_main2;
     } catch {
         # process any error/exception that we may have gotten
-		my $ex = $@;
+		my $ex = $_;
 
 		# determine if there's an error message available to display
 		my $pkg = __PACKAGE__;
@@ -424,7 +424,7 @@ sub main::fetch_main
 					.(ref $ex)."\n";
 			}
 		} else {
-			die "pkg: $@\n";
+			die "pkg: $_\n";
 		}
 	}
 
@@ -465,7 +465,7 @@ sub fetch_main2
             "dest_format:s", "fetch_urls", "quiet", "debug",
             @mod_options )
     } catch {
-		throw_getopt_error ( "command line processing failed: $@" );
+		throw_getopt_error ( "command line processing failed: $_" );
 	};
     if ( not $options_result ) {
 		throw_cli_usage ( "usage: $0 --dir dirpath "
@@ -530,7 +530,7 @@ sub fetch_main2
 		try {
             &WebFetch::run( $pkgname, \%options )
         } catch {
-			print STDERR "WebFetch: run exception: $@\n";
+			print STDERR "WebFetch: run exception: $_\n";
 		} finally {
             if (not @_) {
                 $run_count++;
@@ -567,7 +567,7 @@ sub new
 	bless $self, $class;
 
 	# initialize the object parameters
-	$self->init(@args);
+    $self->init(@args);
 
 	# go fetch the data
 	# this function must be provided by a derived module
@@ -624,7 +624,7 @@ sub mod_load
     try {
         eval "require $pkg" or die $@;
     } catch {
-		throw_mod_load_failure( "failed to load $pkg: $@" );
+		throw_mod_load_failure( "failed to load $pkg: $_" );
 	}
     return;
 }
@@ -712,7 +712,7 @@ sub run
     try {
         $obj = $run_pkg->new(%$options_ref);
     } catch {
-		throw_mod_run_failure( "module run failure: ".$@ );
+		throw_mod_run_failure( "module run failure in $run_pkg: ".$_ );
 	};
 
 	# if the object had data for the WebFetch-embedding API,
@@ -725,7 +725,7 @@ sub run
 	}
 	if (( exists $obj->{data})) {
 		if ( exists $obj->{dest}) {
-			if ( not exists $obj->{actions}{$dest_format}) {
+			if (not exists $obj->{actions}{$dest_format}) {
 				$obj->{actions}{$dest_format} = [];
 			}
 			push @{$obj->{actions}{$dest_format}}, [ $obj->{dest} ];
@@ -1248,7 +1248,7 @@ sub raw_savable
 {
         my ( $self, $filename, $content ) = @_;
 
-	if ( !exists $self->{savable}) {
+	if (not exists $self->{savable}) {
 		$self->{savable} = [];
 	}
         push ( @{$self->{savable}}, {
@@ -1275,7 +1275,7 @@ sub direct_fetch_savable
 {
 	my ( $self, $url ) = @_;
 
-	if ( !exists $self->{savable}) {
+	if (not exists $self->{savable}) {
 		$self->{savable} = [];
 	}
 	my $filename = $url;
@@ -1350,11 +1350,11 @@ sub save
 	}
 
 	# check if we have attributes needed to proceed
-	if ( !exists $self->{"dir"}) {
+	if (not exists $self->{"dir"}) {
 		die "WebFetch: directory path missing - "
 			."required for save\n";
 	}
-	if ( !exists $self->{savable}) {
+	if (not exists $self->{savable}) {
 		die "WebFetch: nothing to save\n";
 	}
 	if ( ref($self->{savable}) ne "ARRAY" ) {
@@ -1390,8 +1390,7 @@ sub save
 			$savable->{error} = "missing file name - skipped";
 			next;
 		}
-		if ((not exists $savable->{content})
-			and ( !exists $savable->{url}))
+		if ((not exists $savable->{content}) and (not exists $savable->{url}))
 		{
 			$savable->{error} = "missing content or URL - skipped";
 			next;
@@ -1440,7 +1439,7 @@ sub save
 		}
 
 		# if a URL was provided and no content, get content from URL
-		if (( ! exists $savable->{content})
+		if ((not exists $savable->{content})
 			and ( exists $savable->{url}))
 		{
             try {
@@ -1495,7 +1494,7 @@ sub save
 			my $gid = $savable->{group};
 			if ( $gid !~ /^[0-9]+$/ox ) {
 				$gid = (getgrnam($gid))[2];
-				if ( ! defined $gid ) {
+				if (not defined $gid ) {
 					$savable->{error} = "cannot chgrp "
 						.$new_content.": "
 						.$savable->{group}
@@ -1503,7 +1502,7 @@ sub save
 					next;
 				}
 			}
-			if ( ! chown $>, $gid, $new_content ) {
+			if (not chown $>, $gid, $new_content ) {
 				$savable->{error} = "cannot chgrp "
 					.$new_content." to "
 					.$savable->{group}.": $!";
@@ -1523,7 +1522,7 @@ sub save
 
 		# move the new content to the main content - final install
 		if ( -f $new_content ) {
-			if ( !rename $new_content, $main_content ) {
+			if (not rename $new_content, $main_content ) {
 				$savable->{error} = "cannot rename "
 					.$new_content." to "
 					.$main_content.": $!";

@@ -58,16 +58,16 @@ our $AUTOLOAD;
 # initialization
 sub init
 {
-	my $self = shift;
+	my ($self, $obj, $num, @args) = @_;
 
 	# save parameters
-	$self->{obj} = shift;
-	$self->{num} = shift;
+	$self->{obj} = $obj;
+	$self->{num} = $num;
 	$self->{recref} = $self->{obj}{records}[$self->{num}];
 
 	# signal WebFetch that Data subclasses do not provide a fetch function
 	$self->{no_fetch} = 1;
-	$self->SUPER::init( @_ );
+	$self->SUPER::init( @args );
 
 	# make accessor functions
 	my $class = ref( $self );
