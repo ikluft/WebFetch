@@ -1,5 +1,5 @@
-#
-# WebFetch::Data::Store - WebFetch Embedding API top-level data store
+# WebFetch::Data::Store
+# ABSTRACT: WebFetch Embedding API top-level data store
 #
 # Copyright (c) 2009-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -35,10 +35,6 @@ use Exception::Class (
 
 # no user-servicable parts beyond this point
 =encoding utf8
-
-=head1 NAME
-
-WebFetch::Data::Store - Object for management of WebFetch data
 
 =head1 SYNOPSIS
 

@@ -1,5 +1,5 @@
-#
-# WebFetch::Input::SiteNews.pm - get headlines from a site-local file
+# WebFetch::Input::SiteNews
+# ABSTRACT: download and save SiteNews headlines from a local file
 #
 # Copyright (c) 1998-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -21,10 +21,6 @@ use Carp;
 use Date::Calc qw(Today Delta_Days Month_to_Text);
 
 =encoding utf8
-
-=head1 NAME
-
-WebFetch::Input::SiteNews - download and save SiteNews headlines
 
 =cut
 

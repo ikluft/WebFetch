@@ -1,5 +1,5 @@
-#
-# WebFetch::Data::Record - WebFetch Embedding API data record
+# WebFetch::Data::Record
+# ABSTRACT: WebFetch Embedding API data record
 #
 # Copyright (c) 2009-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -32,10 +32,6 @@ use Exception::Class (
 
 # no user-servicable parts beyond this point
 =encoding utf8
-
-=head1 NAME
-
-WebFetch::Data::Record - Object for management of WebFetch data records/rows
 
 =head1 SYNOPSIS
 

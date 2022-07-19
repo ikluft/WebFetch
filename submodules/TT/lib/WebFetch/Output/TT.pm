@@ -1,5 +1,5 @@
-#
-# WebFetch::Output::TT - save data via the Perl Template Toolkit
+# WebFetch::Output::TT
+# ABSTRACT: save data from WebFetch via the Perl Template Toolkit
 #
 # Copyright (c) 1998-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -32,10 +32,6 @@ use Exception::Class (
 );
 
 =encoding utf8
-
-=head1 NAME
-
-WebFetch::Output::TT - save data via the Perl Template Toolkit
 
 =cut
 

@@ -1,5 +1,5 @@
-#
-# WebFetch::Output::TWiki - save data into a TWiki web site
+# WebFetch::Output::TWiki
+# ABSTRACTL: save data from WebFetch into a TWiki web site
 #
 # Copyright (c) 2009-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -65,10 +65,6 @@ use Exception::Class (
 );
 
 =encoding utf8
-
-=head1 NAME
-
-WebFetch::Output::TWiki - WebFetch output to TWiki web site
 
 =cut
 

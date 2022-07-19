@@ -1,5 +1,5 @@
-#
-# WebFetch::Input::Atom - get headlines from remote Atom feed
+# WebFetch::Input::Atom
+# ABSTRACT: get headlines for WebFetch from Atom feeds
 #
 # Copyright (c) 1998-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -28,10 +28,6 @@ use Exception::Class (
 );
 
 =encoding utf8
-
-=head1 NAME
-
-WebFetch::Input::Atom - WebFetch input from Atom feeds
 
 =head1 SYNOPSIS
 

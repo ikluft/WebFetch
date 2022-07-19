@@ -1,4 +1,6 @@
-# WebFetch - infrastructure for downloading ("fetching") information from
+# WebFetch
+# ABSTRACT: Perl module to download/fetch and save information from the Web
+# This module hierarchy is infrastructure for downloading ("fetching") information from
 # various sources around the Internet or the local system in order to
 # present them for display, or to export local information to other sites
 # on the Internet
@@ -18,10 +20,6 @@ use utf8;
 package WebFetch;
 
 =encoding utf8
-
-=head1 NAME
-
-WebFetch - Perl module to download and save information from the Web
 
 =head1 SYNOPSIS
 

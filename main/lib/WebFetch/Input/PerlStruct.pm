@@ -1,5 +1,5 @@
-# WebFetch::Input::PerlStruct.pm
-# push a Perl structure with pre-parsed news into WebFetch
+# WebFetch::Input::PerlStruct
+# ABSTRACT: accept a Perl structure with pre-parsed news into WebFetch
 #
 # Copyright (c) 1998-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -72,10 +72,6 @@ sub fetch
 __END__
 # POD docs follow
 =encoding utf8
-
-=head1 NAME
-
-WebFetch::Input::PerlStruct - accepts a Perl structure with pre-parsed news
 
 =head1 SYNOPSIS
 
