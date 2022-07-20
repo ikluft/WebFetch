@@ -4,7 +4,6 @@ Revision history for WebFetch
  [API CHANGE]
 
  [BUG FIXES]
- - reorg'ed optional module dependencies to separate modules, resolves errors encountered by CPAN Bug #55413
 
  [DOCS]
 
@@ -13,15 +12,26 @@ Revision history for WebFetch
  [MAJOR]
 
  [MINOR]
+
+ [REVISION]
+
+ [SECURITY]
+
+0.14.0 2022-07-18T20:46:31-07:00 America/Los_Angeles
+ [BUG FIXES]
+ - reorg'ed optional module dependencies to separate modules, resolves
+   errors encountered by CPAN Bug #55413
+
+ [MINOR]
  - code modernization: convert module to use Dist::Zilla for build & test
 
  [REVISION]
  - code modernization: fix Perl::Critic warnings
- - retroactively add .0 to prior versions in Changes so Dist::Zilla can parse them as x.y.z semantic versioning
- - reorg separate modules to partition dependencies: WebFetch::Input::Atom WebFetch::Input::RSS WebFetch::Output::TT WebFetch::Output::TWiki
+ - retroactively add .0 to prior versions in Changes so Dist::Zilla can
+   parse them as x.y.z semantic versioning
+ - reorg separate modules to partition dependencies: WebFetch::Input::Atom
+   WebFetch::Input::RSS WebFetch::Output::TT WebFetch::Output::TWiki
  - add test script t/010-struct.t
-
- [SECURITY]
 
 0.13.0 2009-09-20T21:59:42-0700 America/Los_Angeles
  [REVISION]
