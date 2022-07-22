@@ -1682,15 +1682,19 @@ See L<https://www.gnu.org/licenses/gpl-3.0-standalone.html>.
 
 =head1 SEE ALSO
 
-L<WebFetch::Input::PerlStruct.html">WebFetch::Input::PerlStruct>,
-L<WebFetch::Input::SiteNews.html">WebFetch::Input::SiteNews>,
-L<WebFetch::Input::Atom.html">WebFetch::Input::Atom>,
-L<WebFetch::Input::RSS.html">WebFetch::Input::RSS>,
-L<WebFetch::Input::Dump.html">WebFetch::Input::Dump>,
-L<WebFetch::Output::TT.html">WebFetch::Output::TT>,
-L<WebFetch::Output::Dump.html">WebFetch::Output::Dump>,
-L<https://github.com/ikluft/WebFetch>,
-L<http://www.perl.org/>
+Included in WebFetch module: 
+L<WebFetch::Input::PerlStruct>,
+L<WebFetch::Input::SiteNews>,
+L<WebFetch::Output::Dump>
+
+Modules separated to contain external module dependencies:
+L<WebFetch::Input::Atom>,
+L<WebFetch::Input::RSS>,
+L<WebFetch::Output::TT>,
+L<WebFetch::Output::TWiki>,
+
+Source code repository:
+L<https://github.com/ikluft/WebFetch>
 
 =head1 BUGS AND LIMITATIONS
 
