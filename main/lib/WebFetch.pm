@@ -424,10 +424,10 @@ sub main::fetch_main
 		} else {
 			die "pkg: $_\n";
 		}
-	}
+	};
 
 	# success
-	exit 0;
+	return 0;
 }
 
 # mainline which fetch_main() calls in an exception catching wrapper
@@ -623,7 +623,7 @@ sub mod_load
         eval "require $pkg" or die $@;
     } catch {
 		throw_mod_load_failure( "failed to load $pkg: $_" );
-	}
+	};
     return;
 }
 
