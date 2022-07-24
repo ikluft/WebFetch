@@ -176,22 +176,17 @@ sub fetch
     return;
 }
 
-# parse input file
-sub parse_input
+# inner portion of input parsing
+# this function was broken out to satisfy Perl::Critic warning about too much code between file open & close
+sub parse_input_inner
 {
-    my ( $self, $input ) = @_;
-
-    # parse data file
-    my $news_data;
-    if ( not open ($news_data, "<", $input)) {
-        croak "$0: failed to open $input: $!\n";
-    }
+    my ($self, $news_data_fd) = @_;
     my @news_items;
     my $position = 0;
     my $state = initial_state;      # before first entry
     my ( $current );
     $cat_priorities = {};                   # priorities for sorting
-    while ( <$news_data> ) {
+    while ( <$news_data_fd> ) {
         chop;
         /^\s*\#/x and next; # skip comments
         /^\s*$/x and next;  # skip blank lines
@@ -243,6 +238,20 @@ sub parse_input
             }
         }
     }
+    return @news_items;
+}
+
+# parse input file
+sub parse_input
+{
+    my ( $self, $input ) = @_;
+
+    # parse data file
+    my $news_data;
+    if ( not open ($news_data, "<", $input)) {
+        croak "$0: failed to open $input: $!\n";
+    }
+    my @news_items = $self->parse_input_inner($news_data);
     close $news_data;
 
     # translate parsed news into the WebFetch Embedding API data table
