@@ -106,6 +106,7 @@ reference to a module that is derived from (inherits from) WebFetch.
 
 =cut
 
+use Carp qw(croak);
 use Getopt::Long;
 use LWP::UserAgent;
 use HTTP::Request;
@@ -409,20 +410,20 @@ sub main::fetch_main
 					warn $ex_cap->trace->as_string, "\n";
 				}
 
-				die "$pkg: ".$ex_cap->error."\n";
+				croak "$pkg: ".$ex_cap->error."\n";
 			}
 			if ( $ex->can("stringify")) {
 				# Error.pm, possibly others
-				die "$pkg: ".$ex->stringify."\n";
+				croak "$pkg: ".$ex->stringify."\n";
 			} elsif ( $ex->can("as_string")) {
 				# generic - should work for many classes
-				die "$pkg: ".$ex->as_string."\n";
+				croak "$pkg: ".$ex->as_string."\n";
 			} else {
-				die "$pkg: unknown exception of type "
+				croak "$pkg: unknown exception of type "
 					.(ref $ex)."\n";
 			}
 		} else {
-			die "pkg: $_\n";
+			croak "pkg: $_\n";
 		}
 	};
 
@@ -430,11 +431,10 @@ sub main::fetch_main
 	return 0;
 }
 
-# mainline which fetch_main() calls in an exception catching wrapper
-sub fetch_main2
+# Search for modules which have registered "cmdline" capability.
+# Collect command-line options and usage info from modules.
+sub collect_cmdline
 {
-	# search for modules which have registered "cmdline" capability
-	# collect their command line options
 	my ( @mod_options, @mod_usage );
 	if (( exists $modules{cmdline} )
 		and ( ref $modules{cmdline} eq "ARRAY" ))
@@ -454,6 +454,20 @@ sub fetch_main2
 			}
 		}
 	}
+    return (\@mod_options, \@mod_usage);
+}
+
+# mainline which fetch_main() calls in an exception catching wrapper
+sub fetch_main2
+{
+	# search for modules which have registered "cmdline" capability
+	# collect their command line options
+	my ( @mod_options, @mod_usage );
+    {
+        my ($mod_options_ref, $mod_usage_ref) = collect_cmdline();
+        @mod_options = @$mod_options_ref;
+        @mod_usage = $mod_usage_ref;
+    }
 
 	# process command line
 	my ($options_result, %options);
@@ -620,7 +634,7 @@ sub mod_load
 	# make sure we have the run package loaded
     ## no critic (BuiltinFunctions::ProhibitStringyEval)
     try {
-        eval "require $pkg" or die $@;
+        eval "require $pkg" or croak $@;
     } catch {
 		throw_mod_load_failure( "failed to load $pkg: $_" );
 	};
@@ -1349,14 +1363,13 @@ sub save
 
 	# check if we have attributes needed to proceed
 	if (not exists $self->{"dir"}) {
-		die "WebFetch: directory path missing - "
-			."required for save\n";
+		croak "WebFetch: directory path missing - required for save\n";
 	}
 	if (not exists $self->{savable}) {
-		die "WebFetch: nothing to save\n";
+		croak "WebFetch: nothing to save\n";
 	}
 	if ( ref($self->{savable}) ne "ARRAY" ) {
-		die "WebFetch: cannot save - savable is not an array\n";
+		croak "WebFetch: cannot save - savable is not an array\n";
 	}
 
 	# if fetch_urls is defined, turn link fields in the data to savables
@@ -1540,7 +1553,7 @@ sub save
 		}
 	}
 	if ( $err_count ) {
-		die "WebFetch: $err_count errors - fetch/save failed\n";
+		croak "WebFetch: $err_count errors - fetch/save failed\n";
 	}
 
 	# success if we got here
