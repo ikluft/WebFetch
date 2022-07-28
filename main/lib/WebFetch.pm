@@ -1388,7 +1388,8 @@ sub _save_write_content
     return 1;
 }
 
-#
+# save previous main content as old backup
+# internal method used by save()
 sub _save_main_to_backup
 {
 	my ($self, $savable, $main_content, $old_content) = @_;
@@ -1406,6 +1407,7 @@ sub _save_main_to_backup
 }
 
 # chgrp and chmod the "new content" before final installation
+# internal method used by save()
 sub _save_file_mode
 {
     my ($self, $savable, $new_content) = @_;
@@ -1443,6 +1445,8 @@ sub _save_file_mode
     return 1;
 }
 
+# check if content is already in index file
+# internal method used by save()
 sub _save_check_index
 {
     my ($self, $savable) = @_;
@@ -1475,6 +1479,46 @@ sub _save_check_index
         return 0;
     }
     return 1;
+}
+
+# if a URL was provided and no content, get content from URL
+# internal method used by save()
+sub _save_fill_empty_from_url
+{
+    my ($self, $savable) = @_;
+
+    # if a URL was provided and no content, get content from URL
+    if ((not exists $savable->{content}) and ( exists $savable->{url}))
+    {
+        try {
+            $savable->{content} = ${$self->get($savable->{url})}; 
+        } catch {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+# print errors from save operation
+# internal method used by save()
+sub _save_report_errors
+{
+    my ($self) = @_;
+
+	# loop through savable to report any errors
+	my $err_count = 0;
+	foreach my $savable ( @{$self->{savable}}) {
+		if ( exists $savable->{error}) {
+			print STDERR "WebFetch: failed to save "
+				.$savable->{file}.": "
+				.$savable->{error}."\n";
+			$err_count++;
+		}
+	}
+	if ( $err_count ) {
+		croak "WebFetch: $err_count errors - fetch/save failed\n";
+	}
+    return;
 }
 
 =item $obj->save
@@ -1530,9 +1574,7 @@ sub save
 		}
 
 		# an output module may have handled a more intricate operation
-		if (exists $savable->{ok_empty}) {
-			last;
-		}
+		last if (exists $savable->{ok_empty});
 
 		# verify contents of savable record
 		if (not exists $savable->{file}) {
@@ -1566,14 +1608,10 @@ sub save
         }
 
 		# if a URL was provided and no content, get content from URL
-		if ((not exists $savable->{content}) and ( exists $savable->{url}))
-		{
-            try {
-                $savable->{content} = ${$self->get($savable->{url})}; 
-            } catch {
-				next;
-			}
-		}
+        if (not $self->_save_fill_empty_from_url($savable)) {
+            # error occurred - available in $savable->{error}
+            next;
+        }
 
 		# write content to the "new content" file
         if (not $self->_save_write_content($savable, $new_content)) {
@@ -1614,18 +1652,7 @@ sub save
 	}
 
 	# loop through savable to report any errors
-	my $err_count = 0;
-	foreach my $savable ( @{$self->{savable}}) {
-		if ( exists $savable->{error}) {
-			print STDERR "WebFetch: failed to save "
-				.$savable->{file}.": "
-				.$savable->{error}."\n";
-			$err_count++;
-		}
-	}
-	if ( $err_count ) {
-		croak "WebFetch: $err_count errors - fetch/save failed\n";
-	}
+    $self->_save_report_errors();
 
 	# success if we got here
 	return 1;
