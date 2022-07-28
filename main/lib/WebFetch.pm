@@ -1322,6 +1322,161 @@ sub no_savables_ok
     return;
 }
 
+# check conditions are met to perform a save()
+# internal method used by save()
+sub _save_precheck
+{
+	my $self = shift;
+
+	# check if we have attributes needed to proceed
+	if (not exists $self->{"dir"}) {
+		croak "WebFetch: directory path missing - required for save\n";
+	}
+	if (not exists $self->{savable}) {
+		croak "WebFetch: nothing to save\n";
+	}
+	if ( ref($self->{savable}) ne "ARRAY" ) {
+		croak "WebFetch: cannot save - savable is not an array\n";
+	}
+    return;
+}
+
+# convert link fields to savables
+# internal method used by save()
+sub _save_fetch_urls
+{
+	my $self = shift;
+
+	# if fetch_urls is defined, turn link fields in the data to savables
+	if (( exists $self->{fetch_urls}) and $self->{fetch_urls}) {
+		my $entry;
+		$self->data->reset_pos;
+		while ( $entry = $self->data->next_record()) {
+			my $url = $entry->url;
+			if ( defined $url ) {
+				$self->direct_fetch_savable( $entry->url );
+			}
+		}
+	}
+    return;
+}
+
+# write new content for save operation
+# internal method used by save()
+sub _save_write_content
+{
+	my ($self, $savable, $new_content) = @_;
+
+    # write content to the "new content" file
+    ## no critic (InputOutput::RequireBriefOpen)
+    my $new_file;
+    if (not open($new_file, ">:encoding(UTF-8)", "$new_content")) {
+        $savable->{error} = "cannot open $new_content: $!";
+        return 0;
+    }
+    if (not print $new_file $savable->{content}) {
+        $savable->{error} = "failed to write to ".$new_content.": $!";
+        close $new_file;
+        return 0;
+    }
+    if (not close $new_file) {
+        # this can happen with NFS errors
+        $savable->{error} = "failed to close "
+            .$new_content.": $!";
+        return 0;
+    }
+    return 1;
+}
+
+#
+sub _save_main_to_backup
+{
+	my ($self, $savable, $main_content, $old_content) = @_;
+
+    # move the main content to the old content - now it's a backup
+    if ( -f $main_content ) {
+        if (not rename $main_content, $old_content ) {
+            $savable->{error} = "cannot rename "
+                .$main_content." to "
+                .$old_content.": $!";
+            return 0;
+        }
+    }
+    return 1;
+}
+
+# chgrp and chmod the "new content" before final installation
+sub _save_file_mode
+{
+    my ($self, $savable, $new_content) = @_;
+
+    # chgrp the "new content" before final installation
+    if ( exists $savable->{group}) {
+        my $gid = $savable->{group};
+        if ( $gid !~ /^[0-9]+$/ox ) {
+            $gid = (getgrnam($gid))[2];
+            if (not defined $gid ) {
+                $savable->{error} = "cannot chgrp "
+                    .$new_content.": "
+                    .$savable->{group}
+                    ." does not exist";
+                return 0;
+            }
+        }
+        if (not chown $>, $gid, $new_content ) {
+            $savable->{error} = "cannot chgrp "
+                .$new_content." to "
+                .$savable->{group}.": $!";
+            return 0;
+        }
+    }
+
+    # chmod the "new content" before final installation
+    if ( exists $savable->{mode}) {
+        if (not chmod oct($savable->{mode}), $new_content ) {
+            $savable->{error} = "cannot chmod "
+                .$new_content." to "
+                .$savable->{mode}.": $!";
+            return 0;
+        }
+    }
+    return 1;
+}
+
+sub _save_check_index
+{
+    my ($self, $savable) = @_;
+
+    # if a URL was provided and index flag is set, use index file
+    my %id_index;
+    my ( $timestamp, $filename );
+    my $was_in_index = 0;
+    if (( exists $savable->{url}) and ( exists $savable->{index}))
+    {
+        require DB_File;
+        tie %id_index, 'DB_File',
+            $self->{dir}."/id_index.db",
+            &DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
+        if ( exists $id_index{$savable->{url}}) {
+            ( $timestamp, $filename ) =
+                split /#/x, $id_index{$savable->{url}};
+            $was_in_index = 1;
+        } else {
+            $timestamp = time;
+            $id_index{$savable->{url}} =
+                $timestamp."#".$savable->{file};
+        }
+        untie %id_index ;
+    }
+
+    # For now, we consider it done if the file was in the index.
+    # Future options would be to check if URL was modified.
+    if ( $was_in_index ) {
+        return 0;
+    }
+    return 1;
+}
+
 =item $obj->save
 
 This WebFetch utility function goes through all the entries in the
@@ -1362,27 +1517,10 @@ sub save
 	}
 
 	# check if we have attributes needed to proceed
-	if (not exists $self->{"dir"}) {
-		croak "WebFetch: directory path missing - required for save\n";
-	}
-	if (not exists $self->{savable}) {
-		croak "WebFetch: nothing to save\n";
-	}
-	if ( ref($self->{savable}) ne "ARRAY" ) {
-		croak "WebFetch: cannot save - savable is not an array\n";
-	}
+    $self->_save_precheck();
 
 	# if fetch_urls is defined, turn link fields in the data to savables
-	if (( exists $self->{fetch_urls}) and $self->{fetch_urls}) {
-		my $entry;
-		$self->data->reset_pos;
-		while ( $entry = $self->data->next_record()) {
-			my $url = $entry->url;
-			if ( defined $url ) {
-				$self->direct_fetch_savable( $entry->url );
-			}
-		}
-	}
+    $self->_save_fetch_urls();
 
 	# loop through "savable" (grouped content and filename destination)
 	foreach my $savable ( @{$self->{savable}}) {
@@ -1422,36 +1560,13 @@ sub save
 		}
 
 		# if a URL was provided and index flag is set, use index file
-		my %id_index;
-		my ( $timestamp, $filename );
-		my $was_in_index = 0;
-		if (( exists $savable->{url}) and ( exists $savable->{index}))
-		{
-			require DB_File;
-			tie %id_index, 'DB_File',
-				$self->{dir}."/id_index.db",
-				&DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
-			if ( exists $id_index{$savable->{url}}) {
-				( $timestamp, $filename ) =
-					split /#/x, $id_index{$savable->{url}};
-				$was_in_index = 1;
-			} else {
-				$timestamp = time;
-				$id_index{$savable->{url}} =
-					$timestamp."#".$savable->{file};
-			}
-			untie %id_index ;
-		}
-
-		# For now, we consider it done if the file was in the index.
-		# Future options would be to check if URL was modified.
-		if ( $was_in_index ) {
-			next;
-		}
+        if (not $self->_save_check_index($savable)) {
+            # done since it was found in the index
+            next;
+        }
 
 		# if a URL was provided and no content, get content from URL
-		if ((not exists $savable->{content})
-			and ( exists $savable->{url}))
+		if ((not exists $savable->{content}) and ( exists $savable->{url}))
 		{
             try {
                 $savable->{content} = ${$self->get($savable->{url})}; 
@@ -1461,24 +1576,9 @@ sub save
 		}
 
 		# write content to the "new content" file
-        {
-            ## no critic (InputOutput::RequireBriefOpen)
-            my $new_file;
-            if (not open($new_file, ">:encoding(UTF-8)", "$new_content")) {
-                $savable->{error} = "cannot open $new_content: $!";
-                next;
-            }
-            if (not print $new_file $savable->{content}) {
-                $savable->{error} = "failed to write to ".$new_content.": $!";
-                close $new_file;
-                next;
-            }
-            if (not close $new_file) {
-                # this can happen with NFS errors
-                $savable->{error} = "failed to close "
-                    .$new_content.": $!";
-                next;
-            }
+        if (not $self->_save_write_content($savable, $new_content)) {
+            # error occurred - available in $savable->{error}
+            next;
         }
 
 		# remove the "old content" file to get it out of the way
@@ -1491,45 +1591,16 @@ sub save
 		}
 
 		# move the main content to the old content - now it's a backup
-		if ( -f $main_content ) {
-			if (not rename $main_content, $old_content ) {
-				$savable->{error} = "cannot rename "
-					.$main_content." to "
-					.$old_content.": $!";
-				next;
-			}
-		}
+        if (not $self->_save_main_to_backup($savable, $main_content), $old_content) {
+            # error occurred - available in $savable->{error}
+            next;
+        }
 
-		# chgrp the "new content" before final installation
-		if ( exists $savable->{group}) {
-			my $gid = $savable->{group};
-			if ( $gid !~ /^[0-9]+$/ox ) {
-				$gid = (getgrnam($gid))[2];
-				if (not defined $gid ) {
-					$savable->{error} = "cannot chgrp "
-						.$new_content.": "
-						.$savable->{group}
-						." does not exist";
-					next;
-				}
-			}
-			if (not chown $>, $gid, $new_content ) {
-				$savable->{error} = "cannot chgrp "
-					.$new_content." to "
-					.$savable->{group}.": $!";
-				next;
-			}
-		}
-
-		# chmod the "new content" before final installation
-		if ( exists $savable->{mode}) {
-			if (not chmod oct($savable->{mode}), $new_content ) {
-				$savable->{error} = "cannot chmod "
-					.$new_content." to "
-					.$savable->{mode}.": $!";
-				next;
-			}
-		}
+        # chgrp and chmod the "new content" before final installation
+        if (not $self->_save_file_mode($savable, $new_content)) {
+            # error occurred - available in $savable->{error}
+            next;
+        }
 
 		# move the new content to the main content - final install
 		if ( -f $new_content ) {
