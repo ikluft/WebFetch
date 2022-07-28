@@ -32,13 +32,8 @@ use Exception::Class (
 =cut
 
 # set defaults
-our ( @url, $cat_priorities, $now, $nowstamp );
-
 our @Options = ();
 our $Usage = "";
-
-# configuration parameters
-our $num_links = 5;
 
 # no user-servicable parts beyond this point
 
