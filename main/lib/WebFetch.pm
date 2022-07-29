@@ -236,8 +236,6 @@ If $value is not provided (or is undefied) then this is a read accessor, returni
 configuration entry named by $key.
 If $value is defined then this is a write accessor, assigning $value to the configuration entry named by $key.
 
-=back
-
 =cut
 
 # wrapper for WebFetch::Data::Config read/write accessor
@@ -255,8 +253,6 @@ sub config
 This class method returns a boolean value which is true if the configuration entry named by $key exists
 in the WebFetch key/value configuration store. Otherwise it returns false.
 
-=back
-
 =cut
 
 # wrapper for WebFetch::Data::Config existence-test method
@@ -273,8 +269,6 @@ sub has_config
 
 This class method deletes the configuration entry named by $key.
 
-=back
-
 =cut
 
 # wrapper for WebFetch::Data::Config existence-test method
@@ -290,8 +284,6 @@ sub del_config
 =item WebFetch->import_config(\%hashref)
 
 This class method imports all the key/value pairs from %hashref into the WebFetch configuration.
-
-=back
 
 =cut
 
@@ -314,13 +306,11 @@ sub import_config
 This class method returns a list of the keys in the WebFetch configuration store.
 This method was made for testing purposes. That is currently its only foreseen use case.
 
-=back
-
 =cut
 
 sub keys_config
 {
-    my ($class, $hashref) = @_;
+    my ($class) = @_;
     if (not $class->isa("WebFetch")) {
         throw_incompatible_class("invalid import_config() call for '$class': not in the WebFetch hierarchy");
     }
