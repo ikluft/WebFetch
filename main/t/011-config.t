@@ -20,7 +20,7 @@ my %samples = (
 # count test cases
 binmode(STDOUT, ":encoding(UTF-8)");
 binmode(STDERR, ":encoding(UTF-8)");
-plan tests => 10 + int(keys %samples) * 10;
+plan tests => 10 + int(keys %samples) * 12;
 
 # test instantiation
 is(WebFetch::Data::Config->has_instance(), undef, "no instance before initialization");
@@ -38,6 +38,7 @@ foreach my $key (sort keys %samples) {
     is($instance->contains($key), 0, "by instance method: entry '$key' should not exist prior to add");
     my $value = $samples{$key};
     lives_ok(sub {$instance->accessor($key, $value);}, "by instance method: insert '$key' -> '$value'");
+    is($instance->contains($key), 1, "by instance method: entry '$key' should exist after add");
     is($instance->accessor($key), $value, "by instance method: verify '$key' -> '$value'");
 }
 is_deeply([sort keys %$instance], [sort keys %samples],
@@ -55,6 +56,7 @@ foreach my $key (sort keys %samples) {
     is(WebFetch::Data::Config->contains($key), 0, "by class method: entry '$key' should not exist prior to add");
     my $value = $samples{$key};
     lives_ok(sub {WebFetch::Data::Config->accessor($key, $value);}, "by class method: insert '$key' -> '$value'");
+    is(WebFetch::Data::Config->contains($key), 1, "by class method: entry '$key' should exist after add");
     is(WebFetch::Data::Config->accessor($key), $value, "by class method: verify '$key' -> '$value'");
 }
 is_deeply([sort keys %{WebFetch::Data::Config->instance()}], [sort keys %samples],
