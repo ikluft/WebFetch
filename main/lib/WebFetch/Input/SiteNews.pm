@@ -25,21 +25,22 @@ use Date::Calc qw(Today Delta_Days Month_to_Text);
 =cut
 
 # set defaults
-our ( $cat_priorities, $now, $nowstamp );
-
-our @Options = (
+my ( $cat_priorities, $now, $nowstamp );
+my @Options = (
     "short=s",
     "long=s",
 );
-our $Usage = "--short short-output-file --long long-output-file";
+my $Usage = "--short short-output-file --long long-output-file";
 
 # configuration parameters
-our $num_links = 5;
+my $num_links = 5;
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( "cmdline", "input:sitenews" );
+__PACKAGE__->module_register( "cmdline",
+    { Options => \@Options, Usage => \$Usage, num_links => $num_links },
+    "input:sitenews" );
 
 =head1 SYNOPSIS
 
@@ -81,7 +82,7 @@ sub fetch
 
     # set parameters for WebFetch routines
     if (not defined $self->{num_links}) {
-        $self->{num_links} = $WebFetch::Input::SiteNews::num_links;
+        $self->{num_links} = WebFetch->config("num_links");
     }
     if (not defined $self->{style}) {
         $self->{style} = {};

@@ -97,7 +97,7 @@ than a certain interval, respect it.  (It isn't hard to find violators
 in server logs.)  If in doubt, try every 30 minutes until more information
 becomes available.
 
-=head1 WebFetch FUNCTIONS
+=head1 WebFetch FUNCTIONS AND METHODS
 
 The following function definitions assume B<C<$obj>> is a blessed
 reference to a module that is derived from (inherits from) WebFetch.
@@ -111,6 +111,7 @@ use Getopt::Long;
 use LWP::UserAgent;
 use HTTP::Request;
 use Date::Calc;
+use WebFetch::Data::Config;
 
 # define exceptions/errors
 use Try::Tiny;
@@ -125,6 +126,12 @@ use Exception::Class (
 		alias => 'throw_data_wrongtype',
                 description => "provided data must be a WebFetch::Data::Store",
         },
+
+	'WebFetch::Exception::IncompatibleClass' => {
+        isa => 'WebFetch::Exception',
+        alias => 'throw_incompatible_class',
+        description => "class method called for class outside WebFetch hierarchy",
+    },
 
 	'WebFetch::Exception::GetoptError' => {
                 isa => 'WebFetch::Exception',
@@ -222,6 +229,78 @@ sub debug
     return;
 }
 
+=item WebFetch->config( $key, [$value])
+
+This class method is the read/write accessor to WebFetch's key/value configuration store.
+If $value is not provided (or is undefied) then this is a read accessor, returning the value of the
+configuration entry named by $key.
+If $value is defined then this is a write accessor, assigning $value to the configuration entry named by $key.
+
+=back
+
+# wrapper for WebFetch::Data::Config read/write accessor
+sub config
+{
+    my ($class, $key, $value) = @_;
+    if (not $class->isa("WebFetch")) {
+        throw_incompatible_class("invalid config() call for '$class': not in the WebFetch hierarchy");
+    }
+    return WebFetch::Data::Config->accessor($key, $value);
+}
+
+=item WebFetch->has_config($key)
+
+This class method returns a boolean value which is true if the configuration entry named by $key exists
+in the WebFetch key/value configuration store. Otherwise it returns false.
+
+=back
+
+# wrapper for WebFetch::Data::Config existence-test method
+sub has_config
+{
+    my ($class, $key) = @_;
+    if (not $class->isa("WebFetch")) {
+        throw_incompatible_class("invalid has_config() call for '$class': not in the WebFetch hierarchy");
+    }
+    return WebFetch::Data::Config->contains($key);
+}
+
+=item WebFetch->del_config($key)
+
+This class method deletes the configuration entry named by $key.
+
+=back
+
+# wrapper for WebFetch::Data::Config existence-test method
+sub del_config
+{
+    my ($class, $key) = @_;
+    if (not $class->isa("WebFetch")) {
+        throw_incompatible_class("invalid del_config() call for '$class': not in the WebFetch hierarchy");
+    }
+    return WebFetch::Data::Config->del($key);
+}
+
+=item WebFetch->import_config(\%hashref)
+
+This class method imports all the key/value pairs from %hashref into the WebFetch configuration.
+
+=back
+
+sub import_config
+{
+    my ($class, $hashref) = @_;
+    if (not $class->isa("WebFetch")) {
+        throw_incompatible_class("invalid import_config() call for '$class': not in the WebFetch hierarchy");
+    }
+
+    # import config entries
+    foreach my $key (%$hashref) {
+        WebFetch::Data::Config->accessor($key, $hashref->{$key});
+    }
+    return;
+}
+
 =item WebFetch::module_register( $module, @capabilities );
 
 This function allows a Perl module to register itself with the WebFetch API
@@ -233,8 +312,12 @@ For subclasses of WebFetch, it can be called as a class method.
 For the $module parameter, the Perl module should provide its own
 name, usually via the __PACKAGE__ string.
 
-The @capabilities array is any number of strings as needed to list the
+@capabilities is an array of strings as needed to list the
 capabilities which the module performs for the WebFetch API.
+
+If the first entry of @capabilities is a hash reference, its key/value
+pairs are all imported to the WebFetch configuration.
+
 The currently-recognized capabilities are "cmdline", "input" and "output".
 "config", "filter", "save" and "storage" are reserved for future use.  The
 function will save all the capability names that the module provides, without
@@ -250,6 +333,12 @@ output format handler for the "tt" format, the Perl Template Toolkit.
 sub module_register
 {
 	my ( $module, @capabilities ) = @_;
+
+    # import configuration entries if 1st entry in @capabilities is a hashref
+    if (ref $capabilities[0] eq 'HASH') {
+        my $config_ref = shift @capabilities;
+        WebFetch->import_config($config_ref);
+    }
 
 	# each string provided is a capability the module provides
 	foreach my $capability ( @capabilities ) {
@@ -436,21 +525,28 @@ sub main::fetch_main
 sub collect_cmdline
 {
 	my ( @mod_options, @mod_usage );
-	if (( exists $modules{cmdline} )
-		and ( ref $modules{cmdline} eq "ARRAY" ))
-	{
+	if (( exists $modules{cmdline} ) and ( ref $modules{cmdline} eq "ARRAY" )) {
 		foreach my $cli_mod ( @{$modules{cmdline}}) {
+            # obtain ref to module symbol table for backward compatibility with old @Options/$Usage interface
             my $symtab;
             {
                 ## no critic (TestingAndDebugging::ProhibitNoStrict)
                 no strict 'refs';
                 $symtab = \%{$cli_mod."::"};
             }
-            if ((exists $symtab->{Options}) and @{$symtab->{Options}}) {
+
+            # get command line options - try WebFetch config first (preferred), otherwise module symtab (deprecated)
+            if (WebFetch->has_config("Options")) {
+                push @mod_options, WebFetch->config("Options");
+            } elsif ((exists $symtab->{Options}) and int @{$symtab->{Options}}) {
 				push @mod_options, @{$symtab->{Options}};
 			}
-            if ((exists $symtab->{Usage}) and @{$symtab->{Usage}}) {
-				push @mod_usage, @{$symtab->{Usage}};
+
+            # get command line usage - try WebFetch config first (preferred), otherwise module symtab (deprecated)
+            if (WebFetch->has_config("Usage")) {
+                push @mod_usage, WebFetch->config("Usage");
+            } elsif ((exists $symtab->{Usage}) and defined ${$symtab->{Usage}}) {
+				push @mod_usage, ${$symtab->{Usage}};
 			}
 		}
 	}
@@ -688,12 +784,20 @@ or finding/reporting a bug in an existing module
 =back
 
 Modules derived from WebFetch may add their own command-line options
-that WebFetch::run() will use by defining a variable called
-B<C<@Options>> in the calling module,
-using the name/value pairs defined in Perl's Getopts::Long module.
+that WebFetch::run() will use by defining a WebFetch configuration entry
+called "Options",
+containing the name/value pairs defined in Perl's Getopts::Long module.
 Derived modules can also add to the command-line usage error message by
-defining a variable called B<C<$Usage>> with a string of the additional
+defining a configuration entry called "Usage" with a string of the additional
 parameters, as they should appear in the usage message.
+See the WebFetch->module_register() and WebFetch->config() class methods
+for setting configuration entries.
+
+For backward compatibility, WebFetch also looks for @Options and $Usage
+in the calling module's symbol table if they aren't found in the WebFetch
+configuration. However this method is deprecated and should not be used in
+new code. Perl coding best practices have evolved to recommend against using
+package variables in the years since the API was first defined.
 
 =cut
 
@@ -1151,7 +1255,7 @@ is a reference to a hash which will be used by the I<do_actions> function.
 # placeholder for fetch routines by derived classes
 sub fetch
 {
-	throw_abstract "fetch is an abstract function and must be overridden";
+	throw_abstract "fetch is an abstract function and must be overridden by a subclass";
 }
 
 
@@ -1796,7 +1900,10 @@ See L<https://www.gnu.org/licenses/gpl-3.0-standalone.html>.
 Included in WebFetch module: 
 L<WebFetch::Input::PerlStruct>,
 L<WebFetch::Input::SiteNews>,
-L<WebFetch::Output::Dump>
+L<WebFetch::Output::Dump>,
+L<WebFetch::Data::Config>,
+L<WebFetch::Data::Record>,
+L<WebFetch::Data::Store>
 
 Modules separated to contain external module dependencies:
 L<WebFetch::Input::Atom>,

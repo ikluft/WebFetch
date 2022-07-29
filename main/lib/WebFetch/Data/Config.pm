@@ -42,6 +42,7 @@ sub _class_or_obj
     return $coo if ref $coo;
 
     # class method: return the instance via the instance() class method
+    # if the singleton object wasn't already instantiated, this will take care of it
     # assumption: it must be string name of class WebFetch::Data::Config or subclass of it - so it has instance()
     return $coo->instance();
 }
@@ -116,6 +117,7 @@ In all classes other than WebFetch, use WebFetch's config() and has_config() cla
     WebFetch->config($key, $write_value);
     my $read_value = WebFetch->config($key);
     my $bool_value = WebFetch->has_config($key);
+    my $del_value = WebFetch->del_config($key);
 
 From within WebFetch, class or instance methods may be used interchangeably.
 
@@ -127,10 +129,12 @@ From within WebFetch, class or instance methods may be used interchangeably.
     $config_instance->write_accessor($key, $write_value);
     my $read_value = $config_instance->read_accessor($key);
     my $bool_value = $config_instance->contains($key);
+    my $del_value = $config_instance->del($key);
     # or
     WebFetch::Data::Config->accessor($key, $write_value);
     my $read_value = WebFetch::Data::Config->accessor($key);
     my $bool_value = WebFetch::Data::Config->contains($key);
+    my $del_value = WebFetch::Data::Config->del($key);
 
 =head1 DESCRIPTION
 
