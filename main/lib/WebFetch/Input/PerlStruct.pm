@@ -33,9 +33,6 @@ use Exception::Class (
 
 );
 
-our @Options = ( );
-our $Usage = "";
-
 # configuration parameters
 
 # no user-servicable parts beyond this point

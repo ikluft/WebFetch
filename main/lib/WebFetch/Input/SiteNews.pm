@@ -38,9 +38,9 @@ my $num_links = 5;
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( "cmdline",
+__PACKAGE__->module_register(
     { Options => \@Options, Usage => \$Usage, num_links => $num_links },
-    "input:sitenews" );
+    "cmdline", "input:sitenews" );
 
 =head1 SYNOPSIS
 

@@ -31,10 +31,6 @@ use Exception::Class (
 
 =cut
 
-# set defaults
-our @Options = ();
-our $Usage = "";
-
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
