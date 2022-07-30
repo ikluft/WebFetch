@@ -68,17 +68,18 @@ use Exception::Class (
 
 =cut
 
-# globals/defaults
-our @Options = ( "twiki_root=s", "config_topic=s", "config_key=s" );
-our $Usage = "--twiki_root path-to-twiki --config_topic web.topic "
+# defaults
+my @Options = ( "twiki_root=s", "config_topic=s", "config_key=s" );
+my $Usage = "--twiki_root path-to-twiki --config_topic web.topic "
 	."--config_key keyword";
-our @default_field_names = ( qw( key web parent prefix template form
+my @default_field_names = ( qw( key web parent prefix template form
 	options ));
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( "cmdline", "output:twiki" );
+__PACKAGE__->module_register( {Options => \@Options, Usage => \$Usage, default_field_names => \@default_field_names},
+    "cmdline", "output:twiki" );
 
 =head1 SYNOPSIS
 

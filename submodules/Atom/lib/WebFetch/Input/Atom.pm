@@ -71,10 +71,6 @@ C<Osite_news.html>.
 
 =cut
 
-
-our @Options = ();
-our $Usage = "";
-
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch

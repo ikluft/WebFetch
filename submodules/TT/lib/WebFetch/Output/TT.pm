@@ -36,14 +36,13 @@ use Exception::Class (
 =cut
 
 # set defaults
-
-our @Options = ( "template=s", "tt_include:s" );
-our $Usage = "--template template-file [--tt_include include-path]";
+my @Options = ( "template=s", "tt_include:s" );
+my $Usage = "--template template-file [--tt_include include-path]";
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( "cmdline", "output:tt" );
+__PACKAGE__->module_register( {Options => \@Options, Usage => \$Usage}, "cmdline", "output:tt" );
 
 =head1 SYNOPSIS
 
