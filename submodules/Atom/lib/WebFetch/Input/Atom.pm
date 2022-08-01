@@ -22,7 +22,6 @@ use Carp;
 use Scalar::Util qw( blessed );
 use Date::Calc qw(Today Delta_Days Month_to_Text);
 use XML::Atom::Client;
-use LWP::UserAgent;
 
 use Exception::Class (
 );
