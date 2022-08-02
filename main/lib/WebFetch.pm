@@ -351,11 +351,16 @@ name, usually via the __PACKAGE__ string.
 @capabilities is an array of strings as needed to list the
 capabilities which the module performs for the WebFetch API.
 
-If the first entry of @capabilities is a hash reference, its key/value
-pairs are all imported to the WebFetch configuration.
+If any entry of @capabilities is a hash reference, its key/value
+pairs are all imported to the WebFetch configuration, and becomes accessible via
+the I<config()> method. For more readable code, a hashref parmeter should not be used more than once.
+Though that would work. Also for readability, it is recommended to make the hashref the first
+parameter when this feature is used.
+
+Except for the config hashref, parameters must be strings as follows.
 
 The currently-recognized capabilities are "cmdline", "input" and "output".
-"config", "filter", "save" and "storage" are reserved for future use.  The
+"filter", "save" and "storage" are reserved for future use.  The
 function will save all the capability names that the module provides, without
 checking whether any code will use it.
 
@@ -370,14 +375,14 @@ sub module_register
 {
 	my ( $module, @capabilities ) = @_;
 
-    # import configuration entries if 1st entry in @capabilities is a hashref
-    if (ref $capabilities[0] eq 'HASH') {
-        my $config_ref = shift @capabilities;
-        WebFetch->import_config($config_ref);
-    }
-
 	# each string provided is a capability the module provides
 	foreach my $capability ( @capabilities ) {
+        # import configuration entries if any entry in @capabilities is a hashref
+        if (ref $capability eq 'HASH') {
+            WebFetch->import_config($capability);
+            next;
+        }
+
 		# A ":" if present delimits a group of capabilities
 		# such as "input:rss" for and "input" capability of "rss"
 		if ( $capability =~ /([^:]+):([^:]+)/x ) {
