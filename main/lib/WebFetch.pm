@@ -220,13 +220,32 @@ my %default_modules = (
 );
 my %modules;
 our $AUTOLOAD;
-my $debug;
+
+sub debug_mode
+{
+    my @args = @_;
+
+    # check if any arguments were provided
+    # counting parameters allows us to handle undef if provided as a value (can't do that with "defined" test)
+    if (scalar @args == 0) {
+        # if no new value provided, return debug configuration value
+        return WebFetch->config('debug') ? 1 : 0;
+    }
+
+    # set debug mode from provided value
+    my $debug_mode = $args[0] ? 1 : 0;
+    WebFetch->config(debug => $debug_mode);
+    return $debug_mode;
+}
 
 sub debug
 {
     my @args = @_;
-	$debug and print STDERR "debug: ".join( " ", @args )."\n";
-    return;
+    my $debug_mode = debug_mode();
+	if ($debug_mode) {
+        print STDERR "debug: ".join( " ", @args )."\n";
+    }
+    return $debug_mode;
 }
 
 =item WebFetch->config( $key, [$value])
@@ -603,7 +622,7 @@ sub fetch_main2
 
 	# set debugging mode
 	if (( exists $options{debug}) and $options{debug}) {
-		$debug = 1;
+        WebFetch::debug_mode(1);
 	}
 	debug "fetch_main2";
 
