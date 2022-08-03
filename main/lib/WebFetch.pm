@@ -1827,7 +1827,7 @@ be redirected there.
 
 # autoloader catches calls to unknown functions
 # redirect to the class which made the call, if the function exists
-## no critic (ClassHierarchies::ProhibitAutoloading Subroutines::RequireFinalReturn)
+## no critic (ClassHierarchies::ProhibitAutoloading)
 sub AUTOLOAD
 {
 	my ($self, @args) = @_;
@@ -1843,30 +1843,29 @@ sub AUTOLOAD
 
 	# check for function in caller package
 	# (WebFetch may hand an input module's object to an output module)
-	if ( $package->can( $name )) {
-		# make an alias of the sub
-		{
-            ## no critic (TestingAndDebugging::ProhibitNoStrict)
-			no strict 'refs';
-			*{__PACKAGE__."::".$name} = \&{$package."::".$name};
-		}
-		my $retval;
-        try {
-            $retval = $self->$name( @args );
-        } catch {
-			my $e = Exception::Class->caught();
-			ref $e ? $e->rethrow
-				: throw_autoload_fail "failure in "
-					."autoloaded function: ".$e;
-		};
-		return $retval;
-	}
+	if (not $package->can($name)) {
+        # throw exception for unknown function/method
+        throw_autoload_fail "function $name not found - called by $package ($filename line $line)";
+    }
 
-	# if we got here, we failed
-	throw_autoload_fail "function $name not found - "
-		."called by $package ($filename line $line)";
+    # make an alias of the sub
+    {
+        ## no critic (TestingAndDebugging::ProhibitNoStrict)
+        no strict 'refs';
+        *{__PACKAGE__."::".$name} = \&{$package."::".$name};
+    }
+    my $retval;
+    try {
+        $retval = $self->$name( @args );
+    } catch {
+        my $e = Exception::Class->caught();
+        ref $e ? $e->rethrow
+            : throw_autoload_fail "failure in "
+                ."autoloaded function: ".$e;
+    };
+    return $retval;
 }
-## critic (ClassHierarchies::ProhibitAutoloading Subroutines::RequireFinalReturn)
+## critic (ClassHierarchies::ProhibitAutoloading)
 
 1;
 __END__
