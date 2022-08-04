@@ -12,6 +12,7 @@ Revision history for WebFetch::Input::Atom
  [MAJOR]
 
  [MINOR]
+ - submodules now use Config store to add CLI/API options & usage to WebFetch
 
  [REVISION]
 

@@ -12,8 +12,14 @@ Revision history for WebFetch
  [MAJOR]
 
  [MINOR]
+ - new module WebFetch::Data::Config to manage config key/value storage in a global singleton object
+ - submodules now use Config store to add CLI/API options & usage to WebFetch
+ - keep backward compatibility with older modules use of package variables to add CLI/API options & usage
+ - upgrade timestamp handling from original YYYYMMDD & YYYY-MM-DD to include ISO8601
 
  [REVISION]
+ - code modernization: update Perl Best Practices conformance to Perl::Critic's "harsh" warning level
+ - 100+ new unit test cases
 
  [SECURITY]
 
