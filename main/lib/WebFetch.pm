@@ -110,6 +110,9 @@ use Carp qw(croak);
 use Getopt::Long;
 use LWP::UserAgent;
 use HTTP::Request;
+use DateTime;
+use DateTime::Format::ISO8601;
+use DateTime::Locale;
 use Date::Calc;
 use WebFetch::Data::Config;
 
@@ -685,7 +688,7 @@ sub fetch_main2
                 $run_count++;
                 last;
             }
-		}
+		};
 	}
 	if ( $run_count == 0 ) {
 		throw_no_run( "no handlers were able or available to process "
@@ -963,16 +966,16 @@ unique identifier string for the entry
 
 =item date
 
-a date stamp,
-which must be program-readable
-by Perl's Date::Calc module in the Parse_Date() function
-in order to support timestamp-related comparisons
-and processing that some users have requested.
-If the date cannot be parsed by Date::Calc,
-either translate it when your module captures it,
-or do not define this "well-known" field
-because it wouldn't fit the definition.
-(plain text, no HTML tags)
+a date stamp (and optional timestamp),
+which must be program-readable as L<ISO 8601|https://en.wikipedia.org/wiki/ISO_8601>
+date/time format (via L<DateTime::Format::ISO8601>),
+Unix date command output (via L<Date::Calc>'s Parse_Date() function)
+or as "YYYY-MM-DD" date string format.
+For backward compatibility, "YYYYMMDD" format is also accepted,
+though technically that format was deprecated from ISO 8601 in 2004.
+If the date cannot be parsed by these methods,
+either translate it to ISO 8601 when your module captures it
+or do not define this well-known field.
 
 =item summary
 
@@ -1639,7 +1642,7 @@ sub _save_fill_empty_from_url
             $savable->{content} = ${$self->get($savable->{url})}; 
         } catch {
             return 0;
-        }
+        };
     }
     return 1;
 }
@@ -1801,6 +1804,110 @@ sub save
 
 	# success if we got here
 	return 1;
+}
+
+=item WebFetch::parse_date([{locale => "locale", time_zone => "time zone"}], $raw_time_str)
+
+
+=cut
+
+sub parse_date
+{
+    my @args = @_;
+    my %opts;
+    if (ref $args[0] eq "HASH") {
+        %opts = %{shift @args};
+    }
+    my $stamp = shift @args;
+    my $result;
+
+    # use regular expressions to check simple date formats YYYY-MM-DD and YYYYMMDD
+
+    # check YYYY-MM-DD date format
+    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    if ($stamp =~ /^ (....) - (..) - (..) \s+ $/x ) {
+        $result = [year => $1, month => $2, day => $3, %opts];
+
+    # check YYYYMMDD format for backward compatibility: no longer ISO 8601 compliant since 2004 update
+    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    } elsif ($stamp =~ /^ (....) (..) (..) \s+ $/x ) {
+        $result = [year => $1, month => $2, day => $3, %opts];
+    }
+
+    # check ISO 8601
+    # catch any exceptions thrown by the DateTime::Format::ISO8601 constructor and leave $result undefined
+    # save it as a DateTime object
+    if (not defined $result) {
+        try {
+            $result = DateTime::Format::ISO8601->parse_datetime($stamp, $opts{locale});
+            if (exists $opts{time_zone} and $result->time_zone() eq "floating") {
+                $result->set_time_zone($opts{time_zone});
+            }
+        };
+    }
+
+    # check Unix date format and other misc processing from Date::Calc's Parse_Date()
+    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    if (not defined $result) {
+        my @date;
+        try {
+            @date = Date::Calc::Parse_Date($stamp, $opts{locale});
+        };
+        if (@date) {
+            $result = [year => $date[0], month => $date[1], day => $date[2], %opts];
+        };
+    }
+
+    # return parsed result, or undef if all parsing methods failed
+    return $result;
+}
+
+=item WebFetch::gen_timestamp([{locale => "locale", time_zone => "time zone"}], $datetime)
+
+
+=cut
+
+sub gen_timestamp
+{
+    my @args = @_;
+    my %opts;
+    if (ref $args[0] eq "HASH") {
+        %opts = %{shift @args};
+    }
+    my $datetime;
+    my $date_only = 0; # boolean flag: true = use date only, false = full timestamp
+    if (ref $args[0]) {
+        if ($args[0]->isa("DateTime")) {
+            $datetime = $args[0];
+            if (exists $opts{locale}) {
+                try {
+                    $datetime->set_locale($opts{locale});
+                };
+            }
+            if (exists $opts{time_zone}) {
+                try {
+                    $datetime->set_time_zone($opts{time_zone});
+                };
+            }
+        } elsif (ref $args[0] eq "ARRAY") {
+            my %dt_opts = @{$args[0]};
+            foreach my $key (keys %opts) {
+                # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
+                if (not exists $dt_opts{$key}) {
+                    $dt_opts{$key} = $opts{$key};
+                }
+            }
+            $datetime = DateTime->new(%dt_opts);
+            $date_only = 1;
+        }
+    }
+
+    # generate locale-specific timestamp string
+    my $dt_locale = $datetime->locale();
+    if ($date_only) {
+        return $datetime->format_cldr($dt_locale->date_format_full);
+    }
+    return $datetime->format_cldr($dt_locale->datetime_format_full);
 }
 
 #

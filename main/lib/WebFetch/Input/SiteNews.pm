@@ -19,6 +19,7 @@ use base "WebFetch";
 
 use Carp;
 use Date::Calc qw(Today Delta_Days Month_to_Text);
+use DateTime::Format::W3CDTF;
 
 =encoding utf8
 
@@ -177,8 +178,8 @@ sub fetch
     return;
 }
 
-# inner portion of input parsing
-# this function was broken out to satisfy Perl::Critic warning about too much code between file open & close
+# inner portion of input parsing - called by parse_input()
+# read SiteNews text file and parse it into news items to return to caller
 sub parse_input_inner
 {
     my ($self, $news_data_fd) = @_;
@@ -188,7 +189,7 @@ sub parse_input_inner
     my ( $current );
     $cat_priorities = {};                   # priorities for sorting
     while ( <$news_data_fd> ) {
-        chop;
+        chomp;
         /^\s*\#/x and next; # skip comments
         /^\s*$/x and next;  # skip blank lines
 
@@ -204,12 +205,11 @@ sub parse_input_inner
                             = $i + 1;
                     }
                     next;
-                } elsif ( /^url-prefix:\s*(.*)/x ) {
-                    $self->{url_prefix} = $1;
+                } elsif ( /^(\w+):\s*(.*)/x ) {
+                    $self->{$1} = $2;
                 }
             }
-            if ( $state == initial_state or $state == text_state )
-            {
+            if ( $state == initial_state or $state == text_state ) {
                 # found first attribute of a new entry
                 if ( /^([^=]+)=(.*)/x ) {
                     $current = {};
@@ -276,9 +276,19 @@ sub parse_input
         my $text = ( defined $item->{text}) ? $item->{text} : "";
         my $url_prefix = ( defined $self->{url_prefix})
             ? $self->{url_prefix} : "";
-        $self->data->add_record(
-            printstamp($posted), $title, priority( $item ),
-                expired( $item ), $pos, $label,
+
+        # timestamp processing using optional locale and time_zone from SiteNews file's global settings at the top
+        my %dt_opts;
+        foreach my $dt_key (qw(locale time_zone)) {
+            if (exists $self->{$dt_key}) {
+                $dt_opts{$dt_key} = $self->{$dt_key}
+            }
+        }
+        my $timestamp = WebFetch::parse_time(\%dt_opts, $posted);
+        my $time_str = WebFetch::gen_timestamp(\%dt_opts, $timestamp);
+
+        # generate data record for output
+        $self->data->add_record($time_str, $title, priority( $item ), expired( $item ), $pos, $label,
                 $url_prefix."#".$label, $category, $text );
         $pos++;
     }
@@ -288,15 +298,6 @@ sub parse_input
 #
 # utility functions
 #
-
-# generate a printable version of the datestamp
-sub printstamp
-{
-    my ( $stamp ) = @_;
-    my ( $year, $mon, $day ) = ( $stamp =~ /^(....)(..)(..)/x );
-
-    return Month_to_Text(int($mon))." ".int($day).", $year";
-}
 
 # function to detect if a news entry is expired
 sub expired
