@@ -17,10 +17,6 @@ package WebFetch::Output::Dump;
 
 use base "WebFetch";
 
-use Carp;
-use Scalar::Util qw( blessed );
-use Date::Calc qw(Today Delta_Days Month_to_Text);
-use LWP::UserAgent;
 use Data::Dumper;
 
 # define exceptions/errors
