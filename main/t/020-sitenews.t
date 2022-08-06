@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# t/013-sitenews.t - unit tests for WebFetch::Input::SiteNews
+# t/020-sitenews.t - unit tests for WebFetch::Input::SiteNews
 use strict;
 use warnings;
 use utf8;
@@ -11,14 +11,23 @@ use File::Basename;
 use Readonly;
 use YAML::XS;
 
-use Test::More skip_all => "under construction";
+use Test::More;
 use Test::Exception;
 use WebFetch;
 use WebFetch::Input::SiteNews;
 
-# test input files configuration
+# configuration & constants
 Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
 Readonly::Scalar my $yaml_file => "test.yaml";
+Readonly::Scalar my $basic_tests => 1;
+
+# count tests from data file
+sub count_tests
+{
+    my $test_data = shift;
+
+    return $test_data->{tests};
+}
 
 #
 # main
@@ -36,10 +45,10 @@ if ( not -e $yaml_path) {
 # load test data from YAML
 my @yaml_docs = YAML::XS::LoadFile($yaml_path);
 my $test_data = $yaml_docs[0];
-my $total_tests = 0 + $test_data->{basic_tests};
-plan tests => $total_tests;
+my $total_tests = $basic_tests + count_tests($test_data);
+plan tests =>  $total_tests;
 
-print Dumper($test_data); # while under construction, dump the YAML content
+print STDERR Dumper($test_data); # while under construction, dump the YAML content
 
 # basic tests
-is(defined $test_data, "test data loaded");
+ok(defined $test_data, "test data loaded"); # placeholder until more tests keep $basic_tests nonzero
