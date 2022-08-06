@@ -1,2 +1,5 @@
 ---
-basic_tests: 1
+tests: 0
+files:
+  - 00-basic-sitenews.webfetch
+  - 01-webfetch-releases.webfetch
