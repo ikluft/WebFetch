@@ -1808,6 +1808,18 @@ sub save
 
 =item WebFetch::parse_date([{locale => "locale", time_zone => "time zone"}], $raw_time_str)
 
+This parses a time string into a time or date structure which can be used by gen_timestamp() or anchor_timestr().
+
+If the string can be parsed as a simple date in the format of YYYY-MM-DD or YYYYMMDD, it returns an array of
+parameters which can be passed to DateTime->new(). Given in this context, gen_timestamp() or anchor_timestr()
+recognize that means this is only a date with no time. (DateTime would fill in a time for midnight, which could be
+shifted by hours if a timezone is added, making a date-only condition nearly impossible to detect.)
+
+If the time can be parsed by L<DateTime::Format::ISO8601>, that result is returned.
+
+If the time can be parsed by L<Date::Calc>'s Parse_Date(), a date-only array result is returned as above.
+
+If the string can't be parsed, it returns undef;
 
 =cut
 
@@ -1825,13 +1837,13 @@ sub parse_date
 
     # check YYYY-MM-DD date format
     # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
-    if ($stamp =~ /^ (....) - (..) - (..) \s+ $/x ) {
-        $result = [year => $1, month => $2, day => $3, %opts];
+    if ($stamp =~ /^ (....) - (..) - (..) \s* $/x ) {
+        $result = [year => int($1), month => int($2), day => int($3), %opts];
 
     # check YYYYMMDD format for backward compatibility: no longer ISO 8601 compliant since 2004 update
     # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
-    } elsif ($stamp =~ /^ (....) (..) (..) \s+ $/x ) {
-        $result = [year => $1, month => $2, day => $3, %opts];
+    } elsif ($stamp =~ /^ (....) (..) (..) \s* $/x ) {
+        $result = [year => int($1), month => int($2), day => int($3), %opts];
     }
 
     # check ISO 8601
@@ -1862,8 +1874,9 @@ sub parse_date
     return $result;
 }
 
-=item WebFetch::gen_timestamp([{locale => "locale", time_zone => "time zone"}], $datetime)
+=item WebFetch::gen_timestamp([{locale => "locale", time_zone => "time zone"}], $time_ref)
 
+This takes a reference received from I<parse_date()> above and returns a string with the date in current locale format.
 
 =cut
 
@@ -1874,6 +1887,7 @@ sub gen_timestamp
     if (ref $args[0] eq "HASH") {
         %opts = %{shift @args};
     }
+
     my $datetime;
     my $date_only = 0; # boolean flag: true = use date only, false = full timestamp
     if (ref $args[0]) {
@@ -1908,6 +1922,56 @@ sub gen_timestamp
         return $datetime->format_cldr($dt_locale->date_format_full);
     }
     return $datetime->format_cldr($dt_locale->datetime_format_full);
+}
+
+=item anchor_timestr([{time_zone => "time zone"}], $time_ref)
+
+This takes a reference received from I<parse_date()> above and returns a timestamp string which can be used
+as a hypertext link anchor, such as in HTML.
+The string will be the numbers from the date, and possible time of day, delimited by dashes '-'.
+If a time zone is provided, it will be used.
+
+For example, August 5, 2022 at 19:30 becomes "2022-08-05-19-30-00".
+
+=cut
+
+sub anchor_timestr
+{
+    my @args = @_;
+    my %opts;
+    if (ref $args[0] eq "HASH") {
+        %opts = %{shift @args};
+    }
+
+    my $datetime;
+    my $date_only = 0; # boolean flag: true = use date only, false = full timestamp
+    if (ref $args[0]) {
+        if (ref $args[0] eq "DateTime") {
+            $datetime = $args[0];
+            if (exists $opts{time_zone}) {
+                try {
+                    $datetime->set_time_zone($opts{time_zone});
+                };
+            }
+        } elsif (ref $args[0] eq "ARRAY") {
+            my %dt_opts = @{$args[0]};
+            foreach my $key (keys %opts) {
+                # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
+                if (not exists $dt_opts{$key}) {
+                    $dt_opts{$key} = $opts{$key};
+                }
+            }
+            $datetime = DateTime->new(%dt_opts);
+            $date_only = 1;
+        }
+    }
+
+    # generate anchor timestamp string
+    return "undated" if not defined $datetime;
+    if ($date_only) {
+        return $datetime->ymd('-');
+    }
+    return $datetime->ymd('-')."-".$datetime->hms('-');
 }
 
 #

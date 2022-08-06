@@ -18,15 +18,15 @@ package WebFetch::Input::SiteNews;
 use base "WebFetch";
 
 use Carp;
-use Date::Calc qw(Today Delta_Days Month_to_Text);
-use DateTime::Format::W3CDTF;
+use DateTime;
+use DateTime::Format::ISO8601;
 
 =encoding utf8
 
 =cut
 
 # set defaults
-my ( $cat_priorities, $now, $nowstamp );
+my ($cat_priorities, $now);
 my @Options = (
     "short=s",
     "long=s",
@@ -77,6 +77,7 @@ sub initial_state { return 0; }
 sub attr_state { return 1; }
 sub text_state { return 2; }
 
+# fetch() is the WebFetch API call point to run this module
 sub fetch
 {
     my ( $self ) = @_;
@@ -106,8 +107,7 @@ sub fetch
     # process the links
 
     # get local time for various date comparisons
-    $now = [ Today ];
-    $nowstamp = sprintf "%04d%02d%02d", @$now;
+    $now = DateTime->now;
 
     # parse data file
     if (( exists $self->{sources}) and ( ref $self->{sources} eq "ARRAY" )) {
@@ -259,16 +259,7 @@ sub parse_input
     my ( %label_hash, $pos );
     $pos = 0;
     foreach my $item ( @news_items ) {
-
-        # generate an intra-page link label
-        my ( $label, $count );
-        $count=0;
-        while (( $label = $item->{posted}."-".sprintf("%03d",$count)) and defined $label_hash{$label}) {
-            $count++;
-        }
-        $label_hash{$label} = 1;
-
-        # save the data record
+        # collect fields for the data record
         my $title = ( defined $item->{title}) ? $item->{title} : "";
         my $posted = ( defined $item->{posted}) ? $item->{posted} : "";
         my $category = ( defined $item->{category})
@@ -278,14 +269,28 @@ sub parse_input
             ? $self->{url_prefix} : "";
 
         # timestamp processing using optional locale and time_zone from SiteNews file's global settings at the top
-        my %dt_opts;
+        my (%dt_opts, $dt, $time_str, $anchor_time);
         foreach my $dt_key (qw(locale time_zone)) {
             if (exists $self->{$dt_key}) {
                 $dt_opts{$dt_key} = $self->{$dt_key}
             }
         }
-        my $timestamp = WebFetch::parse_time(\%dt_opts, $posted);
-        my $time_str = WebFetch::gen_timestamp(\%dt_opts, $timestamp);
+        if ($posted) {
+            $dt = WebFetch::parse_time(\%dt_opts, $posted);
+            $time_str = WebFetch::gen_timestamp(\%dt_opts, $dt);
+            $anchor_time = WebFetch::anchor_timestr(\%dt_opts, $dt);
+        } else {
+            $time_str = "undated";
+            $anchor_time = "0000-undated";
+        }
+
+        # generate an intra-page link label
+        my ( $label, $count );
+        $count=0;
+        while (( $label = $anchor_time."-".sprintf("%03d",$count)) and defined $label_hash{$label}) {
+            $count++;
+        }
+        $label_hash{$label} = 1;
 
         # generate data record for output
         $self->data->add_record($time_str, $title, priority( $item ), expired( $item ), $pos, $label,
@@ -303,8 +308,9 @@ sub parse_input
 sub expired
 {
     my ( $entry ) = @_;
-    return (( defined $entry->{expires}) and
-        ( $entry->{expires} lt $nowstamp ));
+    return 0 if not exists $entry->{expires};
+    return 0 if not defined $entry->{expires};
+    return $entry->{expires} < $now
 }
 
 # function to get the priority value from 
@@ -312,9 +318,9 @@ sub priority
 {
     my ( $entry ) = @_;
 
-    ( defined $entry->{posted}) or return 999;
-    my ( $year, $mon, $day ) = ( $entry->{posted} =~ /^(....)(..)(..)/x );
-    my $age = Delta_Days( $year, $mon, $day, @$now );
+    return 999 if not exists $entry->{posted};
+    return 999 if not defined $entry->{posted};
+    my $age = ($entry->{posted}->subtract_datetime($now))->delta_days();
     my $bonus = 0;
 
     if ( $age <= 2 ) {
