@@ -35,12 +35,13 @@ my $Usage = "--short short-output-file --long long-output-file";
 
 # configuration parameters
 my $num_links = 5;
+sub _config_params { return { Options => \@Options, Usage => \$Usage, num_links => $num_links }; }
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
 __PACKAGE__->module_register(
-    { Options => \@Options, Usage => \$Usage, num_links => $num_links },
+    _config_params(),
     "cmdline", "input:sitenews" );
 
 =head1 SYNOPSIS

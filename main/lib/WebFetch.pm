@@ -241,6 +241,7 @@ sub debug_mode
     return $debug_mode;
 }
 
+# print parameters to STDERR if debug mode is enabled
 sub debug
 {
     my @args = @_;
@@ -249,6 +250,20 @@ sub debug
         print STDERR "debug: ".join( " ", @args )."\n";
     }
     return $debug_mode;
+}
+
+# module registry read-accessor
+# for testing and internal use only
+sub _module_registry
+{
+    my ($class, $key) = @_;
+    if (not $class->isa("WebFetch")) {
+        throw_incompatible_class("invalid _module_registry() call for '$class': not in the WebFetch hierarchy");
+    }
+    if (exists $modules{$key}) {
+        return $modules{$key};
+    }
+    return;
 }
 
 =item WebFetch->config( $key, [$value])
@@ -2070,8 +2085,8 @@ Change the URL, number of links, etc as necessary.
 
 =item command-line parameters
 
-If you need to add command-line parameters, modify both the
-B<C<@Options>> and B<C<$Usage>> variables.
+If you need to add command-line parameters, set both the
+B<Options> and B<Usage> configuration parameters when your module calls I<module_register()>.
 Don't forget to add documentation for your command-line options
 and remove old documentation for any you removed.
 
