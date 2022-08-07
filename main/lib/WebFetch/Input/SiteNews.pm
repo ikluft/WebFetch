@@ -35,7 +35,7 @@ my $Usage = "--short short-output-file --long long-output-file";
 
 # configuration parameters
 my $num_links = 5;
-sub _config_params { return { Options => \@Options, Usage => \$Usage, num_links => $num_links }; }
+sub _config_params { return { Options => \@Options, Usage => $Usage, num_links => $num_links }; }
 
 # no user-servicable parts beyond this point
 
