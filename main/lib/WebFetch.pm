@@ -253,7 +253,8 @@ sub debug
 }
 
 # module registry read-accessor
-# for testing and internal use only
+# for testing and internal use only (inhibit critic warning because it is not unused - tests use it)
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _module_registry
 {
     my ($class, $key) = @_;
@@ -265,6 +266,7 @@ sub _module_registry
     }
     return;
 }
+## critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 
 =item WebFetch->config( $key, [$value])
 
