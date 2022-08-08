@@ -84,11 +84,11 @@ ok(WebFetch->has_config("Usage"), "Usage has been set in WebFetch::Config");
     for (my $entry=0; $entry < int(@$expected); $entry++) {
         my $value = $expected->[$entry];
         is($got->[$entry], $value,
-            "$classname Options data[$entry] matches ".(defined $value ? $value : "undef")." in WebFetch::Config");
+            "sitenews Options[$entry] matches ".(defined $value ? $value : "undef")." in config");
     }
     foreach my $field (qw(Usage num_links)) {
         is($classname->config($field), $config_params->{$field},
-            "$classname $field matches ".$config_params->{$field}." in WebFetch::Config");
+            "sitenews $field matches ".$config_params->{$field}." in config");
     }
 }
 
