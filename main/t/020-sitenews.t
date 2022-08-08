@@ -84,11 +84,11 @@ ok(WebFetch->has_config("Usage"), "Usage has been set in WebFetch::Config");
     for (my $entry=0; $entry < int(@$expected); $entry++) {
         my $value = $expected->[$entry];
         is($got->[$entry], $value,
-            "sitenews Options[$entry] matches ".(defined $value ? $value : "undef")." in config");
+            "SiteNews Options[$entry] matches ".(defined $value ? $value : "undef")." in config");
     }
     foreach my $field (qw(Usage num_links)) {
         is($classname->config($field), $config_params->{$field},
-            "sitenews $field matches ".$config_params->{$field}." in config");
+            "SiteNews $field matches ".$config_params->{$field}." in config");
     }
 }
 
@@ -96,4 +96,19 @@ ok(WebFetch->has_config("Usage"), "Usage has been set in WebFetch::Config");
 # file-based tests
 #
 
-# TBD
+foreach my $file (@{$test_data->{files}}) {
+    next if ref $file ne "ARRAY";
+    foreach my $test_item (@$file) {
+        SKIP: {
+            my $skip_reason;
+            if (not exists $test->{op}) {
+                $skip_reason = "test operation not specified";
+            } elsif (not main->can($test->{op})) {
+                $skip_reason = "test operation ".$test->{op}." not implemented";
+            }
+            SKIP $skip_reason, 1 if defined $skip_reason;
+
+            my $op = $test->{op};
+        }
+    }
+}
