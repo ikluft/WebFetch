@@ -870,6 +870,9 @@ sub run
 	my $obj;
 
 	debug "entered run for $run_pkg";
+    my $test_probe_flag = ((exists $options_ref->{test_probe})
+        and (ref $options_ref->{test_probe} eq "HASH"))
+        ? 1 : 0;
 
 	# make sure we have the run package loaded
 	mod_load $run_pkg;
@@ -891,6 +894,9 @@ sub run
     } catch {
 		throw_mod_run_failure( "module run failure in $run_pkg: ".$_ );
 	};
+    if ($test_probe_flag) {
+        $options_ref->{test_probe}{webfetch} = $obj;
+    }
 
 	# if the object had data for the WebFetch-embedding API,
 	# then data processing is external to the fetch routine
@@ -927,6 +933,9 @@ sub run
 					."error: " .$savable->{error};
 			}
 		}
+        if ($test_probe_flag) {
+            $options_ref->{test_probe}{errors} = \@errors;
+        }
 		if (@errors) {
 			throw_save_error( "error saving results in "
 				.$obj->{dir}
