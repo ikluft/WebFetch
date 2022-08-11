@@ -25,24 +25,93 @@ Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
 Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
 Readonly::Hash my %test_ops => (
-
+    ok => \&op_ok,
 );
+
+# no-op test just does an ok() to get started
+sub op_ok
+{
+    my ($item, $data, $name);
+    ok(1); # don't test anything - just do an ok
+}
 
 # count tests from data file
 sub count_tests
 {
     my $test_data = shift;
     my $count = 0;
-    foreach my $file (@{$test_data->{files}}) {
-        next if ref $file ne "ARRAY";
-        $count += int(@$file);
+    foreach my $file (keys %{$test_data->{files}}) {
+        next if ref $test_data->{files}{$file} ne "ARRAY";
+        $count += int(@{$test_data->{files}{$file}});
     }
     return $count;
 }
 
 #
+# create WebFetch::Output::Capture to capture SiteNews data read by WebFetch
+#
+package WebFetch::Output::Capture;
+use base 'WebFetch';
+use Try::Tiny;
+
+__PACKAGE__->module_register( "output:capture" );
+my @news_items;
+
+# "capture" format handler
+# capture function stashes all the received data records from SiteNews for inspection
+sub fmt_handler_capture
+{
+    my ( $self, $filename ) = @_;
+
+    WebFetch::debug "fetch: ".Dumper($self->{data});
+    $self->no_savables_ok(); # rather than let WebFetch save the data, we'll take it here
+    if (exists $self->{data}{records}) {
+        push @news_items, @{$self->{data}{records}};
+    }
+    return 1;
+}
+
+# return the file list
+sub news_items
+{
+    return @news_items;
+}
+
+#
 # main
 #
+
+# back to main package
+package main;
+use Try::Tiny;
+
+# call WebFetch to process a SiteNews feed
+# uses test_probe option of WebFetch->run() so we can inspect WebFetch::Input::SiteNews object and errors
+sub capture_feed
+{
+    my ($dir, $sn_file) = @_;
+
+    # set up WebFetch->new() options
+    my %test_probe;
+    my %Options = (
+        dir => $dir,
+        source_format => "sitenews",
+        source => $sn_file,
+        dest => "capture",
+        dest_format => "capture",
+        test_probe => \%test_probe,
+    );
+
+    # run WebFetch
+    try {
+        $classname->run(\%Options);
+    } catch {
+        $test_probe{exception} = $_;
+    }
+
+    return \%test_probe;
+}
+
 
 # initialization
 WebFetch::debug_mode($debug_mode);
@@ -96,19 +165,30 @@ ok(WebFetch->has_config("Usage"), "Usage has been set in WebFetch::Config");
 # file-based tests
 #
 
-foreach my $file (@{$test_data->{files}}) {
-    next if ref $file ne "ARRAY";
-    foreach my $test_item (@$file) {
+foreach my $file (sort keys %{$test_data->{files}}) {
+    next if ref $test_data->{files}{$file} ne "ARRAY";
+
+    # process file as a SiteNews feed
+    my $test_data = capture_feed($temp_dir, $file);
+    WebFetch::debug "WebFetch run: ".Dumper($test_data);
+
+    # run tests specified in YAML
+    foreach my $test_item (@{$test_data->{files}{$file}}) {
         SKIP: {
             my $skip_reason;
-            if (not exists $test->{op}) {
+            if (not exists $test_item->{op}) {
                 $skip_reason = "test operation not specified";
-            } elsif (not main->can($test->{op})) {
-                $skip_reason = "test operation ".$test->{op}." not implemented";
+            } elsif (not main->can($test_item->{op})) {
+                $skip_reason = "test operation ".$test_item->{op}." not implemented";
             }
             SKIP $skip_reason, 1 if defined $skip_reason;
 
-            my $op = $test->{op};
+            my $op = $test_item->{op};
+            if (exists $test_ops{$op}) {
+                $test_ops{$op}->($test_item, $test_data, "found $file data");
+            } else {
+                fail("found $file data");
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
 ---
 files:
-  - 00-basic-sitenews.webfetch
-  - 01-webfetch-releases.webfetch
+  00-basic-sitenews.webfetch:
+    - {op: ok, x: 1}
+  01-webfetch-releases.webfetch:
+    - {op: ok, x: 2}

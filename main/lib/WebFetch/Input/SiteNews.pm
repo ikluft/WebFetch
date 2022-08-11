@@ -35,7 +35,10 @@ my $Usage = "--short short-output-file --long long-output-file";
 
 # configuration parameters
 my $num_links = 5;
+
+# functions for access to internal data for testing
 sub _config_params { return { Options => \@Options, Usage => $Usage, num_links => $num_links }; }
+sub _cat_priorities { return $cat_priorities; };
 
 # no user-servicable parts beyond this point
 
