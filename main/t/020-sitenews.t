@@ -91,12 +91,18 @@ sub capture_feed
 {
     my ($dir, $sn_file) = @_;
 
+    # generate short and long output file names
+    my $short_name = basename($sn_file, ".webfetch")."-short.out";
+    my $long_name = basename($sn_file, ".webfetch")."-long.out";
+
     # set up WebFetch->new() options
     my %test_probe;
     my %Options = (
         dir => $dir,
         source_format => "sitenews",
         source => $sn_file,
+        short => $short_name,
+        long => $long_name,
         dest => "capture",
         dest_format => "capture",
         test_probe => \%test_probe,
