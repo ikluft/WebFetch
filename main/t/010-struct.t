@@ -70,7 +70,7 @@ my %params = (
     "content" => WebFetch::Data::Store->new(@content),
     "dir" => $tmpdir,
     "source_format" => 'perlstruct',
-	"dest" => $outfilename,
+    "dest" => $outfilename,
     "dest_format" => "dump",
 );
 my $exitcode;
