@@ -26,26 +26,24 @@ use DateTime::Format::ISO8601;
 =cut
 
 # set defaults
-my ($cat_priorities, $now);
-my @Options = (
-    "short=s",
-    "long=s",
-);
-my $Usage = "--short short-output-file --long long-output-file";
+my ( $cat_priorities, $now );
+my @Options = ( "short=s", "long=s", );
+my $Usage   = "--short short-output-file --long long-output-file";
 
 # configuration parameters
 my $num_links = 5;
 
 # functions for access to internal data for testing
-sub _config_params { return { Options => \@Options, Usage => $Usage, num_links => $num_links }; }
-sub _cat_priorities { return $cat_priorities; };
+sub _config_params
+{
+    return { Options => \@Options, Usage => $Usage, num_links => $num_links };
+}
+sub _cat_priorities { return $cat_priorities; }
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register(
-    _config_params(),
-    "cmdline", "input:sitenews" );
+__PACKAGE__->module_register( _config_params(), "cmdline", "input:sitenews" );
 
 =head1 SYNOPSIS
 
@@ -78,33 +76,34 @@ C<Osite_news.html>.
 
 # constants for state names
 sub initial_state { return 0; }
-sub attr_state { return 1; }
-sub text_state { return 2; }
+sub attr_state    { return 1; }
+sub text_state    { return 2; }
 
 # fetch() is the WebFetch API call point to run this module
 sub fetch
 {
-    my ( $self ) = @_;
+    my ($self) = @_;
 
     # set parameters for WebFetch routines
-    if (not defined $self->{num_links}) {
+    if ( not defined $self->{num_links} ) {
         $self->{num_links} = WebFetch->config("num_links");
     }
-    if (not defined $self->{style}) {
+    if ( not defined $self->{style} ) {
         $self->{style} = {};
         $self->{style}{para} = 1;
     }
 
     # set up Webfetch Embedding API data
-    $self->{actions} = {}; 
+    $self->{actions} = {};
     $self->data->add_fields( "date", "title", "priority", "expired",
         "position", "label", "url", "category", "text" );
+
     # defined which fields match to which "well-known field names"
     $self->data->add_wk_names(
-        "title" => "title",
-        "url" => "url",
-        "date" => "date",
-        "summary" => "text",
+        "title"    => "title",
+        "url"      => "url",
+        "date"     => "date",
+        "summary"  => "text",
         "category" => "category"
     );
 
@@ -114,14 +113,15 @@ sub fetch
     $now = DateTime->now;
 
     # parse data file
-    if (( exists $self->{sources}) and ( ref $self->{sources} eq "ARRAY" )) {
-        foreach my $source ( @{$self->{sources}}) {
-            $self->parse_input( $source );
+    if ( ( exists $self->{sources} ) and ( ref $self->{sources} eq "ARRAY" ) ) {
+        foreach my $source ( @{ $self->{sources} } ) {
+            $self->parse_input($source);
         }
     }
 
     # set parameters for the short news format
     if ( defined $self->{short_path} ) {
+
         # create the HTML actions list
         $self->{actions}{html} = [];
 
@@ -139,8 +139,8 @@ sub fetch
 
             # check expirations first
             my $exp_fnum = $self->fname2fnum("expired");
-            ( $a->[$exp_fnum] and not $b->[$exp_fnum]) and return 1;
-            ( not $a->[$exp_fnum] and $b->[$exp_fnum]) and return -1;
+            ( $a->[$exp_fnum] and not $b->[$exp_fnum] ) and return 1;
+            ( not $a->[$exp_fnum] and $b->[$exp_fnum] ) and return -1;
 
             # compare priority - posting category w/ age penalty
             my $pri_fnum = $self->fname2fnum("priority");
@@ -153,31 +153,33 @@ sub fetch
             return $a->[$lbl_fnum] cmp $b->[$lbl_fnum];
         };
         $params->{filter_func} = sub {
+
             # filter: skip expired items
             my $exp_fnum = $self->fname2fnum("expired");
             return not $_[$exp_fnum];
         };
         $params->{format_func} = sub {
+
             # generate HTML text
             my $txt_fnum = $self->fname2fnum("text");
             my $pri_fnum = $self->fname2fnum("priority");
-            return $_[$txt_fnum]
-                ."\n<!--- priority ".$_[$pri_fnum]." --->";
+            return $_[$txt_fnum] . "\n<!--- priority " . $_[$pri_fnum] . " --->";
         };
 
         # put parameters for fmt_handler_html() on the html list
-        push @{$self->{actions}{html}}, [ $self->{short_path}, $params ];
+        push @{ $self->{actions}{html} }, [ $self->{short_path}, $params ];
     }
 
     # set parameters for the long news format
     if ( defined $self->{long_path} ) {
+
         # create the SiteNews-specific action list
         # It will use WebFetch::Input::SiteNews::fmt_handler_sitenews_long()
         # which is defined in this file
         $self->{actions}{sitenews_long} = [];
 
         # put parameters for fmt_handler_sitenews_long() on the list
-        push @{$self->{actions}{sitenews_long}}, [ $self->{long_path} ];
+        push @{ $self->{actions}{sitenews_long} }, [ $self->{long_path} ];
     }
     return;
 }
@@ -186,55 +188,59 @@ sub fetch
 # read SiteNews text file and parse it into news items to return to caller
 sub parse_input_inner
 {
-    my ($self, $news_data_fd) = @_;
+    my ( $self, $news_data_fd ) = @_;
     my @news_items;
     my $position = 0;
-    my $state = initial_state;      # before first entry
-    my ( $current );
-    $cat_priorities = {};                   # priorities for sorting
-    while ( <$news_data_fd> ) {
+    my $state    = initial_state;    # before first entry
+    my ($current);
+    $cat_priorities = {};            # priorities for sorting
+    while (<$news_data_fd>) {
         chomp;
-        /^\s*\#/x and next; # skip comments
-        /^\s*$/x and next;  # skip blank lines
+        /^\s*\#/x and next;          # skip comments
+        /^\s*$/x  and next;          # skip blank lines
 
-        if ( /^[^\s]/x ) {
+        if (/^[^\s]/x) {
+
             # found attribute line
             if ( $state == initial_state ) {
-                if ( /^categories:\s*(.*)/x ) {
-                    my @cats = split(' ', $1);
-                    my ( $i );
+                if (/^categories:\s*(.*)/x) {
+                    my @cats = split( ' ', $1 );
+                    my ($i);
                     $cat_priorities->{"default"} = 999;
-                    for ( $i=0; $i<=$#cats; $i++ ) {
-                        $cat_priorities->{$cats[$i]}
-                            = $i + 1;
+                    for ( $i = 0 ; $i <= $#cats ; $i++ ) {
+                        $cat_priorities->{ $cats[$i] } = $i + 1;
                     }
                     next;
-                } elsif ( /^(\w+):\s*(.*)/x ) {
+                } elsif (/^(\w+):\s*(.*)/x) {
                     $self->{$1} = $2;
                 }
             }
             if ( $state == initial_state or $state == text_state ) {
+
                 # found first attribute of a new entry
-                if ( /^([^=]+)=(.*)/x ) {
-                    $current = {};
+                if (/^([^=]+)=(.*)/x) {
+                    $current             = {};
                     $current->{position} = $position++;
-                    $current->{$1} = $2;
+                    $current->{$1}       = $2;
                     push( @news_items, $current );
                     $state = attr_state;
                 }
             } elsif ( $state == attr_state ) {
+
                 # found a followup attribute
-                if ( /^([^=]+)=(.*)/x ) {
+                if (/^([^=]+)=(.*)/x) {
                     $current->{$1} = $2;
                 }
             }
         } else {
+
             # found text line
             if ( $state == initial_state ) {
+
                 # cannot accept text before any attributes
                 next;
             } elsif ( $state == attr_state or $state == text_state ) {
-                if ( defined $current->{text}) {
+                if ( defined $current->{text} ) {
                     $current->{text} .= "\n$_";
                 } else {
                     $current->{text} = $_;
@@ -253,7 +259,7 @@ sub parse_input
 
     # parse data file
     my $news_data;
-    if ( not open ($news_data, "<", $input)) {
+    if ( not open( $news_data, "<", $input ) ) {
         croak "$0: failed to open $input: $!\n";
     }
     my @news_items = $self->parse_input_inner($news_data);
@@ -262,43 +268,46 @@ sub parse_input
     # translate parsed news into the WebFetch Embedding API data table
     my ( %label_hash, $pos );
     $pos = 0;
-    foreach my $item ( @news_items ) {
-        # collect fields for the data record
-        my $title = ( defined $item->{title}) ? $item->{title} : "";
-        my $posted = ( defined $item->{posted}) ? $item->{posted} : "";
-        my $category = ( defined $item->{category})
-            ? $item->{category} : "";
-        my $text = ( defined $item->{text}) ? $item->{text} : "";
-        my $url_prefix = ( defined $self->{url_prefix})
-            ? $self->{url_prefix} : "";
+    foreach my $item (@news_items) {
 
-        # timestamp processing using optional locale and time_zone from SiteNews file's global settings at the top
-        my (%dt_opts, $dt, $time_str, $anchor_time);
+        # collect fields for the data record
+        my $title    = ( defined $item->{title} )    ? $item->{title}    : "";
+        my $posted   = ( defined $item->{posted} )   ? $item->{posted}   : "";
+        my $category = ( defined $item->{category} ) ? $item->{category} : "";
+        my $text     = ( defined $item->{text} )     ? $item->{text}     : "";
+        my $url_prefix =
+            ( defined $self->{url_prefix} ) ? $self->{url_prefix} : "";
+
+# timestamp processing using optional locale and time_zone from SiteNews file's global settings at the top
+        my ( %dt_opts, $dt, $time_str, $anchor_time );
         foreach my $dt_key (qw(locale time_zone)) {
-            if (exists $self->{$dt_key}) {
-                $dt_opts{$dt_key} = $self->{$dt_key}
+            if ( exists $self->{$dt_key} ) {
+                $dt_opts{$dt_key} = $self->{$dt_key};
             }
         }
         if ($posted) {
-            $dt = WebFetch::parse_time(\%dt_opts, $posted);
-            $time_str = WebFetch::gen_timestamp(\%dt_opts, $dt);
-            $anchor_time = WebFetch::anchor_timestr(\%dt_opts, $dt);
+            $dt          = WebFetch::parse_time( \%dt_opts, $posted );
+            $time_str    = WebFetch::gen_timestamp( \%dt_opts, $dt );
+            $anchor_time = WebFetch::anchor_timestr( \%dt_opts, $dt );
         } else {
-            $time_str = "undated";
+            $time_str    = "undated";
             $anchor_time = "0000-undated";
         }
 
         # generate an intra-page link label
         my ( $label, $count );
-        $count=0;
-        while (( $label = $anchor_time."-".sprintf("%03d",$count)) and defined $label_hash{$label}) {
+        $count = 0;
+        while ( ( $label = $anchor_time . "-" . sprintf( "%03d", $count ) )
+            and defined $label_hash{$label} )
+        {
             $count++;
         }
         $label_hash{$label} = 1;
 
         # generate data record for output
-        $self->data->add_record($time_str, $title, priority( $item ), expired( $item ), $pos, $label,
-                $url_prefix."#".$label, $category, $text );
+        $self->data->add_record( $time_str, $title, priority($item),
+            expired($item), $pos, $label, $url_prefix . "#" . $label,
+            $category,      $text );
         $pos++;
     }
     return;
@@ -311,34 +320,35 @@ sub parse_input
 # function to detect if a news entry is expired
 sub expired
 {
-    my ( $entry ) = @_;
+    my ($entry) = @_;
     return 0 if not exists $entry->{expires};
     return 0 if not defined $entry->{expires};
-    return $entry->{expires} < $now
+    return $entry->{expires} < $now;
 }
 
-# function to get the priority value from 
+# function to get the priority value from
 sub priority
 {
-    my ( $entry ) = @_;
+    my ($entry) = @_;
 
     return 999 if not exists $entry->{posted};
     return 999 if not defined $entry->{posted};
-    my $age = ($entry->{posted}->subtract_datetime($now))->delta_days();
+    my $age   = ( $entry->{posted}->subtract_datetime($now) )->delta_days();
     my $bonus = 0;
 
     if ( $age <= 2 ) {
         $bonus -= 2 - $age;
     }
-    if (( defined $entry->{category}) and
-        ( defined $cat_priorities->{$entry->{category}}))
+    if (    ( defined $entry->{category} )
+        and ( defined $cat_priorities->{ $entry->{category} } ) )
     {
-        my $cat_pri = ( exists $cat_priorities->{$entry->{category}})
-            ? $cat_priorities->{$entry->{category}} : 0;
+        my $cat_pri =
+            ( exists $cat_priorities->{ $entry->{category} } )
+            ? $cat_priorities->{ $entry->{category} }
+            : 0;
         return $cat_pri + $age * 0.025 + $bonus;
     } else {
-        return $cat_priorities->{"default"} + $age * 0.025
-            + $bonus;
+        return $cat_priorities->{"default"} + $age * 0.025 + $bonus;
     }
 }
 

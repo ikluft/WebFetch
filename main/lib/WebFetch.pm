@@ -119,107 +119,107 @@ use WebFetch::Data::Config;
 # define exceptions/errors
 use Try::Tiny;
 use Exception::Class (
-	'WebFetch::Exception',
-	'WebFetch::TracedException' => {
-                isa => 'WebFetch::Exception',
-	},
-
-	'WebFetch::Exception::DataWrongType' => {
-                isa => 'WebFetch::TracedException',
-		alias => 'throw_data_wrongtype',
-                description => "provided data must be a WebFetch::Data::Store",
-        },
-
-	'WebFetch::Exception::IncompatibleClass' => {
+    'WebFetch::Exception',
+    'WebFetch::TracedException' => {
         isa => 'WebFetch::Exception',
-        alias => 'throw_incompatible_class',
+    },
+
+    'WebFetch::Exception::DataWrongType' => {
+        isa         => 'WebFetch::TracedException',
+        alias       => 'throw_data_wrongtype',
+        description => "provided data must be a WebFetch::Data::Store",
+    },
+
+    'WebFetch::Exception::IncompatibleClass' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_incompatible_class',
         description => "class method called for class outside WebFetch hierarchy",
     },
 
-	'WebFetch::Exception::GetoptError' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_getopt_error',
-                description => "software error during command line processing",
-        },
+    'WebFetch::Exception::GetoptError' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_getopt_error',
+        description => "software error during command line processing",
+    },
 
-	'WebFetch::Exception::Usage' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_cli_usage',
-		description => "command line processing failed",
-	},
+    'WebFetch::Exception::Usage' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_cli_usage',
+        description => "command line processing failed",
+    },
 
-	'WebFetch::Exception::Save' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_save_error',
-		description => "an error occurred while saving the data",
-	},
+    'WebFetch::Exception::Save' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_save_error',
+        description => "an error occurred while saving the data",
+    },
 
-	'WebFetch::Exception::NoSave' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_no_save',
-		description => "unable to save: no data or nowhere to save it",
-	},
+    'WebFetch::Exception::NoSave' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_no_save',
+        description => "unable to save: no data or nowhere to save it",
+    },
 
-	'WebFetch::Exception::NoHandler' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_no_handler',
-		description => "no handler was found",
-	},
+    'WebFetch::Exception::NoHandler' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_no_handler',
+        description => "no handler was found",
+    },
 
-	'WebFetch::Exception::MustOverride' => {
-                isa => 'WebFetch::TracedException',
-		alias => 'throw_abstract',
-		description => "A WebFetch function was called which is "
-			."supposed to be overridden by a subclass",
-	},
+    'WebFetch::Exception::MustOverride' => {
+        isa         => 'WebFetch::TracedException',
+        alias       => 'throw_abstract',
+        description => "A WebFetch function was called which is "
+            . "supposed to be overridden by a subclass",
+    },
 
-	'WebFetch::Exception::NetworkGet' => {
-                isa => 'WebFetch::Exception',
-                description => "Failed to access RSS feed",
-        },
+    'WebFetch::Exception::NetworkGet' => {
+        isa         => 'WebFetch::Exception',
+        description => "Failed to access RSS feed",
+    },
 
-	'WebFetch::Exception::ModLoadFailure' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_mod_load_failure',
-                description => "failed to load a WebFetch Perl module",
-        },
+    'WebFetch::Exception::ModLoadFailure' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_mod_load_failure',
+        description => "failed to load a WebFetch Perl module",
+    },
 
-	'WebFetch::Exception::ModRunFailure' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_mod_run_failure',
-                description => "failed to run a WebFetch module",
-        },
+    'WebFetch::Exception::ModRunFailure' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_mod_run_failure',
+        description => "failed to run a WebFetch module",
+    },
 
-	'WebFetch::Exception::ModNoRunModule' => {
-                isa => 'WebFetch::Exception',
-		alias => 'throw_no_run',
-                description => "no module was found to run the request",
-        },
+    'WebFetch::Exception::ModNoRunModule' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_no_run',
+        description => "no module was found to run the request",
+    },
 
-	'WebFetch::Exception::AutoloadFailure' => {
-                isa => 'WebFetch::TracedException',
-		alias => 'throw_autoload_fail',
-                description => "AUTOLOAD failed to handle function call",
-        },
+    'WebFetch::Exception::AutoloadFailure' => {
+        isa         => 'WebFetch::TracedException',
+        alias       => 'throw_autoload_fail',
+        description => "AUTOLOAD failed to handle function call",
+    },
 
 );
 
 # initialize class variables
 my %default_modules = (
-	"input" => {
-		"rss" => "WebFetch::Input::RSS",
-		"sitenews" => "WebFetch::Input::SiteNews",
-		"perlstruct" => "WebFetch::Input::PerlStruct",
-		"atom" => "WebFetch::Input::Atom",
-		"dump" => "WebFetch::Input::Dump",
-	},
-	"output" => {
-		"rss" => "WebFetch::Output:RSS",
-		"atom" => "WebFetch::Output:Atom",
-		"tt" => "WebFetch::Output:TT",
-		"perlstruct" => "WebFetch::Output::PerlStruct",
-		"dump" => "WebFetch::Output::Dump",
-	}
+    "input" => {
+        "rss"        => "WebFetch::Input::RSS",
+        "sitenews"   => "WebFetch::Input::SiteNews",
+        "perlstruct" => "WebFetch::Input::PerlStruct",
+        "atom"       => "WebFetch::Input::Atom",
+        "dump"       => "WebFetch::Input::Dump",
+    },
+    "output" => {
+        "rss"        => "WebFetch::Output:RSS",
+        "atom"       => "WebFetch::Output:Atom",
+        "tt"         => "WebFetch::Output:TT",
+        "perlstruct" => "WebFetch::Output::PerlStruct",
+        "dump"       => "WebFetch::Output::Dump",
+    }
 );
 my %modules;
 our $AUTOLOAD;
@@ -228,26 +228,27 @@ sub debug_mode
 {
     my @args = @_;
 
-    # check if any arguments were provided
-    # counting parameters allows us to handle undef if provided as a value (can't do that with "defined" test)
-    if (scalar @args == 0) {
+# check if any arguments were provided
+# counting parameters allows us to handle undef if provided as a value (can't do that with "defined" test)
+    if ( scalar @args == 0 ) {
+
         # if no new value provided, return debug configuration value
         return WebFetch->config('debug') ? 1 : 0;
     }
 
     # set debug mode from provided value
     my $debug_mode = $args[0] ? 1 : 0;
-    WebFetch->config(debug => $debug_mode);
+    WebFetch->config( debug => $debug_mode );
     return $debug_mode;
 }
 
 # print parameters to STDERR if debug mode is enabled
 sub debug
 {
-    my @args = @_;
+    my @args       = @_;
     my $debug_mode = debug_mode();
-	if ($debug_mode) {
-        print STDERR "debug: ".join( " ", @args )."\n";
+    if ($debug_mode) {
+        print STDERR "debug: " . join( " ", @args ) . "\n";
     }
     return $debug_mode;
 }
@@ -257,11 +258,12 @@ sub debug
 ## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _module_registry
 {
-    my ($class, $key) = @_;
-    if (not $class->isa("WebFetch")) {
-        throw_incompatible_class("invalid _module_registry() call for '$class': not in the WebFetch hierarchy");
+    my ( $class, $key ) = @_;
+    if ( not $class->isa("WebFetch") ) {
+        throw_incompatible_class(
+            "invalid _module_registry() call for '$class': not in the WebFetch hierarchy");
     }
-    if (exists $modules{$key}) {
+    if ( exists $modules{$key} ) {
         return $modules{$key};
     }
     return;
@@ -280,11 +282,12 @@ If $value is defined then this is a write accessor, assigning $value to the conf
 # wrapper for WebFetch::Data::Config read/write accessor
 sub config
 {
-    my ($class, $key, $value) = @_;
-    if (not $class->isa("WebFetch")) {
-        throw_incompatible_class("invalid config() call for '$class': not in the WebFetch hierarchy");
+    my ( $class, $key, $value ) = @_;
+    if ( not $class->isa("WebFetch") ) {
+        throw_incompatible_class(
+            "invalid config() call for '$class': not in the WebFetch hierarchy");
     }
-    return WebFetch::Data::Config->accessor($key, $value);
+    return WebFetch::Data::Config->accessor( $key, $value );
 }
 
 =item WebFetch->has_config($key)
@@ -297,9 +300,10 @@ in the WebFetch key/value configuration store. Otherwise it returns false.
 # wrapper for WebFetch::Data::Config existence-test method
 sub has_config
 {
-    my ($class, $key) = @_;
-    if (not $class->isa("WebFetch")) {
-        throw_incompatible_class("invalid has_config() call for '$class': not in the WebFetch hierarchy");
+    my ( $class, $key ) = @_;
+    if ( not $class->isa("WebFetch") ) {
+        throw_incompatible_class(
+            "invalid has_config() call for '$class': not in the WebFetch hierarchy");
     }
     return WebFetch::Data::Config->contains($key);
 }
@@ -313,9 +317,10 @@ This class method deletes the configuration entry named by $key.
 # wrapper for WebFetch::Data::Config existence-test method
 sub del_config
 {
-    my ($class, $key) = @_;
-    if (not $class->isa("WebFetch")) {
-        throw_incompatible_class("invalid del_config() call for '$class': not in the WebFetch hierarchy");
+    my ( $class, $key ) = @_;
+    if ( not $class->isa("WebFetch") ) {
+        throw_incompatible_class(
+            "invalid del_config() call for '$class': not in the WebFetch hierarchy");
     }
     return WebFetch::Data::Config->del($key);
 }
@@ -328,14 +333,15 @@ This class method imports all the key/value pairs from %hashref into the WebFetc
 
 sub import_config
 {
-    my ($class, $hashref) = @_;
-    if (not $class->isa("WebFetch")) {
-        throw_incompatible_class("invalid import_config() call for '$class': not in the WebFetch hierarchy");
+    my ( $class, $hashref ) = @_;
+    if ( not $class->isa("WebFetch") ) {
+        throw_incompatible_class(
+            "invalid import_config() call for '$class': not in the WebFetch hierarchy");
     }
 
     # import config entries
     foreach my $key (%$hashref) {
-        WebFetch::Data::Config->accessor($key, $hashref->{$key});
+        WebFetch::Data::Config->accessor( $key, $hashref->{$key} );
     }
     return;
 }
@@ -350,8 +356,9 @@ This method was made for testing purposes. That is currently its only foreseen u
 sub keys_config
 {
     my ($class) = @_;
-    if (not $class->isa("WebFetch")) {
-        throw_incompatible_class("invalid import_config() call for '$class': not in the WebFetch hierarchy");
+    if ( not $class->isa("WebFetch") ) {
+        throw_incompatible_class(
+            "invalid import_config() call for '$class': not in the WebFetch hierarchy");
     }
     my $instance = WebFetch::Data::Config->instance();
     return keys %$instance;
@@ -393,37 +400,40 @@ output format handler for the "tt" format, the Perl Template Toolkit.
 
 sub module_register
 {
-	my ( $module, @capabilities ) = @_;
+    my ( $module, @capabilities ) = @_;
 
-	# each string provided is a capability the module provides
-	foreach my $capability ( @capabilities ) {
+    # each string provided is a capability the module provides
+    foreach my $capability (@capabilities) {
+
         # import configuration entries if any entry in @capabilities is a hashref
-        if (ref $capability eq 'HASH') {
+        if ( ref $capability eq 'HASH' ) {
             WebFetch->import_config($capability);
             next;
         }
 
-		# A ":" if present delimits a group of capabilities
-		# such as "input:rss" for and "input" capability of "rss"
-		if ( $capability =~ /([^:]+):([^:]+)/x ) {
-			# A ":" was found so process a 2nd-level group entry
-			my $group = $1;
-			my $subcap = $2;
-			if ( not exists $modules{$group}) {
-				$modules{$group} = {};
-			}
-			if ( not exists $modules{$group}{$subcap}) {
-				$modules{$group}{$subcap} = [];
-			}
-			push @{$modules{$group}{$subcap}}, $module;
-		} else {
-			# just a simple capbility name so store it
-			if ( not exists $modules{$capability}) {
-				$modules{$capability} = [];
-			}
-			push @{$modules{$capability}}, $module;
-		}
-	}
+        # A ":" if present delimits a group of capabilities
+        # such as "input:rss" for and "input" capability of "rss"
+        if ( $capability =~ /([^:]+):([^:]+)/x ) {
+
+            # A ":" was found so process a 2nd-level group entry
+            my $group  = $1;
+            my $subcap = $2;
+            if ( not exists $modules{$group} ) {
+                $modules{$group} = {};
+            }
+            if ( not exists $modules{$group}{$subcap} ) {
+                $modules{$group}{$subcap} = [];
+            }
+            push @{ $modules{$group}{$subcap} }, $module;
+        } else {
+
+            # just a simple capbility name so store it
+            if ( not exists $modules{$capability} ) {
+                $modules{$capability} = [];
+            }
+            push @{ $modules{$capability} }, $module;
+        }
+    }
     return;
 }
 
@@ -431,69 +441,73 @@ sub module_register
 # for WebFetch internal use only
 sub module_select
 {
-	my $capability = shift;
-	my $is_optional = shift;
+    my $capability  = shift;
+    my $is_optional = shift;
 
-	debug "module_select($capability,$is_optional)";
-	# parse the capability string
-	my ( $group, $topic );
-	if ( $capability =~ /([^:]*):(.*)/x ) {
-		$group = $1;
-		$topic = $2
-	} else {
-		$topic = $capability;
-	}
-	
-	# check for modules to handle the specified source_format
-	my ( @handlers, %handlers );
+    debug "module_select($capability,$is_optional)";
 
-	# consider whether a group is in use (single or double-level scan)
-	if ( $group ) {
-		# double-level scan
+    # parse the capability string
+    my ( $group, $topic );
+    if ( $capability =~ /([^:]*):(.*)/x ) {
+        $group = $1;
+        $topic = $2;
+    } else {
+        $topic = $capability;
+    }
 
-		# if the group exists, search in it
-		if (( exists $modules{$group}{$topic} )
-			and ( ref $modules{$group}{$topic} eq "ARRAY" ))
-		{
-			# search group for topic
-			foreach my $handler (@{$modules{$group}{$topic}})
-			{
-				if ( not exists $handlers{$handler}) {
-					push @handlers, $handler;
-					$handlers{$handler} = 1;
-				}
-			}
+    # check for modules to handle the specified source_format
+    my ( @handlers, %handlers );
 
-		# otherwise check the defaults
-		} elsif ( exists $default_modules{$group}{$topic} ) {
-			# check default handlers
-			my $def_handler = $default_modules{$group}{$topic};
-			if ( not exists $handlers{$def_handler}) {
-				push @handlers, $def_handler;
-				$handlers{$def_handler} = 1;
-			}
-		}
-	} else {
-		# single-level scan
+    # consider whether a group is in use (single or double-level scan)
+    if ($group) {
 
-		# if the topic exists, the search is a success
-		if (( exists $modules{$topic})
-			and ( ref $modules{$topic} eq "ARRAY" ))
-		{
-			@handlers = @{$modules{$topic}};
-		}
-	}
-	
-	# check if any handlers were found for this format
-	if ( not @handlers and not $is_optional ) {
-		throw_no_handler( "handler not found for $capability" );
-	}
+        # double-level scan
 
-	debug "module_select: ".join( " ", @handlers );
-	return @handlers;
+        # if the group exists, search in it
+        if (    ( exists $modules{$group}{$topic} )
+            and ( ref $modules{$group}{$topic} eq "ARRAY" ) )
+        {
+            # search group for topic
+            foreach my $handler ( @{ $modules{$group}{$topic} } ) {
+                if ( not exists $handlers{$handler} ) {
+                    push @handlers, $handler;
+                    $handlers{$handler} = 1;
+                }
+            }
+
+            # otherwise check the defaults
+        } elsif ( exists $default_modules{$group}{$topic} ) {
+
+            # check default handlers
+            my $def_handler = $default_modules{$group}{$topic};
+            if ( not exists $handlers{$def_handler} ) {
+                push @handlers, $def_handler;
+                $handlers{$def_handler} = 1;
+            }
+        }
+    } else {
+
+        # single-level scan
+
+        # if the topic exists, the search is a success
+        if (    ( exists $modules{$topic} )
+            and ( ref $modules{$topic} eq "ARRAY" ) )
+        {
+            @handlers = @{ $modules{$topic} };
+        }
+    }
+
+    # check if any handlers were found for this format
+    if ( not @handlers and not $is_optional ) {
+        throw_no_handler("handler not found for $capability");
+    }
+
+    debug "module_select: " . join( " ", @handlers );
+    return @handlers;
 }
 
 # satisfy POD coverage test - but don't put this function in the user manual
+
 =pod
 =cut
 
@@ -502,29 +516,28 @@ sub module_select
 # returns the format string which will be provided
 sub singular_handler
 {
-	my $group = shift;
+    my $group = shift;
 
-	debug "singular_handler($group)";
-	my $count = 0;
-	my $last_entry;
-	foreach my $entry ( keys %{$modules{$group}} ) {
-		if ( ref $modules{$group}{$entry} eq "ARRAY" ) {
-			my $entry_count = scalar @{$modules{$group}{$entry}};
-			$count += $entry_count;
-			if ( $count > 1 ) {
-				return;
-			}
-			if ( $entry_count == 1 ) {
-				$last_entry = $entry;
-			}
-		}
-	}
+    debug "singular_handler($group)";
+    my $count = 0;
+    my $last_entry;
+    foreach my $entry ( keys %{ $modules{$group} } ) {
+        if ( ref $modules{$group}{$entry} eq "ARRAY" ) {
+            my $entry_count = scalar @{ $modules{$group}{$entry} };
+            $count += $entry_count;
+            if ( $count > 1 ) {
+                return;
+            }
+            if ( $entry_count == 1 ) {
+                $last_entry = $entry;
+            }
+        }
+    }
 
-	# if there's only one registered, that's the one to use
-	debug "singular_handler: count=$count last_entry=$last_entry";
-	return $count == 1 ? $last_entry : undef;
+    # if there's only one registered, that's the one to use
+    debug "singular_handler: count=$count last_entry=$last_entry";
+    return $count == 1 ? $last_entry : undef;
 }
-
 
 =item fetch_main
 
@@ -543,174 +556,178 @@ behalf of each of the packages.
 # fetch_main - try/catch wrapper for fetch_main2 to catch and display errors
 sub main::fetch_main
 {
-	# run fetch_main2 in a try/catch wrapper to handle exceptions
-	try {
+
+    # run fetch_main2 in a try/catch wrapper to handle exceptions
+    try {
         &WebFetch::fetch_main2;
     } catch {
+
         # process any error/exception that we may have gotten
-		my $ex = $_;
+        my $ex = $_;
 
-		# determine if there's an error message available to display
-		my $pkg = __PACKAGE__;
-		if ( ref $ex ) {
-			if ( my $ex_cap = Exception::Class->caught(
-				"WebFetch::Exception"))
-			{
-				if ( $ex_cap->isa( "WebFetch::TracedException" )) {
-					warn $ex_cap->trace->as_string, "\n";
-				}
+        # determine if there's an error message available to display
+        my $pkg = __PACKAGE__;
+        if ( ref $ex ) {
+            if ( my $ex_cap = Exception::Class->caught("WebFetch::Exception") ) {
+                if ( $ex_cap->isa("WebFetch::TracedException") ) {
+                    warn $ex_cap->trace->as_string, "\n";
+                }
 
-				croak "$pkg: ".$ex_cap->error."\n";
-			}
-			if ( $ex->can("stringify")) {
-				# Error.pm, possibly others
-				croak "$pkg: ".$ex->stringify."\n";
-			} elsif ( $ex->can("as_string")) {
-				# generic - should work for many classes
-				croak "$pkg: ".$ex->as_string."\n";
-			} else {
-				croak "$pkg: unknown exception of type "
-					.(ref $ex)."\n";
-			}
-		} else {
-			croak "pkg: $_\n";
-		}
-	};
+                croak "$pkg: " . $ex_cap->error . "\n";
+            }
+            if ( $ex->can("stringify") ) {
 
-	# success
-	return 0;
+                # Error.pm, possibly others
+                croak "$pkg: " . $ex->stringify . "\n";
+            } elsif ( $ex->can("as_string") ) {
+
+                # generic - should work for many classes
+                croak "$pkg: " . $ex->as_string . "\n";
+            } else {
+                croak "$pkg: unknown exception of type " . ( ref $ex ) . "\n";
+            }
+        } else {
+            croak "pkg: $_\n";
+        }
+    };
+
+    # success
+    return 0;
 }
 
 # Search for modules which have registered "cmdline" capability.
 # Collect command-line options and usage info from modules.
 sub collect_cmdline
 {
-	my ( @mod_options, @mod_usage );
-	if (( exists $modules{cmdline} ) and ( ref $modules{cmdline} eq "ARRAY" )) {
-		foreach my $cli_mod ( @{$modules{cmdline}}) {
-            # obtain ref to module symbol table for backward compatibility with old @Options/$Usage interface
+    my ( @mod_options, @mod_usage );
+    if ( ( exists $modules{cmdline} ) and ( ref $modules{cmdline} eq "ARRAY" ) ) {
+        foreach my $cli_mod ( @{ $modules{cmdline} } ) {
+
+   # obtain ref to module symbol table for backward compatibility with old @Options/$Usage interface
             my $symtab;
             {
                 ## no critic (TestingAndDebugging::ProhibitNoStrict)
                 no strict 'refs';
-                $symtab = \%{$cli_mod."::"};
+                $symtab = \%{ $cli_mod . "::" };
             }
 
-            # get command line options - try WebFetch config first (preferred), otherwise module symtab (deprecated)
-            if (WebFetch->has_config("Options")) {
+# get command line options - try WebFetch config first (preferred), otherwise module symtab (deprecated)
+            if ( WebFetch->has_config("Options") ) {
                 push @mod_options, WebFetch->config("Options");
-            } elsif ((exists $symtab->{Options}) and int @{$symtab->{Options}}) {
-				push @mod_options, @{$symtab->{Options}};
-			}
+            } elsif ( ( exists $symtab->{Options} )
+                and int @{ $symtab->{Options} } )
+            {
+                push @mod_options, @{ $symtab->{Options} };
+            }
 
-            # get command line usage - try WebFetch config first (preferred), otherwise module symtab (deprecated)
-            if (WebFetch->has_config("Usage")) {
+# get command line usage - try WebFetch config first (preferred), otherwise module symtab (deprecated)
+            if ( WebFetch->has_config("Usage") ) {
                 push @mod_usage, WebFetch->config("Usage");
-            } elsif ((exists $symtab->{Usage}) and defined ${$symtab->{Usage}}) {
-				push @mod_usage, ${$symtab->{Usage}};
-			}
-		}
-	}
-    return (\@mod_options, \@mod_usage);
+            } elsif ( ( exists $symtab->{Usage} )
+                and defined ${ $symtab->{Usage} } )
+            {
+                push @mod_usage, ${ $symtab->{Usage} };
+            }
+        }
+    }
+    return ( \@mod_options, \@mod_usage );
 }
 
 # mainline which fetch_main() calls in an exception catching wrapper
 sub fetch_main2
 {
-	# search for modules which have registered "cmdline" capability
-	# collect their command line options
-	my ( @mod_options, @mod_usage );
+
+    # search for modules which have registered "cmdline" capability
+    # collect their command line options
+    my ( @mod_options, @mod_usage );
     {
-        my ($mod_options_ref, $mod_usage_ref) = collect_cmdline();
+        my ( $mod_options_ref, $mod_usage_ref ) = collect_cmdline();
         @mod_options = @$mod_options_ref;
-        @mod_usage = $mod_usage_ref;
+        @mod_usage   = $mod_usage_ref;
     }
 
-	# process command line
-	my ($options_result, %options);
-	try {
-        $options_result = GetOptions ( \%options,
-            "dir:s", "group:s", "mode:s", "source=s", "source_format:s", "dest=s",
-            "dest_format:s", "fetch_urls", "quiet", "debug",
-            @mod_options )
+    # process command line
+    my ( $options_result, %options );
+    try {
+        $options_result = GetOptions(
+            \%options,    "dir:s",           "group:s", "mode:s",
+            "source=s",   "source_format:s", "dest=s",  "dest_format:s",
+            "fetch_urls", "quiet",           "debug",   @mod_options
+        )
     } catch {
-		throw_getopt_error ( "command line processing failed: $_" );
-	};
+        throw_getopt_error("command line processing failed: $_");
+    };
     if ( not $options_result ) {
-		throw_cli_usage ( "usage: $0 --dir dirpath "
-			."[--group group] [--mode mode] "
-			."[--source file] [--source_format fmt-string] "
-			."[--dest file] [--dest_format fmt-string] "
-			."[--fetch_urls] [--quiet] "
-			.join( " ", @mod_usage ));
-	}
+        throw_cli_usage( "usage: $0 --dir dirpath "
+                . "[--group group] [--mode mode] "
+                . "[--source file] [--source_format fmt-string] "
+                . "[--dest file] [--dest_format fmt-string] "
+                . "[--fetch_urls] [--quiet] "
+                . join( " ", @mod_usage ) );
+    }
 
-	# set debugging mode
-	if (( exists $options{debug}) and $options{debug}) {
+    # set debugging mode
+    if ( ( exists $options{debug} ) and $options{debug} ) {
         WebFetch::debug_mode(1);
-	}
-	debug "fetch_main2";
+    }
+    debug "fetch_main2";
 
-	# if either source/input or dest/output formats were not provided,
-	# check if only one handler is registered - if so that's the default
-	if ( not exists $options{source_format}) {
-		if ( my $fmt = singular_handler( "input" )) {
-			$options{source_format} = $fmt;
-		}
-	}
-	if ( not exists $options{dest_format}) {
-		if ( my $fmt = singular_handler( "output" )) {
-			$options{dest_format} = $fmt;
-		}
-	}
+    # if either source/input or dest/output formats were not provided,
+    # check if only one handler is registered - if so that's the default
+    if ( not exists $options{source_format} ) {
+        if ( my $fmt = singular_handler("input") ) {
+            $options{source_format} = $fmt;
+        }
+    }
+    if ( not exists $options{dest_format} ) {
+        if ( my $fmt = singular_handler("output") ) {
+            $options{dest_format} = $fmt;
+        }
+    }
 
-	# check for modules to handle the specified source_format
-	my ( @handlers, %handlers );
-	if (( exists $modules{input}{ $options{source_format}} )
-		and ( ref $modules{input}{ $options{source_format}}
-			eq "ARRAY" ))
-	{
-		foreach my $handler (@{$modules{input}{$options{source_format}}})
-		{
-			if ( not exists $handlers{$handler}) {
-				push @handlers, $handler;
-				$handlers{$handler} = 1;
-			}
-		}
-	}
-	if ( exists $default_modules{ $options{source_format}} ) {
-		my $handler = $default_modules{ $options{source_format}};
-		if ( not exists $handlers{$handler}) {
-			push @handlers, $handler;
-			$handlers{$handler} = 1;
-		}
-	}
-	
-	# check if any handlers were found for this input format
-	if ( not @handlers ) {
-		throw_no_handler( "input handler not found for "
-			.$options{source_format});
-	}
+    # check for modules to handle the specified source_format
+    my ( @handlers, %handlers );
+    if (    ( exists $modules{input}{ $options{source_format} } )
+        and ( ref $modules{input}{ $options{source_format} } eq "ARRAY" ) )
+    {
+        foreach my $handler ( @{ $modules{input}{ $options{source_format} } } ) {
+            if ( not exists $handlers{$handler} ) {
+                push @handlers, $handler;
+                $handlers{$handler} = 1;
+            }
+        }
+    }
+    if ( exists $default_modules{ $options{source_format} } ) {
+        my $handler = $default_modules{ $options{source_format} };
+        if ( not exists $handlers{$handler} ) {
+            push @handlers, $handler;
+            $handlers{$handler} = 1;
+        }
+    }
 
-	# run the available handlers until one succeeds or none are left
-	my $run_count = 0;
-	foreach my $pkgname ( @handlers ) {
-		debug "running for $pkgname";
-		try {
+    # check if any handlers were found for this input format
+    if ( not @handlers ) {
+        throw_no_handler( "input handler not found for " . $options{source_format} );
+    }
+
+    # run the available handlers until one succeeds or none are left
+    my $run_count = 0;
+    foreach my $pkgname (@handlers) {
+        debug "running for $pkgname";
+        try {
             &WebFetch::run( $pkgname, \%options )
         } catch {
-			print STDERR "WebFetch: run exception: $_\n";
-		} finally {
-            if (not @_) {
+            print STDERR "WebFetch: run exception: $_\n";
+        } finally {
+            if ( not @_ ) {
                 $run_count++;
                 last;
             }
-		};
-	}
-	if ( $run_count == 0 ) {
-		throw_no_run( "no handlers were able or available to process "
-			." source format" );
-	}
+        };
+    }
+    if ( $run_count == 0 ) {
+        throw_no_run( "no handlers were able or available to process " . " source format" );
+    }
     return 1;
 }
 
@@ -731,30 +748,29 @@ this way as if the WebFetch object had become a member of that class.
 # allocate a new object
 sub new
 {
-	my ($class, @args) = @_;
-	my $self = {};
-	bless $self, $class;
+    my ( $class, @args ) = @_;
+    my $self = {};
+    bless $self, $class;
 
-	# initialize the object parameters
+    # initialize the object parameters
     $self->init(@args);
 
-	# go fetch the data
-	# this function must be provided by a derived module
-	# non-fetching modules (i.e. data) must define $self->{no_fetch}=1
-	if (( not exists $self->{no_fetch}) or not $self->{no_fetch}) {
-		require WebFetch::Data::Store;
-		if ( exists $self->{data}) {
-			$self->{data}->isa( "WebFetch::Data::Store" )
-				or throw_data_wrongtype "object data must be "
-					."a WebFetch::Data::Store";
-		} else {
-			$self->{data} = WebFetch::Data::Store->new();
-		}
-		$self->fetch();
-	}
+    # go fetch the data
+    # this function must be provided by a derived module
+    # non-fetching modules (i.e. data) must define $self->{no_fetch}=1
+    if ( ( not exists $self->{no_fetch} ) or not $self->{no_fetch} ) {
+        require WebFetch::Data::Store;
+        if ( exists $self->{data} ) {
+            $self->{data}->isa("WebFetch::Data::Store")
+                or throw_data_wrongtype "object data must be " . "a WebFetch::Data::Store";
+        } else {
+            $self->{data} = WebFetch::Data::Store->new();
+        }
+        $self->fetch();
+    }
 
-	# the object has been created
-	return $self;
+    # the object has been created
+    return $self;
 }
 
 =item $obj->init( ... )
@@ -769,11 +785,11 @@ attributes in C<$obj>.
 # initialize attributes of new objects
 sub init
 {
-	my ($self, @args) = @_;
-	if ( @args ) {
-		my %params = @args;
-		@$self{keys %params} = values %params;
-	}
+    my ( $self, @args ) = @_;
+    if (@args) {
+        my %params = @args;
+        @$self{ keys %params } = values %params;
+    }
     return;
 }
 
@@ -786,15 +802,15 @@ In case of an error, it throws an exception.
 
 sub mod_load
 {
-	my $pkg = shift;
+    my $pkg = shift;
 
-	# make sure we have the run package loaded
+    # make sure we have the run package loaded
     ## no critic (BuiltinFunctions::ProhibitStringyEval)
     try {
         eval "require $pkg" or croak $@;
     } catch {
-		throw_mod_load_failure( "failed to load $pkg: $_" );
-	};
+        throw_mod_load_failure("failed to load $pkg: $_");
+    };
     return;
 }
 
@@ -865,85 +881,84 @@ package variables in the years since the API was first defined.
 # command-line handling for WebFetch-derived classes
 sub run
 {
-	my $run_pkg = shift;
-	my $options_ref = shift;
-	my $obj;
+    my $run_pkg     = shift;
+    my $options_ref = shift;
+    my $obj;
 
-	debug "entered run for $run_pkg";
-    my $test_probe_flag = ((exists $options_ref->{test_probe})
-        and (ref $options_ref->{test_probe} eq "HASH"))
-        ? 1 : 0;
+    debug "entered run for $run_pkg";
+    my $test_probe_flag =
+        ( ( exists $options_ref->{test_probe} ) and ( ref $options_ref->{test_probe} eq "HASH" ) )
+        ? 1
+        : 0;
 
-	# make sure we have the run package loaded
-	mod_load $run_pkg;
+    # make sure we have the run package loaded
+    mod_load $run_pkg;
 
-	# Note: in order to add WebFetch-embedding capability, the fetch
-	# routine saves its raw data without any HTML/XML/etc formatting
-	# in @{$obj->{data}} and data-to-savable conversion routines in
-	# %{$obj->{actions}}, which contains several structures with key
-	# names matching software processing features.  The purpose of
-	# this is to externalize the captured data so other software can
-	# use it too.
+    # Note: in order to add WebFetch-embedding capability, the fetch
+    # routine saves its raw data without any HTML/XML/etc formatting
+    # in @{$obj->{data}} and data-to-savable conversion routines in
+    # %{$obj->{actions}}, which contains several structures with key
+    # names matching software processing features.  The purpose of
+    # this is to externalize the captured data so other software can
+    # use it too.
 
-	# create the new object
-	# this also calls the $obj->fetch() routine for the module which
-	# has inherited from WebFetch to do this
-	debug "run before new";
+    # create the new object
+    # this also calls the $obj->fetch() routine for the module which
+    # has inherited from WebFetch to do this
+    debug "run before new";
     try {
         $obj = $run_pkg->new(%$options_ref);
     } catch {
-		throw_mod_run_failure( "module run failure in $run_pkg: ".$_ );
-	};
+        throw_mod_run_failure( "module run failure in $run_pkg: " . $_ );
+    };
     if ($test_probe_flag) {
         $options_ref->{test_probe}{webfetch} = $obj;
     }
 
-	# if the object had data for the WebFetch-embedding API,
-	# then data processing is external to the fetch routine
-	# (This externalizes the data for other software to capture it.)
-	debug "run before output";
-	my $dest_format = $obj->{dest_format};
-	if ( not exists $obj->{actions}) {
-		$obj->{actions} = {};
-	}
-	if (( exists $obj->{data})) {
-		if ( exists $obj->{dest}) {
-			if (not exists $obj->{actions}{$dest_format}) {
-				$obj->{actions}{$dest_format} = [];
-			}
-			push @{$obj->{actions}{$dest_format}}, [ $obj->{dest} ];
-		}
+    # if the object had data for the WebFetch-embedding API,
+    # then data processing is external to the fetch routine
+    # (This externalizes the data for other software to capture it.)
+    debug "run before output";
+    my $dest_format = $obj->{dest_format};
+    if ( not exists $obj->{actions} ) {
+        $obj->{actions} = {};
+    }
+    if ( ( exists $obj->{data} ) ) {
+        if ( exists $obj->{dest} ) {
+            if ( not exists $obj->{actions}{$dest_format} ) {
+                $obj->{actions}{$dest_format} = [];
+            }
+            push @{ $obj->{actions}{$dest_format} }, [ $obj->{dest} ];
+        }
 
-		# perform requested actions on the data
-		$obj->do_actions();
-	} else {
-		throw_no_save( "save failed: no data or nowhere to save it" );
-	}
+        # perform requested actions on the data
+        $obj->do_actions();
+    } else {
+        throw_no_save("save failed: no data or nowhere to save it");
+    }
 
-	debug "run before save";
-	my $result = $obj->save();
+    debug "run before save";
+    my $result = $obj->save();
 
-	# check for errors, throw exception to report errors per savable item
-	if (not $result) {
-		my @errors;
-		foreach my $savable ( @{$obj->{savable}}) {
-			(ref $savable eq "HASH") or next;
-			if ( exists $savable->{error}) {
-				push @errors, "file: ".$savable->{file}
-					."error: " .$savable->{error};
-			}
-		}
+    # check for errors, throw exception to report errors per savable item
+    if ( not $result ) {
+        my @errors;
+        foreach my $savable ( @{ $obj->{savable} } ) {
+            ( ref $savable eq "HASH" ) or next;
+            if ( exists $savable->{error} ) {
+                push @errors, "file: " . $savable->{file} . "error: " . $savable->{error};
+            }
+        }
         if ($test_probe_flag) {
             $options_ref->{test_probe}{errors} = \@errors;
         }
-		if (@errors) {
-			throw_save_error( "error saving results in "
-				.$obj->{dir}
-				."\n".join( "\n", @errors )."\n" );
-		}
-	}
+        if (@errors) {
+            throw_save_error(
+                "error saving results in " . $obj->{dir} . "\n" . join( "\n", @errors ) . "\n" );
+        }
+    }
 
-	return $result ? 0 : 1;
+    return $result ? 0 : 1;
 }
 
 =item $obj->do_actions
@@ -1162,60 +1177,63 @@ For coding examples, use the I<fmt_handler_*> functions in WebFetch.pm itself.
 
 sub do_actions
 {
-	my ( $self ) = @_;
-	debug "in WebFetch::do_actions";
+    my ($self) = @_;
+    debug "in WebFetch::do_actions";
 
-	# we *really* need the data and actions to be set!
-	# otherwise assume we're in WebFetch 0.09 compatibility mode and
-	# $self->fetch() better have created its own savables already
-	if ((not exists $self->{data}) or (not exists $self->{actions})) {
-		return
-	}
+    # we *really* need the data and actions to be set!
+    # otherwise assume we're in WebFetch 0.09 compatibility mode and
+    # $self->fetch() better have created its own savables already
+    if ( ( not exists $self->{data} ) or ( not exists $self->{actions} ) ) {
+        return;
+    }
 
-	# loop through all the actions
-	foreach my $action_spec ( keys %{$self->{actions}} ) {
-		my $handler_ref;
+    # loop through all the actions
+    foreach my $action_spec ( keys %{ $self->{actions} } ) {
+        my $handler_ref;
 
-		# check for modules to handle the specified dest_format
-		my $action_handler = "fmt_handler_".$action_spec;
-		if ( exists $modules{output}{$action_spec}) {
-			foreach my $class ( @{$modules{output}{$action_spec}}) {
-				if ( $class->can( $action_handler )) {
-					$handler_ref = \&{$class."::".$action_handler};
-					last;
-				}
-			}
-		}
+        # check for modules to handle the specified dest_format
+        my $action_handler = "fmt_handler_" . $action_spec;
+        if ( exists $modules{output}{$action_spec} ) {
+            foreach my $class ( @{ $modules{output}{$action_spec} } ) {
+                if ( $class->can($action_handler) ) {
+                    $handler_ref = \&{ $class . "::" . $action_handler };
+                    last;
+                }
+            }
+        }
 
-		if ( defined $handler_ref )
-		{
-			# loop through action spec entries (parameter lists)
-			foreach my $entry (@{$self->{actions}{$action_spec}}) {
-				# parameters must be in an ARRAY ref
-				if (ref $entry ne "ARRAY" ) {
-					warn "warning: entry in action spec "
-						."\"".$action_spec."\""
-						."expected to be ARRAY, found "
-						.(ref $entry)." instead "
-						."- ignored\n";
-					next;
-				}
+        if ( defined $handler_ref ) {
 
-				# everything looks OK - call the handler
-				&$handler_ref($self, @$entry);
+            # loop through action spec entries (parameter lists)
+            foreach my $entry ( @{ $self->{actions}{$action_spec} } ) {
 
-				# if there were errors, the handler should
-				# have created a savable entry which
-				# contains only the error entry so that
-				# it will be reported by $self->save()
-			}
-		} else {
-			warn "warning: action \"$action_spec\" specified but "
-				."\&{\$self->$action_handler}() "
-				."not defined in "
-				.(ref $self)." - ignored\n";
-		}
-	}
+                # parameters must be in an ARRAY ref
+                if ( ref $entry ne "ARRAY" ) {
+                    warn "warning: entry in action spec " . "\""
+                        . $action_spec . "\""
+                        . "expected to be ARRAY, found "
+                        . ( ref $entry )
+                        . " instead "
+                        . "- ignored\n";
+                    next;
+                }
+
+                # everything looks OK - call the handler
+                &$handler_ref( $self, @$entry );
+
+                # if there were errors, the handler should
+                # have created a savable entry which
+                # contains only the error entry so that
+                # it will be reported by $self->save()
+            }
+        } else {
+            warn "warning: action \"$action_spec\" specified but "
+                . "\&{\$self->$action_handler}() "
+                . "not defined in "
+                . ( ref $self )
+                . " - ignored\n";
+        }
+    }
     return;
 }
 
@@ -1325,9 +1343,8 @@ is a reference to a hash which will be used by the I<do_actions> function.
 # placeholder for fetch routines by derived classes
 sub fetch
 {
-	throw_abstract "fetch is an abstract function and must be overridden by a subclass";
+    throw_abstract "fetch is an abstract function and must be overridden by a subclass";
 }
-
 
 =item $obj->get
 
@@ -1353,31 +1370,30 @@ suppresses printing of HTTP request errors on STDERR
 # utility function to get the contents of a URL
 sub get
 {
-        my ( $self, $source ) = @_;
+    my ( $self, $source ) = @_;
 
-	if (not defined $source) {
-		$source = $self->{source};
-	}
-	if ( $self->{debug}) {
-		print STDERR "debug: get(".$source.")\n";
-	}
+    if ( not defined $source ) {
+        $source = $self->{source};
+    }
+    if ( $self->{debug} ) {
+        print STDERR "debug: get(" . $source . ")\n";
+    }
 
-        # send request, capture response
-        my $ua = LWP::UserAgent->new;
-	$ua->agent("WebFetch/$WebFetch::VERSION ".$ua->agent);
-        my $request = HTTP::Request->new(GET => $source);
-        my $response = $ua->request($request);
+    # send request, capture response
+    my $ua = LWP::UserAgent->new;
+    $ua->agent( "WebFetch/$WebFetch::VERSION " . $ua->agent );
+    my $request  = HTTP::Request->new( GET => $source );
+    my $response = $ua->request($request);
 
-        # abort on failure
-        if ($response->is_error) {
-                WebFetch::Exception::NetworkGet->throw(
-			"The request received an error: "
-			.$response->as_string );
-        }
+    # abort on failure
+    if ( $response->is_error ) {
+        WebFetch::Exception::NetworkGet->throw(
+            "The request received an error: " . $response->as_string );
+    }
 
-        # return the content
-        my $content = $response->content;
-	return \$content;
+    # return the content
+    my $content = $response->content;
+    return \$content;
 }
 
 =item $obj->html_savable( $filename, $content )
@@ -1401,16 +1417,16 @@ See $obj->fetch for details on the contents of the C<savable> parameter
 # utility function to make a savable record for HTML text
 sub html_savable
 {
-        my ( $self, $filename, $content ) = @_;
+    my ( $self, $filename, $content ) = @_;
 
-	$self->raw_savable( $filename,
-		"<!--- begin text generated by "
-		."Perl5 WebFetch $WebFetch::VERSION - do not manually edit --->\n"
-		."<!--- WebFetch can be found at "
-		."http://www.webfetch.org/ --->\n"
-		.$content
-		."<!--- end text generated by "
-		."Perl5 WebFetch $WebFetch::VERSION - do not manually edit --->\n" );
+    $self->raw_savable( $filename,
+              "<!--- begin text generated by "
+            . "Perl5 WebFetch $WebFetch::VERSION - do not manually edit --->\n"
+            . "<!--- WebFetch can be found at "
+            . "http://www.webfetch.org/ --->\n"
+            . $content
+            . "<!--- end text generated by "
+            . "Perl5 WebFetch $WebFetch::VERSION - do not manually edit --->\n" );
     return;
 }
 
@@ -1432,17 +1448,20 @@ See $obj->fetch for details on the contents of the C<savable> parameter
 # utility function to make a savable record for raw text
 sub raw_savable
 {
-        my ( $self, $filename, $content ) = @_;
+    my ( $self, $filename, $content ) = @_;
 
-	if (not exists $self->{savable}) {
-		$self->{savable} = [];
-	}
-        push ( @{$self->{savable}}, {
-                'file' => $filename,
-                'content' => $content,
-		(( exists $self->{group}) ? ('group' => $self->{group}) : ()),
-		(( exists $self->{mode}) ? ('mode' => $self->{mode}) : ())
-                });
+    if ( not exists $self->{savable} ) {
+        $self->{savable} = [];
+    }
+    push(
+        @{ $self->{savable} },
+        {
+            'file'    => $filename,
+            'content' => $content,
+            ( ( exists $self->{group} ) ? ( 'group' => $self->{group} ) : () ),
+            ( ( exists $self->{mode} )  ? ( 'mode'  => $self->{mode} )  : () )
+        }
+    );
     return;
 }
 
@@ -1459,21 +1478,24 @@ in a news feed.
 
 sub direct_fetch_savable
 {
-	my ( $self, $url ) = @_;
+    my ( $self, $url ) = @_;
 
-	if (not exists $self->{savable}) {
-		$self->{savable} = [];
-	}
-	my $filename = $url;
-	$filename =~ s=[;?].*==x;
-	$filename =~ s=^.*/==x;
-	push ( @{$self->{savable}}, {
-		'url' => $url,
-		'file' => $filename,
-		'index' => 1,
-		(( exists $self->{group}) ? ('group' => $self->{group}) : ()),
-		(( exists $self->{mode}) ? ('mode' => $self->{mode}) : ())
-		});
+    if ( not exists $self->{savable} ) {
+        $self->{savable} = [];
+    }
+    my $filename = $url;
+    $filename =~ s=[;?].*==x;
+    $filename =~ s=^.*/==x;
+    push(
+        @{ $self->{savable} },
+        {
+            'url'   => $url,
+            'file'  => $filename,
+            'index' => 1,
+            ( ( exists $self->{group} ) ? ( 'group' => $self->{group} ) : () ),
+            ( ( exists $self->{mode} )  ? ( 'mode'  => $self->{mode} )  : () )
+        }
+    );
     return;
 }
 
@@ -1488,11 +1510,14 @@ basically says that's OK.
 
 sub no_savables_ok
 {
-	my $self = shift;
+    my $self = shift;
 
-	push ( @{$self->{savable}}, {
-		'ok_empty' => 1,
-		});
+    push(
+        @{ $self->{savable} },
+        {
+            'ok_empty' => 1,
+        }
+    );
     return;
 }
 
@@ -1500,18 +1525,18 @@ sub no_savables_ok
 # internal method used by save()
 sub _save_precheck
 {
-	my $self = shift;
+    my $self = shift;
 
-	# check if we have attributes needed to proceed
-	if (not exists $self->{"dir"}) {
-		croak "WebFetch: directory path missing - required for save\n";
-	}
-	if (not exists $self->{savable}) {
-		croak "WebFetch: nothing to save\n";
-	}
-	if ( ref($self->{savable}) ne "ARRAY" ) {
-		croak "WebFetch: cannot save - savable is not an array\n";
-	}
+    # check if we have attributes needed to proceed
+    if ( not exists $self->{"dir"} ) {
+        croak "WebFetch: directory path missing - required for save\n";
+    }
+    if ( not exists $self->{savable} ) {
+        croak "WebFetch: nothing to save\n";
+    }
+    if ( ref( $self->{savable} ) ne "ARRAY" ) {
+        croak "WebFetch: cannot save - savable is not an array\n";
+    }
     return;
 }
 
@@ -1519,19 +1544,19 @@ sub _save_precheck
 # internal method used by save()
 sub _save_fetch_urls
 {
-	my $self = shift;
+    my $self = shift;
 
-	# if fetch_urls is defined, turn link fields in the data to savables
-	if (( exists $self->{fetch_urls}) and $self->{fetch_urls}) {
-		my $entry;
-		$self->data->reset_pos;
-		while ( $entry = $self->data->next_record()) {
-			my $url = $entry->url;
-			if ( defined $url ) {
-				$self->direct_fetch_savable( $entry->url );
-			}
-		}
-	}
+    # if fetch_urls is defined, turn link fields in the data to savables
+    if ( ( exists $self->{fetch_urls} ) and $self->{fetch_urls} ) {
+        my $entry;
+        $self->data->reset_pos;
+        while ( $entry = $self->data->next_record() ) {
+            my $url = $entry->url;
+            if ( defined $url ) {
+                $self->direct_fetch_savable( $entry->url );
+            }
+        }
+    }
     return;
 }
 
@@ -1539,24 +1564,24 @@ sub _save_fetch_urls
 # internal method used by save()
 sub _save_write_content
 {
-	my ($self, $savable, $new_content) = @_;
+    my ( $self, $savable, $new_content ) = @_;
 
     # write content to the "new content" file
     ## no critic (InputOutput::RequireBriefOpen)
     my $new_file;
-    if (not open($new_file, ">:encoding(UTF-8)", "$new_content")) {
+    if ( not open( $new_file, ">:encoding(UTF-8)", "$new_content" ) ) {
         $savable->{error} = "cannot open $new_content: $!";
         return 0;
     }
-    if (not print $new_file $savable->{content}) {
-        $savable->{error} = "failed to write to ".$new_content.": $!";
+    if ( not print $new_file $savable->{content} ) {
+        $savable->{error} = "failed to write to " . $new_content . ": $!";
         close $new_file;
         return 0;
     }
-    if (not close $new_file) {
+    if ( not close $new_file ) {
+
         # this can happen with NFS errors
-        $savable->{error} = "failed to close "
-            .$new_content.": $!";
+        $savable->{error} = "failed to close " . $new_content . ": $!";
         return 0;
     }
     return 1;
@@ -1566,14 +1591,12 @@ sub _save_write_content
 # internal method used by save()
 sub _save_main_to_backup
 {
-	my ($self, $savable, $main_content, $old_content) = @_;
+    my ( $self, $savable, $main_content, $old_content ) = @_;
 
     # move the main content to the old content - now it's a backup
     if ( -f $main_content ) {
-        if (not rename $main_content, $old_content ) {
-            $savable->{error} = "cannot rename "
-                .$main_content." to "
-                .$old_content.": $!";
+        if ( not rename $main_content, $old_content ) {
+            $savable->{error} = "cannot rename " . $main_content . " to " . $old_content . ": $!";
             return 0;
         }
     }
@@ -1584,35 +1607,30 @@ sub _save_main_to_backup
 # internal method used by save()
 sub _save_file_mode
 {
-    my ($self, $savable, $new_content) = @_;
+    my ( $self, $savable, $new_content ) = @_;
 
     # chgrp the "new content" before final installation
-    if ( exists $savable->{group}) {
+    if ( exists $savable->{group} ) {
         my $gid = $savable->{group};
         if ( $gid !~ /^[0-9]+$/ox ) {
-            $gid = (getgrnam($gid))[2];
-            if (not defined $gid ) {
-                $savable->{error} = "cannot chgrp "
-                    .$new_content.": "
-                    .$savable->{group}
-                    ." does not exist";
+            $gid = ( getgrnam($gid) )[2];
+            if ( not defined $gid ) {
+                $savable->{error} =
+                    "cannot chgrp " . $new_content . ": " . $savable->{group} . " does not exist";
                 return 0;
             }
         }
-        if (not chown $>, $gid, $new_content ) {
-            $savable->{error} = "cannot chgrp "
-                .$new_content." to "
-                .$savable->{group}.": $!";
+        if ( not chown $>, $gid, $new_content ) {
+            $savable->{error} =
+                "cannot chgrp " . $new_content . " to " . $savable->{group} . ": $!";
             return 0;
         }
     }
 
     # chmod the "new content" before final installation
-    if ( exists $savable->{mode}) {
-        if (not chmod oct($savable->{mode}), $new_content ) {
-            $savable->{error} = "cannot chmod "
-                .$new_content." to "
-                .$savable->{mode}.": $!";
+    if ( exists $savable->{mode} ) {
+        if ( not chmod oct( $savable->{mode} ), $new_content ) {
+            $savable->{error} = "cannot chmod " . $new_content . " to " . $savable->{mode} . ": $!";
             return 0;
         }
     }
@@ -1623,33 +1641,32 @@ sub _save_file_mode
 # internal method used by save()
 sub _save_check_index
 {
-    my ($self, $savable) = @_;
+    my ( $self, $savable ) = @_;
 
     # if a URL was provided and index flag is set, use index file
     my %id_index;
     my ( $timestamp, $filename );
     my $was_in_index = 0;
-    if (( exists $savable->{url}) and ( exists $savable->{index}))
-    {
+    if ( ( exists $savable->{url} ) and ( exists $savable->{index} ) ) {
         require DB_File;
         tie %id_index, 'DB_File',
-            $self->{dir}."/id_index.db",
-            &DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
-        if ( exists $id_index{$savable->{url}}) {
+            $self->{dir} . "/id_index.db",
+            &DB_File::O_CREAT | &DB_File::O_RDWR, oct(640);
+        if ( exists $id_index{ $savable->{url} } ) {
             ( $timestamp, $filename ) =
-                split /#/x, $id_index{$savable->{url}};
+                split /#/x, $id_index{ $savable->{url} };
             $was_in_index = 1;
         } else {
             $timestamp = time;
-            $id_index{$savable->{url}} =
-                $timestamp."#".$savable->{file};
+            $id_index{ $savable->{url} } =
+                $timestamp . "#" . $savable->{file};
         }
-        untie %id_index ;
+        untie %id_index;
     }
 
     # For now, we consider it done if the file was in the index.
     # Future options would be to check if URL was modified.
-    if ( $was_in_index ) {
+    if ($was_in_index) {
         return 0;
     }
     return 1;
@@ -1659,13 +1676,12 @@ sub _save_check_index
 # internal method used by save()
 sub _save_fill_empty_from_url
 {
-    my ($self, $savable) = @_;
+    my ( $self, $savable ) = @_;
 
     # if a URL was provided and no content, get content from URL
-    if ((not exists $savable->{content}) and ( exists $savable->{url}))
-    {
+    if ( ( not exists $savable->{content} ) and ( exists $savable->{url} ) ) {
         try {
-            $savable->{content} = ${$self->get($savable->{url})}; 
+            $savable->{content} = ${ $self->get( $savable->{url} ) };
         } catch {
             return 0;
         };
@@ -1679,19 +1695,19 @@ sub _save_report_errors
 {
     my ($self) = @_;
 
-	# loop through savable to report any errors
-	my $err_count = 0;
-	foreach my $savable ( @{$self->{savable}}) {
-		if ( exists $savable->{error}) {
-			print STDERR "WebFetch: failed to save "
-				.$savable->{file}.": "
-				.$savable->{error}."\n";
-			$err_count++;
-		}
-	}
-	if ( $err_count ) {
-		croak "WebFetch: $err_count errors - fetch/save failed\n";
-	}
+    # loop through savable to report any errors
+    my $err_count = 0;
+    foreach my $savable ( @{ $self->{savable} } ) {
+        if ( exists $savable->{error} ) {
+            print STDERR "WebFetch: failed to save "
+                . $savable->{file} . ": "
+                . $savable->{error} . "\n";
+            $err_count++;
+        }
+    }
+    if ($err_count) {
+        croak "WebFetch: $err_count errors - fetch/save failed\n";
+    }
     return;
 }
 
@@ -1728,108 +1744,111 @@ See $obj->fetch for details on the contents of the C<savable> parameter
 # file-save routines for all WebFetch-derived classes
 sub save
 {
-	my $self = shift;
+    my $self = shift;
 
-	if ( $self->{debug} ) {
-		print STDERR "entering save()\n";
-	}
+    if ( $self->{debug} ) {
+        print STDERR "entering save()\n";
+    }
 
-	# check if we have attributes needed to proceed
+    # check if we have attributes needed to proceed
     $self->_save_precheck();
 
-	# if fetch_urls is defined, turn link fields in the data to savables
+    # if fetch_urls is defined, turn link fields in the data to savables
     $self->_save_fetch_urls();
 
-	# loop through "savable" (grouped content and filename destination)
-	foreach my $savable ( @{$self->{savable}}) {
+    # loop through "savable" (grouped content and filename destination)
+    foreach my $savable ( @{ $self->{savable} } ) {
 
-		if (exists $savable->{file}) {
-			debug "saving ".$savable->{file}."\n";
-		}
+        if ( exists $savable->{file} ) {
+            debug "saving " . $savable->{file} . "\n";
+        }
 
-		# an output module may have handled a more intricate operation
-		last if (exists $savable->{ok_empty});
+        # an output module may have handled a more intricate operation
+        last if ( exists $savable->{ok_empty} );
 
-		# verify contents of savable record
-		if (not exists $savable->{file}) {
-			$savable->{error} = "missing file name - skipped";
-			next;
-		}
-		if ((not exists $savable->{content}) and (not exists $savable->{url}))
-		{
-			$savable->{error} = "missing content or URL - skipped";
-			next;
-		}
+        # verify contents of savable record
+        if ( not exists $savable->{file} ) {
+            $savable->{error} = "missing file name - skipped";
+            next;
+        }
+        if (    ( not exists $savable->{content} )
+            and ( not exists $savable->{url} ) )
+        {
+            $savable->{error} = "missing content or URL - skipped";
+            next;
+        }
 
-		# generate file names
-		my $new_content = $self->{"dir"}."/N".$savable->{file};
-		my $main_content = $self->{"dir"}."/".$savable->{file};
-		my $old_content = $self->{"dir"}."/O".$savable->{file};
+        # generate file names
+        my $new_content  = $self->{"dir"} . "/N" . $savable->{file};
+        my $main_content = $self->{"dir"} . "/" . $savable->{file};
+        my $old_content  = $self->{"dir"} . "/O" . $savable->{file};
 
-		# make sure the Nxx "new content" file does not exist yet
-		if ( -f $new_content ) {
-			if (not unlink $new_content ) {
-				$savable->{error} = "cannot unlink "
-					.$new_content.": $!";
-				next;
-			}
-		}
+        # make sure the Nxx "new content" file does not exist yet
+        if ( -f $new_content ) {
+            if ( not unlink $new_content ) {
+                $savable->{error} = "cannot unlink " . $new_content . ": $!";
+                next;
+            }
+        }
 
-		# if a URL was provided and index flag is set, use index file
-        if (not $self->_save_check_index($savable)) {
+        # if a URL was provided and index flag is set, use index file
+        if ( not $self->_save_check_index($savable) ) {
+
             # done since it was found in the index
             next;
         }
 
-		# if a URL was provided and no content, get content from URL
-        if (not $self->_save_fill_empty_from_url($savable)) {
+        # if a URL was provided and no content, get content from URL
+        if ( not $self->_save_fill_empty_from_url($savable) ) {
+
             # error occurred - available in $savable->{error}
             next;
         }
 
-		# write content to the "new content" file
-        if (not $self->_save_write_content($savable, $new_content)) {
+        # write content to the "new content" file
+        if ( not $self->_save_write_content( $savable, $new_content ) ) {
+
             # error occurred - available in $savable->{error}
             next;
         }
 
-		# remove the "old content" file to get it out of the way
-		if ( -f $old_content ) {
-			if (not unlink $old_content ) {
-				$savable->{error} = "cannot unlink "
-					.$old_content.": $!";
-				next;
-			}
-		}
+        # remove the "old content" file to get it out of the way
+        if ( -f $old_content ) {
+            if ( not unlink $old_content ) {
+                $savable->{error} = "cannot unlink " . $old_content . ": $!";
+                next;
+            }
+        }
 
-		# move the main content to the old content - now it's a backup
-        if (not $self->_save_main_to_backup($savable, $main_content), $old_content) {
+        # move the main content to the old content - now it's a backup
+        if ( not $self->_save_main_to_backup( $savable, $main_content ), $old_content ) {
+
             # error occurred - available in $savable->{error}
             next;
         }
 
         # chgrp and chmod the "new content" before final installation
-        if (not $self->_save_file_mode($savable, $new_content)) {
+        if ( not $self->_save_file_mode( $savable, $new_content ) ) {
+
             # error occurred - available in $savable->{error}
             next;
         }
 
-		# move the new content to the main content - final install
-		if ( -f $new_content ) {
-			if (not rename $new_content, $main_content ) {
-				$savable->{error} = "cannot rename "
-					.$new_content." to "
-					.$main_content.": $!";
-				next;
-			}
-		}
-	}
+        # move the new content to the main content - final install
+        if ( -f $new_content ) {
+            if ( not rename $new_content, $main_content ) {
+                $savable->{error} =
+                    "cannot rename " . $new_content . " to " . $main_content . ": $!";
+                next;
+            }
+        }
+    }
 
-	# loop through savable to report any errors
+    # loop through savable to report any errors
     $self->_save_report_errors();
 
-	# success if we got here
-	return 1;
+    # success if we got here
+    return 1;
 }
 
 =item WebFetch::parse_date([{locale => "locale", time_zone => "time zone"}], $raw_time_str)
@@ -1853,47 +1872,50 @@ sub parse_date
 {
     my @args = @_;
     my %opts;
-    if (ref $args[0] eq "HASH") {
-        %opts = %{shift @args};
+    if ( ref $args[0] eq "HASH" ) {
+        %opts = %{ shift @args };
     }
     my $stamp = shift @args;
     my $result;
 
     # use regular expressions to check simple date formats YYYY-MM-DD and YYYYMMDD
 
-    # check YYYY-MM-DD date format
-    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
-    if ($stamp =~ /^ (....) - (..) - (..) \s* $/x ) {
-        $result = [year => int($1), month => int($2), day => int($3), %opts];
+# check YYYY-MM-DD date format
+# save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    if ( $stamp =~ /^ (....) - (..) - (..) \s* $/x ) {
+        $result = [ year => int($1), month => int($2), day => int($3), %opts ];
 
-    # check YYYYMMDD format for backward compatibility: no longer ISO 8601 compliant since 2004 update
-    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
-    } elsif ($stamp =~ /^ (....) (..) (..) \s* $/x ) {
-        $result = [year => int($1), month => int($2), day => int($3), %opts];
+# check YYYYMMDD format for backward compatibility: no longer ISO 8601 compliant since 2004 update
+# save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    } elsif ( $stamp =~ /^ (....) (..) (..) \s* $/x ) {
+        $result = [ year => int($1), month => int($2), day => int($3), %opts ];
     }
 
-    # check ISO 8601
-    # catch any exceptions thrown by the DateTime::Format::ISO8601 constructor and leave $result undefined
-    # save it as a DateTime object
-    if (not defined $result) {
+# check ISO 8601
+# catch any exceptions thrown by the DateTime::Format::ISO8601 constructor and leave $result undefined
+# save it as a DateTime object
+    if ( not defined $result ) {
         try {
-            $result = DateTime::Format::ISO8601->parse_datetime($stamp, $opts{locale});
-            if (exists $opts{time_zone} and $result->time_zone() eq "floating") {
-                $result->set_time_zone($opts{time_zone});
+            $result = DateTime::Format::ISO8601->parse_datetime( $stamp, $opts{locale} );
+            if ( exists $opts{time_zone}
+                and $result->time_zone() eq "floating" )
+            {
+                $result->set_time_zone( $opts{time_zone} );
             }
         };
     }
 
-    # check Unix date format and other misc processing from Date::Calc's Parse_Date()
-    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
-    if (not defined $result) {
+# check Unix date format and other misc processing from Date::Calc's Parse_Date()
+# save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    if ( not defined $result ) {
         my @date;
         try {
-            @date = Date::Calc::Parse_Date($stamp, $opts{locale});
+            @date = Date::Calc::Parse_Date( $stamp, $opts{locale} );
         };
         if (@date) {
-            $result = [year => $date[0], month => $date[1], day => $date[2], %opts];
-        };
+            $result =
+                [ year => $date[0], month => $date[1], day => $date[2], %opts ];
+        }
     }
 
     # return parsed result, or undef if all parsing methods failed
@@ -1910,34 +1932,35 @@ sub gen_timestamp
 {
     my @args = @_;
     my %opts;
-    if (ref $args[0] eq "HASH") {
-        %opts = %{shift @args};
+    if ( ref $args[0] eq "HASH" ) {
+        %opts = %{ shift @args };
     }
 
     my $datetime;
-    my $date_only = 0; # boolean flag: true = use date only, false = full timestamp
-    if (ref $args[0]) {
-        if ($args[0]->isa("DateTime")) {
+    my $date_only = 0;    # boolean flag: true = use date only, false = full timestamp
+    if ( ref $args[0] ) {
+        if ( $args[0]->isa("DateTime") ) {
             $datetime = $args[0];
-            if (exists $opts{locale}) {
+            if ( exists $opts{locale} ) {
                 try {
-                    $datetime->set_locale($opts{locale});
+                    $datetime->set_locale( $opts{locale} );
                 };
             }
-            if (exists $opts{time_zone}) {
+            if ( exists $opts{time_zone} ) {
                 try {
-                    $datetime->set_time_zone($opts{time_zone});
+                    $datetime->set_time_zone( $opts{time_zone} );
                 };
             }
-        } elsif (ref $args[0] eq "ARRAY") {
-            my %dt_opts = @{$args[0]};
-            foreach my $key (keys %opts) {
-                # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
-                if (not exists $dt_opts{$key}) {
+        } elsif ( ref $args[0] eq "ARRAY" ) {
+            my %dt_opts = @{ $args[0] };
+            foreach my $key ( keys %opts ) {
+
+        # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
+                if ( not exists $dt_opts{$key} ) {
                     $dt_opts{$key} = $opts{$key};
                 }
             }
-            $datetime = DateTime->new(%dt_opts);
+            $datetime  = DateTime->new(%dt_opts);
             $date_only = 1;
         }
     }
@@ -1945,9 +1968,9 @@ sub gen_timestamp
     # generate locale-specific timestamp string
     my $dt_locale = $datetime->locale();
     if ($date_only) {
-        return $datetime->format_cldr($dt_locale->date_format_full);
+        return $datetime->format_cldr( $dt_locale->date_format_full );
     }
-    return $datetime->format_cldr($dt_locale->datetime_format_full);
+    return $datetime->format_cldr( $dt_locale->datetime_format_full );
 }
 
 =item anchor_timestr([{time_zone => "time zone"}], $time_ref)
@@ -1965,29 +1988,30 @@ sub anchor_timestr
 {
     my @args = @_;
     my %opts;
-    if (ref $args[0] eq "HASH") {
-        %opts = %{shift @args};
+    if ( ref $args[0] eq "HASH" ) {
+        %opts = %{ shift @args };
     }
 
     my $datetime;
-    my $date_only = 0; # boolean flag: true = use date only, false = full timestamp
-    if (ref $args[0]) {
-        if (ref $args[0] eq "DateTime") {
+    my $date_only = 0;    # boolean flag: true = use date only, false = full timestamp
+    if ( ref $args[0] ) {
+        if ( ref $args[0] eq "DateTime" ) {
             $datetime = $args[0];
-            if (exists $opts{time_zone}) {
+            if ( exists $opts{time_zone} ) {
                 try {
-                    $datetime->set_time_zone($opts{time_zone});
+                    $datetime->set_time_zone( $opts{time_zone} );
                 };
             }
-        } elsif (ref $args[0] eq "ARRAY") {
-            my %dt_opts = @{$args[0]};
-            foreach my $key (keys %opts) {
-                # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
-                if (not exists $dt_opts{$key}) {
+        } elsif ( ref $args[0] eq "ARRAY" ) {
+            my %dt_opts = @{ $args[0] };
+            foreach my $key ( keys %opts ) {
+
+        # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
+                if ( not exists $dt_opts{$key} ) {
                     $dt_opts{$key} = $opts{$key};
                 }
             }
-            $datetime = DateTime->new(%dt_opts);
+            $datetime  = DateTime->new(%dt_opts);
             $date_only = 1;
         }
     }
@@ -1997,7 +2021,7 @@ sub anchor_timestr
     if ($date_only) {
         return $datetime->ymd('-');
     }
-    return $datetime->ymd('-')."-".$datetime->hms('-');
+    return $datetime->ymd('-') . "-" . $datetime->hms('-');
 }
 
 #
@@ -2005,9 +2029,14 @@ sub anchor_timestr
 #
 
 sub data { my $self = shift; return $self->{data}; }
-sub wk2fname { my ($self, @args) = @_; return $self->{data}->wk2fname(@args)};
-sub fname2fnum { my ($self, @args) = @_; return $self->{data}->fname2fnum(@args)};
-sub wk2fnum { my ($self, @args) = @_; return $self->{data}->wk2fnum(@args)};
+sub wk2fname { my ( $self, @args ) = @_; return $self->{data}->wk2fname(@args) }
+
+sub fname2fnum
+{
+    my ( $self, @args ) = @_;
+    return $self->{data}->fname2fnum(@args);
+}
+sub wk2fnum { my ( $self, @args ) = @_; return $self->{data}->wk2fnum(@args) }
 
 =item AUTOLOAD functionality
 
@@ -2027,20 +2056,22 @@ be redirected there.
 ## no critic (ClassHierarchies::ProhibitAutoloading)
 sub AUTOLOAD
 {
-	my ($self, @args) = @_;
-	my $name = $AUTOLOAD;
-	my $type = ref($self) or throw_autoload_fail "AUTOLOAD failed on $name: self is not an object";
+    my ( $self, @args ) = @_;
+    my $name = $AUTOLOAD;
+    my $type = ref($self)
+        or throw_autoload_fail "AUTOLOAD failed on $name: self is not an object";
 
-	$name =~ s/.*://x;   # strip fully-qualified portion, just want function
+    $name =~ s/.*://x;    # strip fully-qualified portion, just want function
 
-	# decline all-caps names - reserved for special Perl functions
-	my ( $package, $filename, $line ) = caller;
-	( $name =~ /^[A-Z]+$/x ) and return;
-	debug __PACKAGE__."::AUTOLOAD $name";
+    # decline all-caps names - reserved for special Perl functions
+    my ( $package, $filename, $line ) = caller;
+    ( $name =~ /^[A-Z]+$/x ) and return;
+    debug __PACKAGE__ . "::AUTOLOAD $name";
 
-	# check for function in caller package
-	# (WebFetch may hand an input module's object to an output module)
-	if (not $package->can($name)) {
+    # check for function in caller package
+    # (WebFetch may hand an input module's object to an output module)
+    if ( not $package->can($name) ) {
+
         # throw exception for unknown function/method
         throw_autoload_fail "function $name not found - called by $package ($filename line $line)";
     }
@@ -2049,16 +2080,16 @@ sub AUTOLOAD
     {
         ## no critic (TestingAndDebugging::ProhibitNoStrict)
         no strict 'refs';
-        *{__PACKAGE__."::".$name} = \&{$package."::".$name};
+        *{ __PACKAGE__ . "::" . $name } = \&{ $package . "::" . $name };
     }
     my $retval;
     try {
-        $retval = $self->$name( @args );
+        $retval = $self->$name(@args);
     } catch {
         my $e = Exception::Class->caught();
-        ref $e ? $e->rethrow
-            : throw_autoload_fail "failure in "
-                ."autoloaded function: ".$e;
+        ref $e
+            ? $e->rethrow
+            : throw_autoload_fail "failure in " . "autoloaded function: " . $e;
     };
     return $retval;
 }

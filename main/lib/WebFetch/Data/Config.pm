@@ -26,31 +26,31 @@ use base 'Class::Singleton';
 # helper function to allow methods to get the singleton instance whether called as a class or instance method
 sub _class_or_obj
 {
-    my $coo = shift; # coo = class or object
+    my $coo = shift;    # coo = class or object
 
     # safety net: all-stop if we received an undef
-    if (not defined $coo) {
-        confess "coo got undef from:".(join "|", caller 1);
+    if ( not defined $coo ) {
+        confess "coo got undef from:" . ( join "|", caller 1 );
     }
 
     # safety net: the class or object must be WebFetch::Data::Config or a derivative
-    if (not $coo->isa("WebFetch::Data::Config")) {
-        confess "incompatible class $coo from:".(join "|", caller 1);
+    if ( not $coo->isa("WebFetch::Data::Config") ) {
+        confess "incompatible class $coo from:" . ( join "|", caller 1 );
     }
 
     # instance method if it got an object reference
     return $coo if ref $coo;
 
-    # class method: return the instance via the instance() class method
-    # if the singleton object wasn't already instantiated, this will take care of it
-    # assumption: it must be string name of class WebFetch::Data::Config or subclass of it - so it has instance()
+# class method: return the instance via the instance() class method
+# if the singleton object wasn't already instantiated, this will take care of it
+# assumption: it must be string name of class WebFetch::Data::Config or subclass of it - so it has instance()
     return $coo->instance();
 }
 
 # check for existence of a config entry
 sub contains
 {
-    my ($class_or_obj, $key) = @_;
+    my ( $class_or_obj, $key ) = @_;
     my $instance = _class_or_obj($class_or_obj);
     return exists $instance->{$key} ? 1 : 0;
 }
@@ -58,9 +58,9 @@ sub contains
 # configuration read accessor
 sub read_accessor
 {
-    my ($class_or_obj, $key) = @_;
+    my ( $class_or_obj, $key ) = @_;
     my $instance = _class_or_obj($class_or_obj);
-    if ($instance->contains($key)) {
+    if ( $instance->contains($key) ) {
         return $instance->{$key};
     }
     return;
@@ -69,7 +69,7 @@ sub read_accessor
 # configuration write accessor
 sub write_accessor
 {
-    my ($class_or_obj, $key, $value) = @_;
+    my ( $class_or_obj, $key, $value ) = @_;
     my $instance = _class_or_obj($class_or_obj);
     $instance->{$key} = $value;
     return;
@@ -79,25 +79,25 @@ sub write_accessor
 # WebFetch's config() method calls here
 sub accessor
 {
-    my ($class_or_obj, $key, $value) = @_;
+    my ( $class_or_obj, $key, $value ) = @_;
     my $instance = _class_or_obj($class_or_obj);
 
     # if no value is provided, use read accessor
-    if (not defined $value) {
+    if ( not defined $value ) {
         return $instance->read_accessor($key);
     }
 
     # otherwise use write accessor
-    $instance->write_accessor($key, $value);
+    $instance->write_accessor( $key, $value );
     return;
 }
 
 # delete configuration item
 sub del
 {
-    my ($class_or_obj, $key) = @_;
+    my ( $class_or_obj, $key ) = @_;
     my $instance = _class_or_obj($class_or_obj);
-    if ($instance->contains($key)) {
+    if ( $instance->contains($key) ) {
         return delete $instance->{$key};
     }
     return;

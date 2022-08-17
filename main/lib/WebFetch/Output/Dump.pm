@@ -20,8 +20,7 @@ use base "WebFetch";
 use Data::Dumper;
 
 # define exceptions/errors
-use Exception::Class (
-);
+use Exception::Class ();
 
 =encoding utf8
 
@@ -30,7 +29,7 @@ use Exception::Class (
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( "output:dump" );
+__PACKAGE__->module_register("output:dump");
 
 =head1 SYNOPSIS
 
@@ -63,10 +62,10 @@ function.
 # Perl structure dump format handler
 sub fmt_handler_dump
 {
-	my ( $self, $filename ) = @_;
+    my ( $self, $filename ) = @_;
 
-	$self->raw_savable( $filename, Dumper( $self->{data}));
-	return 1;
+    $self->raw_savable( $filename, Dumper( $self->{data} ) );
+    return 1;
 }
 
 1;
