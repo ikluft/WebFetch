@@ -22,46 +22,43 @@ use DB_File;
 # define exceptions/errors
 use Try::Tiny;
 use Exception::Class (
-	"WebFetch::Output::TWiki::Exception::NoRoot" => {
-		isa => "WebFetch::Exception",
-		alias => "throw_twiki_no_root",
-		description => "WebFetch::Output::TWiki needs to be provided "
-			."a twiki_root parameter",
-	},
-	"WebFetch::Output::TWiki::Exception::NotFound" => {
-		isa => "WebFetch::Exception",
-		alias => "throw_twiki_not_found",
-		description => "the directory in the twiki_root parameter "
-			."doesn't exist or doesn't have a lib subdirectory",
-	},
-	"WebFetch::Output::TWiki::Exception::Require" => {
-		isa => "WebFetch::Exception",
-		alias => "throw_twiki_require",
-		description => "failed to import TWiki or TWiki::Func modules",
-	},
-	"WebFetch::Output::TWiki::Exception::NoConfig" => {
-		isa => "WebFetch::Exception",
-		alias => "throw_twiki_no_config",
-		description => "WebFetch::Output::TWiki needs to be provided "
-			."a config_topic parameter",
-	},
-	"WebFetch::Output::TWiki::Exception::ConfigMissing" => {
-		isa => "WebFetch::Exception",
-		alias => "throw_twiki_config_missing",
-		description => "WebFetch::Output::TWiki is missing a required "
-			."configuration parameter",
-	},
-	"WebFetch::Output::TWiki::Exception::Oops" => {
-		isa => "WebFetch::Exception",
-		alias => "throw_twiki_oops",
-		description => "WebFetch::Output::TWiki returned errors from "
-			."saving one or more entries",
-	},
-	"WebFetch::Output::TWiki::Exception::FieldNotSpecified" => {
-		isa => "WebFetch::Exception",
-		alias => "throw_field_not_specified",
-		description => "a required field was not defined or found",
-	},
+    "WebFetch::Output::TWiki::Exception::NoRoot" => {
+        isa         => "WebFetch::Exception",
+        alias       => "throw_twiki_no_root",
+        description => "WebFetch::Output::TWiki needs to be provided " . "a twiki_root parameter",
+    },
+    "WebFetch::Output::TWiki::Exception::NotFound" => {
+        isa         => "WebFetch::Exception",
+        alias       => "throw_twiki_not_found",
+        description => "the directory in the twiki_root parameter "
+            . "doesn't exist or doesn't have a lib subdirectory",
+    },
+    "WebFetch::Output::TWiki::Exception::Require" => {
+        isa         => "WebFetch::Exception",
+        alias       => "throw_twiki_require",
+        description => "failed to import TWiki or TWiki::Func modules",
+    },
+    "WebFetch::Output::TWiki::Exception::NoConfig" => {
+        isa         => "WebFetch::Exception",
+        alias       => "throw_twiki_no_config",
+        description => "WebFetch::Output::TWiki needs to be provided " . "a config_topic parameter",
+    },
+    "WebFetch::Output::TWiki::Exception::ConfigMissing" => {
+        isa         => "WebFetch::Exception",
+        alias       => "throw_twiki_config_missing",
+        description => "WebFetch::Output::TWiki is missing a required " . "configuration parameter",
+    },
+    "WebFetch::Output::TWiki::Exception::Oops" => {
+        isa         => "WebFetch::Exception",
+        alias       => "throw_twiki_oops",
+        description => "WebFetch::Output::TWiki returned errors from "
+            . "saving one or more entries",
+    },
+    "WebFetch::Output::TWiki::Exception::FieldNotSpecified" => {
+        isa         => "WebFetch::Exception",
+        alias       => "throw_field_not_specified",
+        description => "a required field was not defined or found",
+    },
 );
 
 =encoding utf8
@@ -70,16 +67,24 @@ use Exception::Class (
 
 # defaults
 my @Options = ( "twiki_root=s", "config_topic=s", "config_key=s" );
-my $Usage = "--twiki_root path-to-twiki --config_topic web.topic "
-	."--config_key keyword";
-my @default_field_names = ( qw( key web parent prefix template form
-	options ));
+my $Usage   = "--twiki_root path-to-twiki --config_topic web.topic " . "--config_key keyword";
+my @default_field_names = (
+    qw( key web parent prefix template form
+        options )
+);
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( {Options => \@Options, Usage => \$Usage, default_field_names => \@default_field_names},
-    "cmdline", "output:twiki" );
+__PACKAGE__->module_register(
+    {
+        Options             => \@Options,
+        Usage               => \$Usage,
+        default_field_names => \@default_field_names
+    },
+    "cmdline",
+    "output:twiki"
+);
 
 =head1 SYNOPSIS
 
@@ -147,360 +152,358 @@ INCLUDE operation on TWiki.
 # read the TWiki configuation
 sub get_twiki_config
 {
-	my $self = shift;
-	WebFetch::debug "in get_twiki_config";
+    my $self = shift;
+    WebFetch::debug "in get_twiki_config";
 
-	# find the TWiki modules
-	if ( ! exists $self->{twiki_root}) {
-		throw_twiki_no_root( "TWiki root directory not defined" );
-	}
-	if (( ! -d $self->{twiki_root}) or ( ! -d $self->{twiki_root}."/lib" ))
-	{
-		throw_twiki_not_found( "can't find TWiki root or lib at "
-			.$self->{twiki_root});
-	}
+    # find the TWiki modules
+    if ( !exists $self->{twiki_root} ) {
+        throw_twiki_no_root("TWiki root directory not defined");
+    }
+    if ( ( !-d $self->{twiki_root} ) or ( !-d $self->{twiki_root} . "/lib" ) ) {
+        throw_twiki_not_found( "can't find TWiki root or lib at " . $self->{twiki_root} );
+    }
 
-	# load the TWiki modules
-	WebFetch::debug "loading TWiki modules";
-	push @INC, $self->{twiki_root}."/lib";
-	my $result;
+    # load the TWiki modules
+    WebFetch::debug "loading TWiki modules";
+    push @INC, $self->{twiki_root} . "/lib";
+    my $result;
     try {
         $result = ( require TWiki and require TWiki::Func );
     } catch {
-		throw_twiki_require ( $@ );
-	};
-    if (not $result) {
-		throw_twiki_require ( "require failed" );
+        throw_twiki_require($@);
+    };
+    if ( not $result ) {
+        throw_twiki_require("require failed");
     }
 
-	# initiate TWiki library, create session as user "WebFetch"
-	$self->{twiki_obj} = TWiki->new( "WebFetch" );
+    # initiate TWiki library, create session as user "WebFetch"
+    $self->{twiki_obj} = TWiki->new("WebFetch");
 
-	# get the contents of the TWiki topic which contains our configuration 
-	if ( !exists $self->{config_topic}) {
-		throw_twiki_no_config( "TWiki configuration page for WebFetch "
-			."not defined" );
-	}
-	my ( $web, $topic ) = split /\./x, $self->{config_topic};
-	WebFetch::debug "config_topic: ".$self->{config_topic}
-		." -> $web, $topic";
-	if (( ! defined $web ) or ( ! defined $topic )) {
-		throw_twiki_no_config( "TWiki configuration page for WebFetch "
-			."must be defined in the format web.topic" );
-	}
+    # get the contents of the TWiki topic which contains our configuration
+    if ( !exists $self->{config_topic} ) {
+        throw_twiki_no_config( "TWiki configuration page for WebFetch " . "not defined" );
+    }
+    my ( $web, $topic ) = split /\./x, $self->{config_topic};
+    WebFetch::debug "config_topic: " . $self->{config_topic} . " -> $web, $topic";
+    if ( ( !defined $web ) or ( !defined $topic ) ) {
+        throw_twiki_no_config(
+            "TWiki configuration page for WebFetch " . "must be defined in the format web.topic" );
+    }
 
-	# check if a config_key was specified before we read the configuration
-	if ( !exists $self->{config_key}) {
-		throw_twiki_no_config( "TWiki configuration key for WebFetch "
-			."not defined" );
-	}
+    # check if a config_key was specified before we read the configuration
+    if ( !exists $self->{config_key} ) {
+        throw_twiki_no_config( "TWiki configuration key for WebFetch " . "not defined" );
+    }
 
-	# read the configuration info
-	my $config = TWiki::Func::readTopic( $web, $topic );
+    # read the configuration info
+    my $config = TWiki::Func::readTopic( $web, $topic );
 
-	# if STARTINCLUDE and STOPINCLUDE are present, use only what's between
-	if ( $config =~ /%STARTINCLUDE%\s*(.*)\s*%STOPINCLUDE%/xs ) {
-		$config = $1;
-	}
+    # if STARTINCLUDE and STOPINCLUDE are present, use only what's between
+    if ( $config =~ /%STARTINCLUDE%\s*(.*)\s*%STOPINCLUDE%/xs ) {
+        $config = $1;
+    }
 
-	# parse the configuration
-	WebFetch::debug "parsing configuration";
-	my @fnames;
-	$self->{twiki_config_all} = [];
-	$self->{twiki_keys} = {};
-	foreach my $line ( split /\r*\n+/xs, $config ) {
-		if ( $line =~ /^\|\s*(.*)\s*\|\s*$/x ) {
-			my @entries = split /\s*\|\s*/x, $1;
-			WebFetch::debug "read entries: ".join( ', ', @entries );
+    # parse the configuration
+    WebFetch::debug "parsing configuration";
+    my @fnames;
+    $self->{twiki_config_all} = [];
+    $self->{twiki_keys}       = {};
+    foreach my $line ( split /\r*\n+/xs, $config ) {
+        if ( $line =~ /^\|\s*(.*)\s*\|\s*$/x ) {
+            my @entries = split /\s*\|\s*/x, $1;
+            WebFetch::debug "read entries: " . join( ', ', @entries );
 
-			# first line contains field headings
-			if ( ! @fnames) {
-				# save table headings as field names
-				foreach my $field ( @entries ) {
-					my $tmp = lc($field);
-					$tmp =~ s/\W//xg;
-					push @fnames, $tmp;
-				}
-				next;
-			}
-			WebFetch::debug "field names: ".join " ", @fnames;
+            # first line contains field headings
+            if ( !@fnames ) {
 
-			# save the entries
-			# it isn't a heading row if we got here
-			# transfer array @entries to named fields in %config
-			WebFetch::debug "data row: ".join " ", @entries;
-			my ( $i, $key, %config );
-			for ( $i=0; $i < scalar @fnames; $i++ ) {
-				$config{ $fnames[$i]} = $entries[$i];
-				if ( $fnames[$i] eq "key" ) {
-					$key = $entries[$i];
-				}
-			}
+                # save table headings as field names
+                foreach my $field (@entries) {
+                    my $tmp = lc($field);
+                    $tmp =~ s/\W//xg;
+                    push @fnames, $tmp;
+                }
+                next;
+            }
+            WebFetch::debug "field names: " . join " ", @fnames;
 
-			# save the %config row in @{$self->{twiki_config_all}}
-			if (( defined $key )
-				and ( !exists $self->{twiki_keys}{$key}))
-			{
-				push @{$self->{twiki_config_all}}, \%config;
-				$self->{twiki_keys}{$key} = ( scalar
-					@{$self->{twiki_config_all}}) - 1;
-			}
-		}
-	}
+            # save the entries
+            # it isn't a heading row if we got here
+            # transfer array @entries to named fields in %config
+            WebFetch::debug "data row: " . join " ", @entries;
+            my ( $i, $key, %config );
+            for ( $i = 0 ; $i < scalar @fnames ; $i++ ) {
+                $config{ $fnames[$i] } = $entries[$i];
+                if ( $fnames[$i] eq "key" ) {
+                    $key = $entries[$i];
+                }
+            }
 
-	# select the line which is for this request
-	if ( ! exists $self->{twiki_keys}{$self->{config_key}}) {
-		throw_twiki_no_config "no configuration found for key "
-			.$self->{config_key};
-	}
-	$self->{twiki_config} = $self->{twiki_config_all}[$self->{twiki_keys}{$self->{config_key}}];
-	WebFetch::debug "twiki_config: ".join( " ", %{$self->{twiki_config}});
+            # save the %config row in @{$self->{twiki_config_all}}
+            if (    ( defined $key )
+                and ( !exists $self->{twiki_keys}{$key} ) )
+            {
+                push @{ $self->{twiki_config_all} }, \%config;
+                $self->{twiki_keys}{$key} =
+                    ( scalar @{ $self->{twiki_config_all} } ) - 1;
+            }
+        }
+    }
+
+    # select the line which is for this request
+    if ( !exists $self->{twiki_keys}{ $self->{config_key} } ) {
+        throw_twiki_no_config "no configuration found for key " . $self->{config_key};
+    }
+    $self->{twiki_config} =
+        $self->{twiki_config_all}[ $self->{twiki_keys}{ $self->{config_key} } ];
+    WebFetch::debug "twiki_config: " . join( " ", %{ $self->{twiki_config} } );
     return;
 }
 
 # write to a TWiki page
 sub write_to_twiki
 {
-	my $self = shift;
-	my $config;
+    my $self = shift;
+    my $config;
 
-	# get config variables
-	$config = $self->{twiki_config};
+    # get config variables
+    $config = $self->{twiki_config};
 
-	# parse options
-	$self->{twiki_options} = {};
-	foreach my $option ( split /\s+/x, $self->{twiki_config}{options}) {
-		if ( $option =~ /^([^=]+)=(.*)/x ) {
-			$self->{twiki_options}{$1} = $2;
-		} else {
-			$self->{twiki_options}{$option} = 1;
-		}
-	}
+    # parse options
+    $self->{twiki_options} = {};
+    foreach my $option ( split /\s+/x, $self->{twiki_config}{options} ) {
+        if ( $option =~ /^([^=]+)=(.*)/x ) {
+            $self->{twiki_options}{$1} = $2;
+        } else {
+            $self->{twiki_options}{$option} = 1;
+        }
+    }
 
-	# determine unique identifier field
-	my $id_field;
-	if ( exists $self->{twiki_options}{id_field}) {
-		$id_field = $self->{twiki_options}{id_field};
-	}
-	if ( ! defined $id_field ) {
-		$id_field = $self->wk2fname( "id" );
-	}
-	if ( ! defined $id_field ) {
-		$id_field = $self->wk2fname( "url" );
-	}
-	if ( ! defined $id_field ) {
-		$id_field = $self->wk2fname( "title" );
-	}
-	if ( ! defined $id_field ) {
-		throw_field_not_specified "identifier field not specified";
-	}
-	$self->{id_field} = $id_field;
+    # determine unique identifier field
+    my $id_field;
+    if ( exists $self->{twiki_options}{id_field} ) {
+        $id_field = $self->{twiki_options}{id_field};
+    }
+    if ( !defined $id_field ) {
+        $id_field = $self->wk2fname("id");
+    }
+    if ( !defined $id_field ) {
+        $id_field = $self->wk2fname("url");
+    }
+    if ( !defined $id_field ) {
+        $id_field = $self->wk2fname("title");
+    }
+    if ( !defined $id_field ) {
+        throw_field_not_specified "identifier field not specified";
+    }
+    $self->{id_field} = $id_field;
 
-	# determine from options whether each item is making metadata or topics
-	if ( exists $self->{twiki_options}{separate_topics}) {
-		$self->write_to_twiki_topics;
-	} else {
-		$self->write_to_twiki_metadata;
-	}
+    # determine from options whether each item is making metadata or topics
+    if ( exists $self->{twiki_options}{separate_topics} ) {
+        $self->write_to_twiki_topics;
+    } else {
+        $self->write_to_twiki_metadata;
+    }
     return;
 }
 
 # write to separate TWiki topics
 sub write_to_twiki_topics
 {
-	my $self = shift;
+    my $self = shift;
 
-	# get config variables
-	my $config = $self->{twiki_config};
-	foreach my $name ( qw( key web parent prefix template form )) {
-		if ( !exists $self->{twiki_config}{$name}) {
-			throw_twiki_config_missing( "missing config parameter "
-				.$name );
-		}
-	}
+    # get config variables
+    my $config = $self->{twiki_config};
+    foreach my $name (qw( key web parent prefix template form )) {
+        if ( !exists $self->{twiki_config}{$name} ) {
+            throw_twiki_config_missing( "missing config parameter " . $name );
+        }
+    }
 
-	# get text of template topic
-	my ($meta, $template ) = TWiki::Func::readTopic( $config->{web},
-		$config->{template});
+    # get text of template topic
+    my ( $meta, $template ) =
+        TWiki::Func::readTopic( $config->{web}, $config->{template} );
 
-	# open DB file for tracking unique IDs of articles already processed
-	my %id_index;
-	tie %id_index, 'DB_File',
-		$self->{dir}."/".$config->{key}."_id_index.db",
-		&DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
+    # open DB file for tracking unique IDs of articles already processed
+    my %id_index;
+    tie %id_index, 'DB_File',
+        $self->{dir} . "/" . $config->{key} . "_id_index.db",
+        &DB_File::O_CREAT | &DB_File::O_RDWR, oct(640);
 
-	# determine initial topic name
-	my ( %topics, @topics );
-	@topics = TWiki::Func::getTopicList( $config->{web});
-	foreach ( @topics ) {
-		$topics{$_} = 1;
-	}
-	my $tnum_counter = 0;
-	my $tnum_format = $config->{prefix}."-%07d";
+    # determine initial topic name
+    my ( %topics, @topics );
+    @topics = TWiki::Func::getTopicList( $config->{web} );
+    foreach (@topics) {
+        $topics{$_} = 1;
+    }
+    my $tnum_counter = 0;
+    my $tnum_format  = $config->{prefix} . "-%07d";
 
-	# create topics with metadata from each WebFetch data record
-	my $entry;
-	my @oopses;
-	my $id_field = $self->{id_field};
-	$self->data->reset_pos;
-	while ( $entry = $self->data->next_record ) {
+    # create topics with metadata from each WebFetch data record
+    my $entry;
+    my @oopses;
+    my $id_field = $self->{id_field};
+    $self->data->reset_pos;
+    while ( $entry = $self->data->next_record ) {
 
-		# check that this entry hasn't already been forwarded to TWiki
-		if ( exists $id_index{$entry->byname( $id_field )}) {
-			next;
-		}
-		$id_index{$entry->byname( $id_field )} = time;
+        # check that this entry hasn't already been forwarded to TWiki
+        if ( exists $id_index{ $entry->byname($id_field) } ) {
+            next;
+        }
+        $id_index{ $entry->byname($id_field) } = time;
 
-		# select topic name
-		my $topicname = sprintf $tnum_format, $tnum_counter;
-		while ( exists $topics{$topicname}) {
-			$tnum_counter++;
-			$topicname = sprintf $tnum_format, $tnum_counter;
-		}
-		$tnum_counter++;
-		$topics{$topicname} = 1;
-		my $text = $template;
-		WebFetch::debug "write_to_twiki_topics: writing $topicname";
+        # select topic name
+        my $topicname = sprintf $tnum_format, $tnum_counter;
+        while ( exists $topics{$topicname} ) {
+            $tnum_counter++;
+            $topicname = sprintf $tnum_format, $tnum_counter;
+        }
+        $tnum_counter++;
+        $topics{$topicname} = 1;
+        my $text = $template;
+        WebFetch::debug "write_to_twiki_topics: writing $topicname";
 
-		# create topic metadata
-		#my $meta = TWiki::Meta->new ( $self->{twiki_obj}, $config->{web}, $topicname );
-		$meta->put( "TOPICPARENT",
-			{ name => $config->{parent}});
-		$meta->put( "FORM", { name => $config->{form}});
-		my $fnum;
-		for ( $fnum = 0; $fnum <= $self->data->num_fields; $fnum++ ) {
-			WebFetch::debug "meta: "
-				.$self->data->field_bynum($fnum)
-				." = ".$entry->bynum($fnum);
-			( defined $self->data->field_bynum($fnum)) or next;
-			( $self->data->field_bynum($fnum) eq "xml") and next;
-			( defined $entry->bynum($fnum)) or next;
-			WebFetch::debug "meta: OK";
-			$meta->putKeyed( "FIELD", {
-				name => $self->data->field_bynum($fnum),
-				value => $entry->bynum($fnum)});
-		}
+        # create topic metadata
+        #my $meta = TWiki::Meta->new ( $self->{twiki_obj}, $config->{web}, $topicname );
+        $meta->put( "TOPICPARENT", { name => $config->{parent} } );
+        $meta->put( "FORM",        { name => $config->{form} } );
+        my $fnum;
+        for ( $fnum = 0 ; $fnum <= $self->data->num_fields ; $fnum++ ) {
+            WebFetch::debug "meta: "
+                . $self->data->field_bynum($fnum) . " = "
+                . $entry->bynum($fnum);
+            ( defined $self->data->field_bynum($fnum) ) or next;
+            ( $self->data->field_bynum($fnum) eq "xml" ) and next;
+            ( defined $entry->bynum($fnum) ) or next;
+            WebFetch::debug "meta: OK";
+            $meta->putKeyed(
+                "FIELD",
+                {
+                    name  => $self->data->field_bynum($fnum),
+                    value => $entry->bynum($fnum)
+                }
+            );
+        }
 
-		# save a special title field for TWiki indexes
-		my $index_title = $entry->title;
-		$index_title =~ s/[\t\r\n\|]+/ /xgs;
-		$index_title =~ s/^\s*//x;
-		$index_title =~ s/\s*$//x;
-		if ( length($index_title) > 60 ) {
-			substr( $index_title, 56, -1, "...");
-		}
-		WebFetch::debug "title: $index_title";
-		$meta->putKeyed( "FIELD", {
-			name => "IndexTitle",
-			title => "Indexing title",
-			value => $index_title });
+        # save a special title field for TWiki indexes
+        my $index_title = $entry->title;
+        $index_title =~ s/[\t\r\n\|]+/ /xgs;
+        $index_title =~ s/^\s*//x;
+        $index_title =~ s/\s*$//x;
+        if ( length($index_title) > 60 ) {
+            substr( $index_title, 56, -1, "..." );
+        }
+        WebFetch::debug "title: $index_title";
+        $meta->putKeyed(
+            "FIELD",
+            {
+                name  => "IndexTitle",
+                title => "Indexing title",
+                value => $index_title
+            }
+        );
 
-		# save the topic
-		my $oopsurl = TWiki::Func::saveTopic( $config->{web},
-			$topicname, $meta, $text );
-		if ( $oopsurl ) {
-			WebFetch::debug "write_to_twiki_topics: "
-				."$topicname - $oopsurl";
-			push @oopses, $entry->title." -> "
-				.$topicname." ".$oopsurl;
-		}
-	}
+        # save the topic
+        my $oopsurl = TWiki::Func::saveTopic( $config->{web}, $topicname, $meta, $text );
+        if ($oopsurl) {
+            WebFetch::debug "write_to_twiki_topics: " . "$topicname - $oopsurl";
+            push @oopses, $entry->title . " -> " . $topicname . " " . $oopsurl;
+        }
+    }
 
-	# check for errors
-	if ( @oopses ) {
-		throw_twiki_oops( "TWiki saves failed:\n".join "\n", @oopses );
-	}
+    # check for errors
+    if (@oopses) {
+        throw_twiki_oops( "TWiki saves failed:\n" . join "\n", @oopses );
+    }
     return;
 }
 
 # write to successive items of TWiki metadata
 sub write_to_twiki_metadata
 {
-	my $self = shift;
+    my $self = shift;
 
-	# get config variables
-	my $config = $self->{twiki_config};
-	foreach my $name ( qw( key web parent )) {
-		if ( !exists $self->{twiki_config}{$name}) {
-			throw_twiki_config_missing( "missing config parameter "
-				.$name );
-		}
-	}
+    # get config variables
+    my $config = $self->{twiki_config};
+    foreach my $name (qw( key web parent )) {
+        if ( !exists $self->{twiki_config}{$name} ) {
+            throw_twiki_config_missing( "missing config parameter " . $name );
+        }
+    }
 
-	# determine metadata title field
-	my $title_field;
-	if ( exists $self->{twiki_options}{title_field}) {
-		$title_field = $self->{twiki_options}{title_field};
-	}
-	if ( ! defined $title_field ) {
-		$title_field = $self->wk2fname( "title" );
-	}
-	if ( ! defined $title_field ) {
-		throw_field_not_specified "title field not specified";
-	}
+    # determine metadata title field
+    my $title_field;
+    if ( exists $self->{twiki_options}{title_field} ) {
+        $title_field = $self->{twiki_options}{title_field};
+    }
+    if ( !defined $title_field ) {
+        $title_field = $self->wk2fname("title");
+    }
+    if ( !defined $title_field ) {
+        throw_field_not_specified "title field not specified";
+    }
 
-	# determine metadata value field
-	my $value_field;
-	if ( exists $self->{twiki_options}{value_field}) {
-		$value_field = $self->{twiki_options}{value_field};
-	}
-	if ( ! defined $value_field ) {
-		$value_field = $self->wk2fname( "summary" );
-	}
-	if ( ! defined $value_field ) {
-		throw_field_not_specified "value field not specified";
-	}
+    # determine metadata value field
+    my $value_field;
+    if ( exists $self->{twiki_options}{value_field} ) {
+        $value_field = $self->{twiki_options}{value_field};
+    }
+    if ( !defined $value_field ) {
+        $value_field = $self->wk2fname("summary");
+    }
+    if ( !defined $value_field ) {
+        throw_field_not_specified "value field not specified";
+    }
 
-	# open DB file for tracking unique IDs of articles already processed
-	my %id_index;
-	tie %id_index, 'DB_File',
-		$self->{dir}."/".$config->{key}."_id_index.db",
-		&DB_File::O_CREAT|&DB_File::O_RDWR, oct(640);
+    # open DB file for tracking unique IDs of articles already processed
+    my %id_index;
+    tie %id_index, 'DB_File',
+        $self->{dir} . "/" . $config->{key} . "_id_index.db",
+        &DB_File::O_CREAT | &DB_File::O_RDWR, oct(640);
 
-	# get text of topic
-	my ($meta, $text) = TWiki::Func::readTopic( $config->{web},
-		$config->{parent});
-	
-	# start metadata line counter
-	my $mnum_counter = 0;
-	my $mnum_format = "line-%07d";
+    # get text of topic
+    my ( $meta, $text ) =
+        TWiki::Func::readTopic( $config->{web}, $config->{parent} );
 
-	# create metadata lines for each entry
-	my $entry;
-	my $id_field = $self->{id_field};
-	$self->data->reset_pos;
-	while ( $entry = $self->data->next_record ) {
-		# check that this entry hasn't already been forwarded to TWiki
-		if ( exists $id_index{$entry->byname( $id_field )}) {
-			next;
-		}
-		$id_index{$entry->byname( $id_field )} = time;
+    # start metadata line counter
+    my $mnum_counter = 0;
+    my $mnum_format  = "line-%07d";
 
-		# select metadata field name
-		my ( $value, $metaname );
-		$value = $meta->get( "FIELD",
-			$metaname = sprintf( $mnum_format, $mnum_counter ));
-		while ( defined $value ) {
-			$value = $meta->get( "FIELD",
-				$metaname = sprintf( $mnum_format,
-					++$mnum_counter ));
-		}
+    # create metadata lines for each entry
+    my $entry;
+    my $id_field = $self->{id_field};
+    $self->data->reset_pos;
+    while ( $entry = $self->data->next_record ) {
 
-		# write the value
-		$meta->putKeyed( "FIELD", {
-			name => $metaname,
-			title => $entry->byname( $title_field ),
-			value => $entry->byname( $value_field ),
-			});
-	}
+        # check that this entry hasn't already been forwarded to TWiki
+        if ( exists $id_index{ $entry->byname($id_field) } ) {
+            next;
+        }
+        $id_index{ $entry->byname($id_field) } = time;
 
-	# save the topic
-	my $oopsurl = TWiki::Func::saveTopic( $config->{web},
-		$config->{parent}, $meta, $text );
-	if ( $oopsurl ) {
-		throw_twiki_oops "TWiki saves failed: "
-			.$config->{parent}." ".$oopsurl;
-	}
+        # select metadata field name
+        my ( $value, $metaname );
+        $value = $meta->get( "FIELD", $metaname = sprintf( $mnum_format, $mnum_counter ) );
+        while ( defined $value ) {
+            $value = $meta->get( "FIELD", $metaname = sprintf( $mnum_format, ++$mnum_counter ) );
+        }
+
+        # write the value
+        $meta->putKeyed(
+            "FIELD",
+            {
+                name  => $metaname,
+                title => $entry->byname($title_field),
+                value => $entry->byname($value_field),
+            }
+        );
+    }
+
+    # save the topic
+    my $oopsurl =
+        TWiki::Func::saveTopic( $config->{web}, $config->{parent}, $meta, $text );
+    if ($oopsurl) {
+        throw_twiki_oops "TWiki saves failed: " . $config->{parent} . " " . $oopsurl;
+    }
     return;
 }
 
@@ -509,14 +512,14 @@ sub fmt_handler_twiki
 {
     my $self = shift;
 
-	# get configuration from TWiki
-	$self->get_twiki_config;
+    # get configuration from TWiki
+    $self->get_twiki_config;
 
-	# write to TWiki topic
-	$self->write_to_twiki;
+    # write to TWiki topic
+    $self->write_to_twiki;
 
-	# no savables - mark it OK so WebFetch::save won't call it an error
-	$self->no_savables_ok;
+    # no savables - mark it OK so WebFetch::save won't call it an error
+    $self->no_savables_ok;
     return 1;
 }
 
@@ -564,4 +567,4 @@ Patches and enhancements may be submitted via a pull request at L<https://github
 
 =cut
 
-1; # End of WebFetch::Output::TWiki
+1;    # End of WebFetch::Output::TWiki

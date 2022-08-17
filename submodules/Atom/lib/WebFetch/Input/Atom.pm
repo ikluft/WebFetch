@@ -23,8 +23,7 @@ use Scalar::Util qw( blessed );
 use Date::Calc qw(Today Delta_Days Month_to_Text);
 use XML::Atom::Client;
 
-use Exception::Class (
-);
+use Exception::Class ();
 
 =encoding utf8
 
@@ -78,73 +77,77 @@ __PACKAGE__->module_register( "cmdline", "input:atom" );
 # called from WebFetch main routine
 sub fetch
 {
-	my ( $self ) = @_;
+    my ($self) = @_;
 
-	# set up Webfetch Embedding API data
-	$self->data->add_fields( "id", "updated", "title", "author", "link",
-		"summary", "content", "xml" );
-	# defined which fields match to which "well-known field names"
-	$self->data->add_wk_names(
-		"id" => "id",
-		"title" => "title",
-		"url" => "link",
-		"date" => "updated",
-		"summary" => "summary",
-	);
+    # set up Webfetch Embedding API data
+    $self->data->add_fields( "id", "updated", "title", "author",
+        "link", "summary", "content", "xml" );
 
-	# parse data file
-	$self->parse_input();
+    # defined which fields match to which "well-known field names"
+    $self->data->add_wk_names(
+        "id"      => "id",
+        "title"   => "title",
+        "url"     => "link",
+        "date"    => "updated",
+        "summary" => "summary",
+    );
 
-	# return and let WebFetch handle the data
+    # parse data file
+    $self->parse_input();
+
+    # return and let WebFetch handle the data
     return;
 }
 
 # extract a string value from a scalar/ref if possible
 sub extract_value
 {
-        my $thing = shift;
+    my $thing = shift;
 
-        ( defined $thing ) or return;
-        if ( ref $thing ) {
-                if ( !blessed $thing ) {
-                        # it's a HASH/ARRAY/etc, not an object
-                        return;
-                }
-                if ( $thing->can( "as_string" )) {
-                        return $thing->as_string;
-                }
-                return;
-        } else {
-                $thing =~ s/\s+$//xs;
-                length $thing > 0 or return;
-                return $thing;
+    ( defined $thing ) or return;
+    if ( ref $thing ) {
+        if ( !blessed $thing ) {
+
+            # it's a HASH/ARRAY/etc, not an object
+            return;
         }
+        if ( $thing->can("as_string") ) {
+            return $thing->as_string;
+        }
+        return;
+    } else {
+        $thing =~ s/\s+$//xs;
+        length $thing > 0 or return;
+        return $thing;
+    }
 }
 
 # parse Atom input
 sub parse_input
 {
-	my $self = shift;
-	my $atom_api = XML::Atom::Client->new;
-	my $atom_feed = $atom_api->getFeed( $self->{source} );
+    my $self      = shift;
+    my $atom_api  = XML::Atom::Client->new;
+    my $atom_feed = $atom_api->getFeed( $self->{source} );
 
-	# parse values from top of structure
-	my @entries;
-	@entries = $atom_feed->entries;
-	foreach my $entry ( @entries ) {
-		# save the data record
-		my $id = extract_value( $entry->id() );
-		my $title = extract_value( $entry->title() );
-		my $author = ( defined $entry->author )
-			? extract_value( $entry->author->name ) : "";
-		my $link = extract_value( $entry->link->href );
-		my $updated = extract_value( $entry->updated() );
-		my $summary = extract_value( $entry->summary() );
-		my $content = extract_value( $entry->content() );
-		my $xml = $entry->as_xml();
-		$self->data->add_record( $id, $updated, $title,
-			$author, $link, $summary, $content, $xml );
-	}
+    # parse values from top of structure
+    my @entries;
+    @entries = $atom_feed->entries;
+    foreach my $entry (@entries) {
+
+        # save the data record
+        my $id    = extract_value( $entry->id() );
+        my $title = extract_value( $entry->title() );
+        my $author =
+            ( defined $entry->author )
+            ? extract_value( $entry->author->name )
+            : "";
+        my $link    = extract_value( $entry->link->href );
+        my $updated = extract_value( $entry->updated() );
+        my $summary = extract_value( $entry->summary() );
+        my $content = extract_value( $entry->content() );
+        my $xml     = $entry->as_xml();
+        $self->data->add_record( $id, $updated, $title, $author, $link, $summary, $content, $xml );
+    }
     return;
 }
 

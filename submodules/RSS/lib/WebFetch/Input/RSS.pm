@@ -21,8 +21,7 @@ use Carp;
 use Scalar::Util qw( blessed );
 use XML::RSS;
 
-use Exception::Class (
-);
+use Exception::Class ();
 
 =encoding utf8
 
@@ -33,7 +32,7 @@ use Exception::Class (
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( "input:rss" );
+__PACKAGE__->module_register("input:rss");
 
 =head1 SYNOPSIS
 
@@ -51,103 +50,107 @@ C<perl -w -MWebFetch::Input::RSS -e "&fetch_main" -- --dir directory
 # called from WebFetch main routine
 sub fetch
 {
-	my ( $self ) = @_;
+    my ($self) = @_;
 
-	# set up Webfetch Embedding API data
-	$self->data->add_fields( "pubDate", "title", "link", "category",
-		"description", "author", "id");
-	# defined which fields match to which "well-known field names"
-	$self->data->add_wk_names(
-		"title" => "title",
-		"url" => "link",
-		"date" => "pubDate",
-		"summary" => "description",
-		"category" => "category",
-        "author" => "author",
-        "id" => "id",
-	);
+    # set up Webfetch Embedding API data
+    $self->data->add_fields( "pubDate", "title", "link", "category",
+        "description", "author", "id" );
 
-	# parse data file
-	$self->parse_input();
+    # defined which fields match to which "well-known field names"
+    $self->data->add_wk_names(
+        "title"    => "title",
+        "url"      => "link",
+        "date"     => "pubDate",
+        "summary"  => "description",
+        "category" => "category",
+        "author"   => "author",
+        "id"       => "id",
+    );
 
-	# return and let WebFetch handle the data
+    # parse data file
+    $self->parse_input();
+
+    # return and let WebFetch handle the data
     return;
 }
 
 # extract a string value from a scalar/ref if possible
 sub extract_value
 {
-	my $thing = shift;
+    my $thing = shift;
 
-	( defined $thing ) or return;
-	if ( ref $thing ) {
-		if ( !blessed $thing ) {
-			# it's a HASH/ARRAY/etc ref
-            if (ref $thing eq "HASH") {
+    ( defined $thing ) or return;
+    if ( ref $thing ) {
+        if ( !blessed $thing ) {
+
+            # it's a HASH/ARRAY/etc ref
+            if ( ref $thing eq "HASH" ) {
+
                 # we need sub-hashes for module namespaces
                 return $thing;
             }
+
             # other refs are not useable here
-			return;
-		}
-		if ( $thing->can( "as_string" )) {
-			return $thing->as_string;
-		}
-		return;
-	} else {
-		$thing =~ s/\s+$//xs;
-		length $thing > 0 or return;
-		return $thing;
-	}
+            return;
+        }
+        if ( $thing->can("as_string") ) {
+            return $thing->as_string;
+        }
+        return;
+    } else {
+        $thing =~ s/\s+$//xs;
+        length $thing > 0 or return;
+        return $thing;
+    }
 }
 
 # parse RSS feed into hash structure
 sub parse_rss
 {
-	my $text = shift;
-	my $rss = XML::RSS->new(version => "2.0");
-	$rss->parse($text);
-	my ( %feed, @buckets );
+    my $text = shift;
+    my $rss  = XML::RSS->new( version => "2.0" );
+    $rss->parse($text);
+    my ( %feed, @buckets );
 
     # copy RSS channel data to WebFetch feed data
-    if (exists $rss->{channel}) {
+    if ( exists $rss->{channel} ) {
         $feed{info} = $rss->{channel};
     }
 
-	# parse values from top of structure
-	foreach my $field ( keys %$rss ) {
-		if ( ref $rss->{$field} eq "HASH" ) {
-			push @buckets, $field;
-		}
-		my $value = extract_value( $rss->{$field});
-		( defined $value ) or next;
-		$feed{$field} = $value;
-	}
+    # parse values from top of structure
+    foreach my $field ( keys %$rss ) {
+        if ( ref $rss->{$field} eq "HASH" ) {
+            push @buckets, $field;
+        }
+        my $value = extract_value( $rss->{$field} );
+        ( defined $value ) or next;
+        $feed{$field} = $value;
+    }
 
-	# parse hashes, i.e. channel parameters, XML/RSS modeules, etc
-	foreach my $bucket ( @buckets ) {
-		( exists $rss->{$bucket}) or next;
-		$feed{$bucket} = {};
-		foreach my $field ( keys %{$rss->{$bucket}} ) {
-			my $value = extract_value( $rss->{$bucket}{$field});
-			( defined $value ) or next;
-			$feed{$bucket}{$field} = $value;
-		}
-	}
+    # parse hashes, i.e. channel parameters, XML/RSS modeules, etc
+    foreach my $bucket (@buckets) {
+        ( exists $rss->{$bucket} ) or next;
+        $feed{$bucket} = {};
+        foreach my $field ( keys %{ $rss->{$bucket} } ) {
+            my $value = extract_value( $rss->{$bucket}{$field} );
+            ( defined $value ) or next;
+            $feed{$bucket}{$field} = $value;
+        }
+    }
 
-	# parse each item from the news feed
-	$feed{items} = [];
-	foreach my $item ( @{$rss->{items}}) {
-		my $f_item = {};
-		foreach my $field ( keys %$item ) {
-			my $value = extract_value( $item->{$field});
-			( defined $value ) or next;
-			$f_item->{$field} = $value;
-		}
-		push @{$feed{items}}, $f_item;
-	}
+    # parse each item from the news feed
+    $feed{items} = [];
+    foreach my $item ( @{ $rss->{items} } ) {
+        my $f_item = {};
+        foreach my $field ( keys %$item ) {
+            my $value = extract_value( $item->{$field} );
+            ( defined $value ) or next;
+            $f_item->{$field} = $value;
+        }
+        push @{ $feed{items} }, $f_item;
+    }
 
-	return \%feed;
+    return \%feed;
 }
 
 # retrieve first of multiple keys found in a hash
@@ -155,20 +158,21 @@ sub parse_rss
 # This handles various RSS feeds which may use original RSS field names or new Dublin Core (dc) synonyms.
 sub get_first
 {
-    my ($hashref, @keys) = @_;
+    my ( $hashref, @keys ) = @_;
     my $result = "";
     foreach my $key (@keys) {
+
         # search field alternatives in modules such as syndication(sy) or Dublin Core(dc)
-        if (index($key, ':') != -1) {
-            my ($module, $field) = split /:/x, $key, 2;
-            if (exists $hashref->{$module}{$field}) {
+        if ( index( $key, ':' ) != -1 ) {
+            my ( $module, $field ) = split /:/x, $key, 2;
+            if ( exists $hashref->{$module}{$field} ) {
                 $result = $hashref->{$module}{$field};
                 last;
             }
         }
 
         # search for key string
-        if (exists $hashref->{$key}) {
+        if ( exists $hashref->{$key} ) {
             $result = $hashref->{$key};
             last;
         }
@@ -179,31 +183,32 @@ sub get_first
 # parse RSS input
 sub parse_input
 {
-	my $self = shift;
+    my $self = shift;
 
-	# parse data file
-	my $raw_rss = $self->get();
-	my $feed = parse_rss( $$raw_rss);
+    # parse data file
+    my $raw_rss = $self->get();
+    my $feed    = parse_rss($$raw_rss);
 
     # copy channel info if present
-    if (exists $feed->{info}) {
+    if ( exists $feed->{info} ) {
         $self->{data}{feed} = $feed->{info};
     }
 
-	# translate parsed RSS feed into the WebFetch Embedding API data table
-	my $pos = 0;
-	foreach my $item (@{$feed->{items}}) {
-		# save the data record
-		my $date = get_first($item, qw(pubDate date dc:date));
-		my $title = get_first($item, qw(title dc:title));
-		my $link = get_first($item, qw(link dc:source));
-		my $category = get_first($item, qw(category));
-		my $description = get_first($item, qw(description dc:description));
-		my $author = get_first($item, qw(author dc:creator));
-		my $id = get_first($item, qw(id identifier dc:identifier));
-		$self->{data}->add_record($date, $title, $link, $category, $description, $author, $id);
-		$pos++;
-	}
+    # translate parsed RSS feed into the WebFetch Embedding API data table
+    my $pos = 0;
+    foreach my $item ( @{ $feed->{items} } ) {
+
+        # save the data record
+        my $date        = get_first( $item, qw(pubDate date dc:date) );
+        my $title       = get_first( $item, qw(title dc:title) );
+        my $link        = get_first( $item, qw(link dc:source) );
+        my $category    = get_first( $item, qw(category) );
+        my $description = get_first( $item, qw(description dc:description) );
+        my $author      = get_first( $item, qw(author dc:creator) );
+        my $id          = get_first( $item, qw(id identifier dc:identifier) );
+        $self->{data}->add_record( $date, $title, $link, $category, $description, $author, $id );
+        $pos++;
+    }
     return;
 }
 

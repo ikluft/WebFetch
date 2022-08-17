@@ -23,11 +23,11 @@ use Template;
 
 # define exceptions/errors
 use Exception::Class (
-	"WebFetch::Output::TT::Exception::Template" => {
-		isa => "WebFetch::TracedException",
-		alias => "throw_template",
-		description => "error during template processing",
-	},
+    "WebFetch::Output::TT::Exception::Template" => {
+        isa         => "WebFetch::TracedException",
+        alias       => "throw_template",
+        description => "error during template processing",
+    },
 
 );
 
@@ -37,12 +37,12 @@ use Exception::Class (
 
 # set defaults
 my @Options = ( "template=s", "tt_include:s" );
-my $Usage = "--template template-file [--tt_include include-path]";
+my $Usage   = "--template template-file [--tt_include include-path]";
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( {Options => \@Options, Usage => \$Usage}, "cmdline", "output:tt" );
+__PACKAGE__->module_register( { Options => \@Options, Usage => \$Usage }, "cmdline", "output:tt" );
 
 =head1 SYNOPSIS
 
@@ -74,27 +74,27 @@ template provided in the --template parameter.
 # Perl Template Toolkit format handler
 sub fmt_handler_tt
 {
-	my $self = shift;
-	my $filename = shift;
-	my $output;
+    my $self     = shift;
+    my $filename = shift;
+    my $output;
 
-        # configure and create template object
-        my %tt_config = (
-                ABSOLUTE => 1,
-                RELATIVE => 1,
-        );
-        if ( exists $self->{tt_include}) {
-                $tt_config{INCLUDE_PATH} = $self->{tt_include}
-        }
-        my $template = Template->new( \%tt_config );
+    # configure and create template object
+    my %tt_config = (
+        ABSOLUTE => 1,
+        RELATIVE => 1,
+    );
+    if ( exists $self->{tt_include} ) {
+        $tt_config{INCLUDE_PATH} = $self->{tt_include};
+    }
+    my $template = Template->new( \%tt_config );
 
-        # process template
-        $template->process( $self->{template}, { data => $self->{data}},
-		\$output, { binmode => ':utf8'} )
-		or throw_template $template->error();
+    # process template
+    $template->process( $self->{template}, { data => $self->{data} },
+        \$output, { binmode => ':utf8' } )
+        or throw_template $template->error();
 
-	$self->raw_savable( $filename, $output );
-	return 1;
+    $self->raw_savable( $filename, $output );
+    return 1;
 }
 
 1;
