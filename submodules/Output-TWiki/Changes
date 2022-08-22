@@ -15,6 +15,8 @@ Revision history for WebFetch::Output::TWiki
  - submodules now use Config store to add CLI/API options & usage to WebFetch
 
  [REVISION]
+ - code modernization: update Perl Best Practices conformance to Perl::Critic's "harsh" warning level
+ - code modernization: formatting with perltidy
 
  [SECURITY]
 
