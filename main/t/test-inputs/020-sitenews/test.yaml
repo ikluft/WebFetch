@@ -1,6 +1,8 @@
 ---
 files:
   00-basic-sitenews.webfetch:
-    - {op: ok, x: 1}
+    - {name: "empty test"}
+    - {op: autofail, skip: "intentional skip", name: "skip test"}
+    - {op: autopass, name: "%{file} found"}
   01-webfetch-releases.webfetch:
-    - {op: ok, x: 2}
+    - {op: autopass, name: "%{file} found"}

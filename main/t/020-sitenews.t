@@ -5,8 +5,9 @@ use warnings;
 use utf8;
 use autodie;
 use open ':std', ':encoding(utf8)';
-use Carp;
+use Carp qw(croak);
 use Data::Dumper;
+use String::Interpolate::Named;
 use File::Temp;
 use File::Basename;
 use Readonly;
@@ -24,31 +25,9 @@ Readonly::Scalar my $debug_mode => (exists $ENV{WEBFETCH_TEST_DEBUG} and $ENV{WE
 Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
 Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
-Readonly::Hash my %test_ops => (
-    ok => \&op_ok,
-);
-
-# no-op test just does an ok() to get started
-sub op_ok
-{
-    my ($item, $data, $name);
-    ok(1); # don't test anything - just do an ok
-}
-
-# count tests from data file
-sub count_tests
-{
-    my $test_data = shift;
-    my $count = 0;
-    foreach my $file (keys %{$test_data->{files}}) {
-        next if ref $test_data->{files}{$file} ne "ARRAY";
-        $count += int(@{$test_data->{files}{$file}});
-    }
-    return $count;
-}
 
 #
-# create WebFetch::Output::Capture to capture SiteNews data read by WebFetch
+# internal WebFetch::Output::Capture class captures SiteNews data read by WebFetch
 #
 package WebFetch::Output::Capture;
 use base 'WebFetch';
@@ -85,6 +64,46 @@ sub news_items
 package main;
 use Try::Tiny;
 
+#
+# test operations functions op_* used for tests specified in YAML data
+#
+
+# autopass test just does a pass() - for starter tests to check test infrastructure runs
+sub op_autopass
+{
+    my ($test_index, $name, $item, $news, $data) = @_;
+    pass("autopass: $name ($test_index)"); # don't test anything - just do a pass
+}
+
+# autofail test just does a fail() - called in case of an op with missing implementation function
+# this may appear in test data with intentional skip to test skipping
+sub op_autofail
+{
+    my ($test_index, $name, $item, $news, $data) = @_;
+    fail("autofail: $name ($test_index)"); # don't test anything - just do a fail
+}
+
+# from test operation name get function name & ref
+# returns a ref to the test operation function, or undef if it doesn't exist
+sub test_op
+{
+    my $op_name = shift;
+    my $func_name = "op_".$op_name;
+    return main->can($func_name);
+}
+
+# count tests from data file
+sub count_tests
+{
+    my $test_data = shift;
+    my $count = 0;
+    foreach my $file (keys %{$test_data->{files}}) {
+        next if ref $test_data->{files}{$file} ne "ARRAY";
+        $count += int(@{$test_data->{files}{$file}});
+    }
+    return $count;
+}
+
 # call WebFetch to process a SiteNews feed
 # uses test_probe option of WebFetch->run() so we can inspect WebFetch::Input::SiteNews object and errors
 sub capture_feed
@@ -106,6 +125,7 @@ sub capture_feed
         dest => "capture",
         dest_format => "capture",
         test_probe => \%test_probe,
+        debug => $debug_mode,
     );
 
     # run WebFetch
@@ -171,30 +191,47 @@ ok(WebFetch->has_config("Usage"), "Usage has been set in WebFetch::Config");
 # file-based tests
 #
 
+# run file-based tests from YAML data
+my $test_index = 0;
 foreach my $file (sort keys %{$test_data->{files}}) {
     next if ref $test_data->{files}{$file} ne "ARRAY";
 
     # process file as a SiteNews feed
-    my $test_data = capture_feed($temp_dir, $file);
-    WebFetch::debug "WebFetch run: ".Dumper($test_data);
+    WebFetch::debug "capture_feed($temp_dir, $input_dir/$file)";
+    my $capture_data = capture_feed($temp_dir, "$input_dir/$file");
+    WebFetch::debug "WebFetch run: ".Dumper($capture_data);
+    my @news_items = WebFetch::Output::Capture::news_items();
+    WebFetch::debug "news items: ".Dumper(\@news_items);
 
     # run tests specified in YAML
     foreach my $test_item (@{$test_data->{files}{$file}}) {
+        my $int = String::Interpolate::Named->new( { args => {
+            file => $file,
+            index => $test_index,
+            %$test_item,
+        }});
         SKIP: {
-            my $skip_reason;
-            if (not exists $test_item->{op}) {
-                $skip_reason = "test operation not specified";
-            } elsif (not main->can($test_item->{op})) {
-                $skip_reason = "test operation ".$test_item->{op}." not implemented";
-            }
-            SKIP $skip_reason, 1 if defined $skip_reason;
-
+            my ($skip_reason, $op_func);
             my $op = $test_item->{op};
-            if (exists $test_ops{$op}) {
-                $test_ops{$op}->($test_item, $test_data, "found $file data");
+            my $name = (exists $test_item->{name}) ? $int->interpolate($test_item->{name}) : "unnamed test";
+            if (not defined $op) {
+                $skip_reason = "test operation not specified: $name ($test_index)";
+            } elsif (exists $test_item->{skip}) {
+                $skip_reason = $test_item->{skip}.": $name ($test_index)";
             } else {
-                fail("found $file data");
+                $op_func = test_op($op);
+                if (not defined $op_func) {
+                    $skip_reason = "test operation $op not implemented: $name ($test_index)";
+                }
+            }
+            skip $skip_reason, 1 if defined $skip_reason;
+
+            if (defined $op_func) {
+                $op_func->($test_index, $name, $test_item, \@news_items, $capture_data);
+            } else {
+                op_autofail($test_index, $name, $test_item, \@news_items, $capture_data);
             }
         }
+        $test_index++;
     }
 }

@@ -34,11 +34,13 @@ my $Usage   = "--short short-output-file --long long-output-file";
 my $num_links = 5;
 
 # functions for access to internal data for testing
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _config_params
 {
     return { Options => \@Options, Usage => $Usage, num_links => $num_links };
 }
 sub _cat_priorities { return $cat_priorities; }
+## critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 
 # no user-servicable parts beyond this point
 
