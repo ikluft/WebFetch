@@ -32,6 +32,7 @@ Readonly::Scalar my $basic_tests => 9;
 package WebFetch::Output::Capture;
 use base 'WebFetch';
 use Try::Tiny;
+use Data::Dumper;
 
 __PACKAGE__->module_register( "output:capture" );
 my @news_items;
@@ -43,7 +44,7 @@ sub fmt_handler_capture
     my ( $self, $filename ) = @_;
 
     WebFetch::debug "fetch: ".Dumper($self->{data});
-    $self->no_savables_ok(); # rather than let WebFetch save the data, we'll take it here
+    #$self->no_savables_ok(); # rather than let WebFetch save the data, we'll take it here
     if (exists $self->{data}{records}) {
         push @news_items, @{$self->{data}{records}};
     }
@@ -115,13 +116,14 @@ sub capture_feed
     my $long_name = basename($sn_file, ".webfetch")."-long.out";
 
     # set up WebFetch->new() options
+    WebFetch::debug "capture_feed: sn_file=$sn_file short_name=$short_name long_name=$long_name";
     my %test_probe;
     my %Options = (
         dir => $dir,
         source_format => "sitenews",
         source => $sn_file,
-        short => $short_name,
-        long => $long_name,
+        short_path => $short_name,
+        long_path => $long_name,
         dest => "capture",
         dest_format => "capture",
         test_probe => \%test_probe,
@@ -130,10 +132,12 @@ sub capture_feed
 
     # run WebFetch
     try {
-        $classname->run(\%Options);
+        my $result = $classname->run(\%Options);
+        $test_probe{result} = $result;
     } catch {
+        WebFetch::debug "capture_feed: $classname->run() threw exception: ".Dumper($_);
         $test_probe{exception} = $_;
-    }
+    };
 
     return \%test_probe;
 }

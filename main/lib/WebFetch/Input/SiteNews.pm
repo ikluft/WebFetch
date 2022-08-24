@@ -27,7 +27,7 @@ use DateTime::Format::ISO8601;
 
 # set defaults
 my ( $cat_priorities, $now );
-my @Options = ( "short=s", "long=s", );
+my @Options = ( "short_path|short=s", "long_path|long=s", );
 my $Usage   = "--short short-output-file --long long-output-file";
 
 # configuration parameters
@@ -114,11 +114,16 @@ sub fetch
     # get local time for various date comparisons
     $now = DateTime->now;
 
-    # parse data file
+    # parse data file(s)
+    my @sources;
     if ( ( exists $self->{sources} ) and ( ref $self->{sources} eq "ARRAY" ) ) {
-        foreach my $source ( @{ $self->{sources} } ) {
-            $self->parse_input($source);
-        }
+        @sources = @{ $self->{sources} };
+    }
+    if ( exists $self->{source} ) {
+        push @sources, $self->{source};
+    }
+    foreach my $source (@sources) {
+        $self->parse_input($source);
     }
 
     # set parameters for the short news format
@@ -288,7 +293,7 @@ sub parse_input
             }
         }
         if ($posted) {
-            $dt          = WebFetch::parse_time( \%dt_opts, $posted );
+            $dt          = WebFetch::parse_date( \%dt_opts, $posted );
             $time_str    = WebFetch::gen_timestamp( \%dt_opts, $dt );
             $anchor_time = WebFetch::anchor_timestr( \%dt_opts, $dt );
         } else {
@@ -315,6 +320,82 @@ sub parse_input
     return;
 }
 
+# format handler function specific to this module's long-news output format
+sub fmt_handler_sitenews_long
+{
+    # TODO move sort block to separate function and remove the no-critic exemption
+    ## no critic ( BuiltinFunctions::RequireSimpleSortBlock )
+    my ( $self, $filename ) = @_;
+
+    # sort events for long display
+    my @long_news = sort {
+
+        # sort news entries for long display
+        # sorting priority:
+        #	date first
+        #	category/priority second
+        #	reverse file order last
+
+        # sort by date
+        my $lbl_fnum = $self->fname2fnum("label");
+        my ( $a_date, $b_date ) = ( $a->[$lbl_fnum], $b->[$lbl_fnum] );
+        $a_date =~ s/-.*//x;
+        $b_date =~ s/-.*//x;
+        if ( $a_date ne $b_date ) {
+            return $b_date cmp $a_date;
+        }
+
+        # sort by priority (within same date)
+        my $pri_fnum = $self->fname2fnum("priority");
+        if ( $a->[$pri_fnum] != $b->[$pri_fnum] ) {
+            return $a->[$pri_fnum] <=> $b->[$pri_fnum];
+        }
+
+        # sort by chronological order (within same date and priority)
+        return $a->[$lbl_fnum] cmp $b->[$lbl_fnum];
+    } @{ $self->{data}{records} };
+
+    # process the links for the long list
+    my ( @long_text, $prev, $url_prefix, $i );
+    $url_prefix =
+        ( defined $self->{url_prefix} )
+        ? $self->{url_prefix}
+        : "";
+    $prev = undef;
+    push @long_text, "<dl>";
+    my $lbl_fnum   = $self->fname2fnum("label");
+    my $date_fnum  = $self->fname2fnum("date");
+    my $title_fnum = $self->fname2fnum("title");
+    my $txt_fnum   = $self->fname2fnum("text");
+    my $exp_fnum   = $self->fname2fnum("expired");
+    my $pri_fnum   = $self->fname2fnum("priority");
+
+    for ( $i = 0 ; $i <= $#long_news ; $i++ ) {
+        my $news = $long_news[$i];
+        if ( ( !defined $prev->[$date_fnum] )
+            or $prev->[$date_fnum] ne $news->[$date_fnum] )
+        {
+            push @long_text, "<dt>" . $news->[$date_fnum];
+            push @long_text, "<dd>";
+        }
+        push @long_text,
+              "<a name=\""
+            . $news->[$lbl_fnum] . "\">"
+            . $news->[$txt_fnum]
+            . "</a>\n"
+            . "<!--- priority: "
+            . $news->[$pri_fnum]
+            . ( $news->[$exp_fnum] ? " expired" : "" ) . " --->";
+        push @long_text, "<p>";
+        $prev = $news;
+    }
+    push @long_text, "</dl>";
+
+    # store it for later save to disk
+    $self->html_savable( $self->{long_path}, join( "\n", @long_text ) . "\n" );
+    return;
+}
+
 #
 # utility functions
 #
@@ -328,14 +409,16 @@ sub expired
     return $entry->{expires} < $now;
 }
 
-# function to get the priority value from
+# function to compute a priority value which decays with age
 sub priority
 {
     my ($entry) = @_;
 
     return 999 if not exists $entry->{posted};
     return 999 if not defined $entry->{posted};
-    my $age   = ( $entry->{posted}->subtract_datetime($now) )->delta_days();
+
+    my $dt    = WebFetch::parse_date( $entry->{posted} );
+    my $age   = ( $dt->subtract_datetime($now) )->delta_days();
     my $bonus = 0;
 
     if ( $age <= 2 ) {
