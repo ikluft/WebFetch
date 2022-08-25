@@ -74,6 +74,7 @@ sub op_autopass
 {
     my ($test_index, $name, $item, $news, $data) = @_;
     pass("autopass: $name ($test_index)"); # don't test anything - just do a pass
+    return;
 }
 
 # autofail test just does a fail() - called in case of an op with missing implementation function
@@ -82,6 +83,17 @@ sub op_autofail
 {
     my ($test_index, $name, $item, $news, $data) = @_;
     fail("autofail: $name ($test_index)"); # don't test anything - just do a fail
+    return;
+}
+
+# test: count data records
+sub op_record_count
+{
+    my ($test_index, $name, $item, $news, $data) = @_;
+    my $expected_count = $item->{count};
+    my $found_count = int( @{$data->{webfetch}{data}{records}} );
+    is($found_count, $expected_count, "record count: $name / expect $expected_count ($test_index)");
+    return;
 }
 
 # from test operation name get function name & ref
