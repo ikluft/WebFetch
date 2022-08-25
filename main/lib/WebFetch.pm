@@ -1194,7 +1194,7 @@ sub do_actions
         # check for modules to handle the specified dest_format
         my $action_handler = "fmt_handler_" . $action_spec;
         if ( exists $modules{output}{$action_spec} ) {
-            foreach my $class ( @{ $modules{output}{$action_spec} } ) {
+            foreach my $class ( ref $self, @{ $modules{output}{$action_spec} } ) {
                 if ( $class->can($action_handler) ) {
                     $handler_ref = \&{ $class . "::" . $action_handler };
                     last;
@@ -1228,8 +1228,7 @@ sub do_actions
             }
         } else {
             warn "warning: action \"$action_spec\" specified but "
-                . "\&{\$self->$action_handler}() "
-                . "not defined in "
+                . "$action_handler}() method not defined in "
                 . ( ref $self )
                 . " - ignored\n";
         }
