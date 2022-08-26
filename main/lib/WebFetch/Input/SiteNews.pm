@@ -293,10 +293,14 @@ sub parse_input
             }
         }
         if ($posted) {
-            $dt          = WebFetch::parse_date( \%dt_opts, $posted );
-            $time_str    = WebFetch::gen_timestamp( \%dt_opts, $dt );
-            $anchor_time = WebFetch::anchor_timestr( \%dt_opts, $dt );
-        } else {
+            my $date_ref    = WebFetch::parse_date( \%dt_opts, $posted );
+            if (defined $date_ref) {
+                my $dt = (ref $date_ref eq "DateTime") ? $date_ref : DateTime->new(@$date_ref);
+                $time_str    = WebFetch::gen_timestamp( \%dt_opts, $dt );
+                $anchor_time = WebFetch::anchor_timestr( \%dt_opts, $dt );
+            }
+        }
+        if (not defined $time_str or not defined $anchor_time) {
             $time_str    = "undated";
             $anchor_time = "0000-undated";
         }
@@ -417,9 +421,11 @@ sub priority
     return 999 if not exists $entry->{posted};
     return 999 if not defined $entry->{posted};
 
-    my $dt    = WebFetch::parse_date( $entry->{posted} );
-    my $age   = ( $dt->subtract_datetime($now) )->delta_days();
-    my $bonus = 0;
+    my $date_ref = WebFetch::parse_date( $entry->{posted} );
+    return 999 if not defined $date_ref;
+    my $dt = (ref $date_ref eq "DateTime") ? $date_ref : DateTime->new(@$date_ref);
+    my $age      = ( $now->subtract_datetime($dt) )->delta_days();
+    my $bonus    = 0;
 
     if ( $age <= 2 ) {
         $bonus -= 2 - $age;

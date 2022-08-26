@@ -24,6 +24,7 @@ Readonly::Scalar my $date_num => 0; # field number for date from WebFetch::Input
 Readonly::Scalar my $title_num => 1; # field number for title
 Readonly::Scalar my $link_num => 1; # field number for link
 Readonly::Scalar my $creator_num => 5; # field number for creator
+Readonly::Scalar my $tmpdir_template => "WebFetch-XXXXXXXXXX";
 Readonly::Hash my %sitenews_global => (
     categories => "release",
     url_prefix => "https://example.net/webfetch-releases/",
@@ -118,11 +119,18 @@ sub process_feed
     return;
 }
 
+#
 # main
+#
 my $debug = 0;
 GetOptions("debug" => \$debug);
+
+# initialize debug mode setting and temporary directory for WebFetch
+# Temporary directory is required by WebFetch. But we don't use it, so autoclean to delete after use.
 WebFetch::debug_mode($debug);
-my $dir = File::Temp->newdir(CLEANUP => 1); # temporary directory required by WebFetch - we don't use it, so autoclean
+my $dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => 1, TMPDIR => 1);
+
+# process each feed URL
 foreach my $rss_url (@rss_urls) {
     process_feed($dir, $rss_url);
 }

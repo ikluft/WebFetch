@@ -25,6 +25,7 @@ Readonly::Scalar my $debug_mode => (exists $ENV{WEBFETCH_TEST_DEBUG} and $ENV{WE
 Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
 Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
+Readonly::Scalar my $tmpdir_template => "WebFetch-XXXXXXXXXX";
 
 #
 # internal WebFetch::Output::Capture class captures SiteNews data read by WebFetch
@@ -91,7 +92,7 @@ sub op_record_count
 {
     my ($test_index, $name, $item, $news, $data) = @_;
     my $expected_count = $item->{count};
-    my $found_count = int( @{$data->{webfetch}{data}{records}} );
+    my $found_count = exists $data->{webfetch}{data}{records} ? int( @{$data->{webfetch}{data}{records}} ) : 0;
     is($found_count, $expected_count, "record count: $name / expect $expected_count ($test_index)");
     return;
 }
@@ -155,9 +156,10 @@ sub capture_feed
 }
 
 
-# initialization
+# initialize debug mode setting and temporary directory for WebFetch
+# In debug mode the temp directory is not cleaned up (deleted) so that its contents can be examined.
 WebFetch::debug_mode($debug_mode);
-my $temp_dir = File::Temp->newdir(CLEANUP => ($debug_mode ? 0 : 1)); # temporary directory required by WebFetch
+my $temp_dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => ($debug_mode ? 0 : 1), TMPDIR => 1);
 
 # locate YAML file with test data
 if (! -d $input_dir) {

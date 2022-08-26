@@ -1228,9 +1228,9 @@ sub do_actions
             }
         } else {
             warn "warning: action \"$action_spec\" specified but "
-                . "$action_handler}() method not defined in "
+                . "$action_handler}() method not accessible in "
                 . ( ref $self )
-                . " - ignored\n";
+                . " or output classes - ignored\n";
         }
     }
     return;
@@ -2181,12 +2181,12 @@ sub parse_date
 
 # check YYYY-MM-DD date format
 # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
-    if ( $stamp =~ /^ (....) - (..) - (..) \s* $/x ) {
+    if ( $stamp =~ /^ (\d{4}) - (\d{2}) - (\d{2}) \s* $/x ) {
         $result = [ year => int($1), month => int($2), day => int($3), %opts ];
 
 # check YYYYMMDD format for backward compatibility: no longer ISO 8601 compliant since 2004 update
 # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
-    } elsif ( $stamp =~ /^ (....) (..) (..) \s* $/x ) {
+    } elsif ( $stamp =~ /^ (\d{4}) (\d{2}) (\d{2}) \s* $/x ) {
         $result = [ year => int($1), month => int($2), day => int($3), %opts ];
     }
 
@@ -2238,7 +2238,7 @@ sub gen_timestamp
     my $datetime;
     my $date_only = 0;    # boolean flag: true = use date only, false = full timestamp
     if ( ref $args[0] ) {
-        if ( $args[0]->isa("DateTime") ) {
+        if ( ref $args[0] eq "DateTime" ) {
             $datetime = $args[0];
             if ( exists $opts{locale} ) {
                 try {

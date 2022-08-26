@@ -4,6 +4,7 @@ files:
     - {name: "empty test"}
     - {op: autofail, skip: "intentional skip", name: "skip test"}
     - {op: autopass, name: "%{file} found"}
-    - {op: record_count, count: 25, name: "%{file} record count"}
+    - {op: record_count, count: 26, name: "%{file} record count"}
   01-webfetch-releases.webfetch:
     - {op: autopass, name: "%{file} found"}
+    - {op: record_count, count: 7, name: "%{file} record count"}
