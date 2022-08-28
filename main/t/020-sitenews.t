@@ -25,6 +25,7 @@ Readonly::Scalar my $debug_mode => (exists $ENV{WEBFETCH_TEST_DEBUG} and $ENV{WE
 Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
 Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
+Readonly::Scalar my $file_init_tests => 2;
 Readonly::Scalar my $tmpdir_template => "WebFetch-XXXXXXXXXX";
 
 #
@@ -45,7 +46,7 @@ sub fmt_handler_capture
     my ( $self, $filename ) = @_;
 
     WebFetch::debug "fetch: ".Dumper($self->{data});
-    #$self->no_savables_ok(); # rather than let WebFetch save the data, we'll take it here
+    $self->no_savables_ok(); # rather than let WebFetch save the data, we'll take it here
     if (exists $self->{data}{records}) {
         push @news_items, @{$self->{data}{records}};
     }
@@ -113,7 +114,7 @@ sub count_tests
     my $count = 0;
     foreach my $file (keys %{$test_data->{files}}) {
         next if ref $test_data->{files}{$file} ne "ARRAY";
-        $count += int(@{$test_data->{files}{$file}});
+        $count += $file_init_tests + int(@{$test_data->{files}{$file}});
     }
     return $count;
 }
@@ -220,6 +221,12 @@ foreach my $file (sort keys %{$test_data->{files}}) {
     WebFetch::debug "WebFetch run: ".Dumper($capture_data);
     my @news_items = WebFetch::Output::Capture::news_items();
     WebFetch::debug "news items: ".Dumper(\@news_items);
+
+    # per-file initial tests
+    ok(not (exists $capture_data->{webfetch}{data}{exception}), "no exceptions in $file ($test_index)");
+    $test_index++;
+    is($capture_data->{result}, 0, "exitcode 0 expected from $file ($test_index)");
+    $test_index++;
 
     # run tests specified in YAML
     foreach my $test_item (@{$test_data->{files}{$file}}) {

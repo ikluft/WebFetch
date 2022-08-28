@@ -1194,7 +1194,7 @@ sub do_actions
         # check for modules to handle the specified dest_format
         my $action_handler = "fmt_handler_" . $action_spec;
         if ( exists $modules{output}{$action_spec} ) {
-            foreach my $class ( ref $self, @{ $modules{output}{$action_spec} } ) {
+            foreach my $class ( @{ $modules{output}{$action_spec} }, ref $self ) {
                 if ( $class->can($action_handler) ) {
                     $handler_ref = \&{ $class . "::" . $action_handler };
                     last;
