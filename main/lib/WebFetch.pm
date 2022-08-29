@@ -1374,9 +1374,7 @@ sub get
     if ( not defined $source ) {
         $source = $self->{source};
     }
-    if ( $self->{debug} ) {
-        print STDERR "debug: get(" . $source . ")\n";
-    }
+    debug "get(" . $source . ")\n";
 
     # send request, capture response
     my $ua = LWP::UserAgent->new;
@@ -1450,9 +1448,7 @@ sub wf_export
     my @export_out;
     my $delim = "";    # blank line is delimeter
 
-    if ( $self->{debug} ) {
-        print STDERR "debug: entered wf_export, output to $filename\n";
-    }
+    debug "entered wf_export, output to $filename\n";
 
     # validate parameters
     if ( not ref $fields or ref $fields ne "ARRAY" ) {
@@ -2045,9 +2041,7 @@ sub save
 {
     my $self = shift;
 
-    if ( $self->{debug} ) {
-        print STDERR "entering save()\n";
-    }
+    debug "entering save()\n";
 
     # check if we have attributes needed to proceed
     $self->_save_precheck();
