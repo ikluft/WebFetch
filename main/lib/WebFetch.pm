@@ -108,6 +108,7 @@ reference to a module that is derived from (inherits from) WebFetch.
 
 use Carp qw(croak);
 use Getopt::Long;
+use Readonly;
 use LWP::UserAgent;
 use HTTP::Request;
 use DateTime;
@@ -115,6 +116,9 @@ use DateTime::Format::ISO8601;
 use DateTime::Locale;
 use Date::Calc;
 use WebFetch::Data::Config;
+
+# constants
+Readonly::Array my @WebFetch_formatters => qw( output:html output:xml output:wf );
 
 # define exceptions/errors
 use Try::Tiny;
@@ -228,8 +232,8 @@ sub debug_mode
 {
     my @args = @_;
 
-# check if any arguments were provided
-# counting parameters allows us to handle undef if provided as a value (can't do that with "defined" test)
+    # check if any arguments were provided
+    # counting parameters allows us to handle undef if provided as a value (can't do that with "defined" test)
     if ( scalar @args == 0 ) {
 
         # if no new value provided, return debug configuration value
@@ -755,6 +759,9 @@ sub new
     # initialize the object parameters
     $self->init(@args);
 
+    # register WebFetch-provided formatters
+    WebFetch->module_register( @WebFetch_formatters );
+
     # go fetch the data
     # this function must be provided by a derived module
     # non-fetching modules (i.e. data) must define $self->{no_fetch}=1
@@ -1188,6 +1195,7 @@ sub do_actions
     }
 
     # loop through all the actions
+    my @checked;
     foreach my $action_spec ( keys %{ $self->{actions} } ) {
         my $handler_ref;
 
@@ -1195,8 +1203,8 @@ sub do_actions
         my $action_handler = "fmt_handler_" . $action_spec;
         if ( exists $modules{output}{$action_spec} ) {
             foreach my $class ( @{ $modules{output}{$action_spec} }, ref $self ) {
-                if ( $class->can($action_handler) ) {
-                    $handler_ref = \&{ $class . "::" . $action_handler };
+                if (my $func_ref = $class->can($action_handler) ) {
+                    $handler_ref = $func_ref;
                     last;
                 }
             }

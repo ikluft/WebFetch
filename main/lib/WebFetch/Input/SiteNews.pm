@@ -45,7 +45,7 @@ sub _cat_priorities { return $cat_priorities; }
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( _config_params(), "cmdline", "input:sitenews" );
+__PACKAGE__->module_register( _config_params(), "cmdline", "input:sitenews", "output:sitenews_long" );
 
 =head1 SYNOPSIS
 
