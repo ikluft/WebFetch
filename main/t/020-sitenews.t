@@ -46,7 +46,6 @@ sub fmt_handler_capture
     my ( $self, $filename ) = @_;
 
     WebFetch::debug "fetch: ".Dumper($self->{data});
-    $self->no_savables_ok(); # rather than let WebFetch save the data, we'll take it here
     if (exists $self->{data}{records}) {
         push @news_items, @{$self->{data}{records}};
     }
