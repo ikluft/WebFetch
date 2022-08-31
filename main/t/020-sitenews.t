@@ -10,6 +10,7 @@ use Data::Dumper;
 use String::Interpolate::Named;
 use File::Temp;
 use File::Basename;
+use File::Compare;
 use Readonly;
 use YAML::XS;
 
@@ -66,6 +67,11 @@ sub news_items
 package main;
 use Try::Tiny;
 
+# initialize debug mode setting and temporary directory for WebFetch
+# In debug mode the temp directory is not cleaned up (deleted) so that its contents can be examined.
+WebFetch::debug_mode($debug_mode);
+my $temp_dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => ($debug_mode ? 0 : 1), TMPDIR => 1);
+
 #
 # test operations functions op_* used for tests specified in YAML data
 #
@@ -94,6 +100,15 @@ sub op_record_count
     my $expected_count = $item->{count};
     my $found_count = exists $data->{webfetch}{data}{records} ? int( @{$data->{webfetch}{data}{records}} ) : 0;
     is($found_count, $expected_count, "record count: $name / expect $expected_count ($test_index)");
+    return;
+}
+
+sub op_output_cmp
+{
+    my ($test_index, $name, $item, $news, $data) = @_;
+    my $expected_file = $input_dir."/".$item->{file};
+    my $test_file = $temp_dir."/".$item->{file};
+    ok(compare("file1","file2"), $item->{file}." output comparison ($test_index)");
     return;
 }
 
@@ -155,11 +170,6 @@ sub capture_feed
     return \%test_probe;
 }
 
-
-# initialize debug mode setting and temporary directory for WebFetch
-# In debug mode the temp directory is not cleaned up (deleted) so that its contents can be examined.
-WebFetch::debug_mode($debug_mode);
-my $temp_dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => ($debug_mode ? 0 : 1), TMPDIR => 1);
 
 # locate YAML file with test data
 if (! -d $input_dir) {
