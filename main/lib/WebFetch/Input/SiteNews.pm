@@ -286,7 +286,7 @@ sub parse_input
             ( defined $self->{url_prefix} ) ? $self->{url_prefix} : "";
 
 # timestamp processing using optional locale and time_zone from SiteNews file's global settings at the top
-        my ( %dt_opts, $dt, $time_str, $anchor_time );
+        my ( %dt_opts, $time_str, $anchor_time );
         foreach my $dt_key (qw(locale time_zone)) {
             if ( exists $self->{$dt_key} ) {
                 $dt_opts{$dt_key} = $self->{$dt_key};
