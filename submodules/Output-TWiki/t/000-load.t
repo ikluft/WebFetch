@@ -15,8 +15,5 @@ plan tests => int(@modules);
 
 # test loading modules
 foreach my $mod (@modules) {
-    use_ok($mod);
+    require_ok($mod);
 }
-
-require WebFetch;
-diag( "Testing WebFetch::Output::TWiki $WebFetch::Output::TWiki::VERSION, Perl $], $^X" );

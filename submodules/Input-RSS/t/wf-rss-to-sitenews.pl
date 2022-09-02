@@ -14,7 +14,6 @@ use Data::Dumper;
 use DateTime::Format::ISO8601;
 
 use WebFetch;
-BEGIN { if (not defined $WebFetch::VERSION) { $WebFetch::VERSION = "0-dev"; } } # placeholder if not in a dzil build
 use WebFetch::Input::RSS;
 
 # configuration

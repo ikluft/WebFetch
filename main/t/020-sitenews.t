@@ -233,7 +233,7 @@ foreach my $file (sort keys %{$test_data->{files}}) {
     # per-file initial tests
     ok(not (exists $capture_data->{webfetch}{data}{exception}), "no exceptions in $file ($test_index)");
     $test_index++;
-    is($capture_data->{result}, 0, "exitcode 0 expected from $file ($test_index)");
+    is($capture_data->{result}, 0, "success result expected from $file ($test_index)");
     $test_index++;
 
     # run tests specified in YAML
