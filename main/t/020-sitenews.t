@@ -28,6 +28,10 @@ Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
 Readonly::Scalar my $file_init_tests => 2;
 Readonly::Scalar my $tmpdir_template => "WebFetch-XXXXXXXXXX";
+Readonly::Hash my %dt_param_defaults => (
+    locale => "en-US",
+    time_zone => "UTC",
+);
 
 #
 # internal WebFetch::Output::Capture class captures SiteNews data read by WebFetch
@@ -107,6 +111,58 @@ sub op_output_cmp
     return;
 }
 
+sub op_value_recurse
+{
+    my ($data_root, $depth, $path) = @_;
+    my $head_path = shift @$path;
+    my $empty_path = int @$path == 0; # flag: true if remainder of path is empty
+
+    # increment depth
+    $depth++;
+
+    # check hash
+    if (ref $data_root eq "HASH") {
+        if (not exists $data_root->{$head_path}) {
+            die "op_value_recurse: $head_path does not exist (depth $depth)";
+        }
+        $empty_path and return $data_root->{$head_path};
+        return op_value_recurse($data_root->{$head_path}, $depth, $path);
+    }
+
+    # check array
+    if (ref $data_root eq "ARRAY") {
+        if (not exists $data_root->[$head_path]) {
+            die "op_value_recurse: $head_path does not exist (depth $depth)";
+        }
+        $empty_path and return $data_root->[$head_path];
+        return op_value_recurse($data_root->[$head_path], $depth, $path);
+    }
+
+    # error if we got here - no container object to descend into for remaining path items
+    die "path attempts to descend below available data at $head_path (depth $depth)";
+}
+
+sub op_value
+{
+    my ($test_index, $name, $item, $news, $data) = @_;
+    my $expected_value = $item->{expected};
+    my $valid_path = ((exists $item->{path}) and (ref $item->{path} eq "ARRAY"));
+    my $path_name = $valid_path ? join("-",@{$item->{path}}) : "";
+    my $test_name = "path: ($path_name) / expect $expected_value ($test_index)";
+    if (not $valid_path) {
+        fail($test_name . " - fail: no path");
+        return;
+    }
+    my $value;
+    try {
+        $value = op_value_recurse($data, 0, $item->{path});
+    } catch {
+        fail($test_name . " - fail: $_");
+    };
+    is($value, $expected_value, $test_name);
+    return;
+}
+
 # from test operation name get function name & ref
 # returns a ref to the test operation function, or undef if it doesn't exist
 sub test_op
@@ -132,7 +188,7 @@ sub count_tests
 # uses test_probe option of WebFetch->run() so we can inspect WebFetch::Input::SiteNews object and errors
 sub capture_feed
 {
-    my ($dir, $sn_file) = @_;
+    my ($dir, $sn_file, $params) = @_;
 
     # generate short and long output file names
     my $short_name = basename($sn_file, ".webfetch")."-short.out";
@@ -151,6 +207,7 @@ sub capture_feed
         dest_format => "capture",
         test_probe => \%test_probe,
         debug => $debug_mode,
+        (defined $params ? %$params : ()),
     );
 
     # run WebFetch
@@ -167,6 +224,7 @@ sub capture_feed
 
 # initialize debug mode setting and temporary directory for WebFetch
 # In debug mode the temp directory is not cleaned up (deleted) so that its contents can be examined.
+# For later manual cleanup, the temp dirs are easy to find named WebFetch-... in the system's temp dir location.
 WebFetch::debug_mode($debug_mode);
 my $temp_dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => ($debug_mode ? 0 : 1), TMPDIR => 1);
 
@@ -224,7 +282,7 @@ foreach my $file (sort keys %{$test_data->{files}}) {
     next if ref $test_data->{files}{$file} ne "ARRAY";
 
     # process file as a SiteNews feed
-    WebFetch::debug "capture_feed($temp_dir, $input_dir/$file)";
+    WebFetch::debug "capture_feed($temp_dir, $input_dir/$file, \%dt_params)";
     my $capture_data = capture_feed($temp_dir, "$input_dir/$file");
     WebFetch::debug "WebFetch run: ".Dumper($capture_data);
     my @news_items = WebFetch::Output::Capture::news_items();
@@ -246,6 +304,19 @@ foreach my $file (sort keys %{$test_data->{files}}) {
         SKIP: {
             my ($skip_reason, $op_func);
             my $op = $test_item->{op};
+
+            # set locale & time zone per test, or from defaults
+            my %dt_params;
+            foreach my $dt_key (keys %dt_param_defaults) {
+                if (exists $test_item->{$dt_key}) {
+                    $dt_params{$dt_key} = $test_item->{$dt_key};
+                } elsif (exists $test_data->{$dt_key}) {
+                    $dt_params{$dt_key} = $test_data->{$dt_key};
+                } else {
+                    $dt_params{$dt_key} = $dt_param_defaults{$dt_key};
+                }
+            }
+
             my $name = (exists $test_item->{name}) ? $int->interpolate($test_item->{name}) : "unnamed test";
             if (not defined $op) {
                 $skip_reason = "test operation not specified: $name ($test_index)";

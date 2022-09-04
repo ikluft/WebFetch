@@ -7,6 +7,8 @@ files:
     - {op: record_count, count: 26, name: "%{file} record count"}
     - {op: output_cmp, file: 00-basic-sitenews-short.out}
     - {op: output_cmp, file: 00-basic-sitenews-long.out}
+    - {op: value, expected: 0, path: [result]}
+    - {op: value, expected: GMT, path: [webfetch, time_zone]}
   01-webfetch-releases.webfetch:
     - {op: autopass, name: "%{file} found"}
     - {op: record_count, count: 7, name: "%{file} record count"}
