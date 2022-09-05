@@ -28,6 +28,7 @@ Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
 Readonly::Scalar my $file_init_tests => 2;
 Readonly::Scalar my $tmpdir_template => "WebFetch-XXXXXXXXXX";
+Readonly::Array my @dt_param_optional => qw(testing_faketime);
 Readonly::Hash my %dt_param_defaults => (
     locale => "en-US",
     time_zone => "UTC",
@@ -281,9 +282,27 @@ my $test_index = 0;
 foreach my $file (sort keys %{$test_data->{files}}) {
     next if ref $test_data->{files}{$file} ne "ARRAY";
 
+    # set parameters per test-file or from defaults: locale, time zone
+    # optional parameter: testing_faketime
+    my %dt_params;
+    foreach my $dt_key (keys %dt_param_defaults) {
+        # parameters with default values
+        if (exists $test_data->{$dt_key}) {
+            $dt_params{$dt_key} = $test_data->{$dt_key};
+        } else {
+            $dt_params{$dt_key} = $dt_param_defaults{$dt_key};
+        }
+    }
+    foreach my $dt_key (@dt_param_optional) {
+        # optional parameters only used if provided in object data
+        if (exists $test_data->{$dt_key}) {
+            $dt_params{$dt_key} = $test_data->{$dt_key};
+        }
+    }
+
     # process file as a SiteNews feed
-    WebFetch::debug "capture_feed($temp_dir, $input_dir/$file, \%dt_params)";
-    my $capture_data = capture_feed($temp_dir, "$input_dir/$file");
+    WebFetch::debug "capture_feed($temp_dir, $input_dir/$file, ".(grep {$_."=".$dt_params{$_}} keys %dt_params).")";
+    my $capture_data = capture_feed($temp_dir, "$input_dir/$file", \%dt_params);
     WebFetch::debug "WebFetch run: ".Dumper($capture_data);
     my @news_items = WebFetch::Output::Capture::news_items();
     WebFetch::debug "news items: ".Dumper(\@news_items);
@@ -304,18 +323,6 @@ foreach my $file (sort keys %{$test_data->{files}}) {
         SKIP: {
             my ($skip_reason, $op_func);
             my $op = $test_item->{op};
-
-            # set locale & time zone per test, or from defaults
-            my %dt_params;
-            foreach my $dt_key (keys %dt_param_defaults) {
-                if (exists $test_item->{$dt_key}) {
-                    $dt_params{$dt_key} = $test_item->{$dt_key};
-                } elsif (exists $test_data->{$dt_key}) {
-                    $dt_params{$dt_key} = $test_data->{$dt_key};
-                } else {
-                    $dt_params{$dt_key} = $dt_param_defaults{$dt_key};
-                }
-            }
 
             my $name = (exists $test_item->{name}) ? $int->interpolate($test_item->{name}) : "unnamed test";
             if (not defined $op) {

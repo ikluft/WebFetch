@@ -112,7 +112,12 @@ sub fetch
     # process the links
 
     # get local time for various date comparisons
-    $now = DateTime->now;
+    if (exists $self->{testing_faketime}) {
+        # use a pre-specified timestamp for testing purposes so news elements are same age as expected result
+        $now = DateTime::Format::ISO8601->parse_datetime($self->{testing_faketime});
+    } else {
+        $now = DateTime->now;
+    }
 
     # parse data file(s)
     my @sources;
