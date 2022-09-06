@@ -146,11 +146,11 @@ Readonly::Hash my %default_modules => (
 
 # parameters which are redirected into a sub-hash
 Readonly::Hash my %redirect_params => (
-    locale => "datetime_settings",
+    locale    => "datetime_settings",
     time_zone => "datetime_settings",
-    notable => "style",
-    para => "style",
-    ul => "style",
+    notable   => "style",
+    para      => "style",
+    ul        => "style",
 );
 
 #
@@ -214,8 +214,7 @@ use Exception::Class (
     'WebFetch::Exception::MustOverride' => {
         isa         => 'WebFetch::TracedException',
         alias       => 'throw_abstract',
-        description => "A WebFetch function was called which is "
-            . "supposed to be overridden by a subclass",
+        description => "A WebFetch function was called which is " . "supposed to be overridden by a subclass",
     },
 
     'WebFetch::Exception::NetworkGet' => {
@@ -289,8 +288,7 @@ sub _module_registry
 {
     my ( $class, $key ) = @_;
     if ( not $class->isa("WebFetch") ) {
-        throw_incompatible_class(
-            "invalid _module_registry() call for '$class': not in the WebFetch hierarchy");
+        throw_incompatible_class("invalid _module_registry() call for '$class': not in the WebFetch hierarchy");
     }
     if ( exists $modules{$key} ) {
         return $modules{$key};
@@ -315,19 +313,17 @@ sub version
 {
     my $class = shift;
 
-    if ( not defined $class) {
-        throw_incompatible_class(
-            "invalid version() call on undefined value");
+    if ( not defined $class ) {
+        throw_incompatible_class("invalid version() call on undefined value");
     }
     if ( not $class->isa("WebFetch") ) {
-        throw_incompatible_class(
-            "invalid version() call for '$class': not in the WebFetch hierarchy");
+        throw_incompatible_class("invalid version() call for '$class': not in the WebFetch hierarchy");
     }
     {
         ## no critic (TestingAndDebugging::ProhibitNoStrict)
         no strict 'refs';
-        if ( defined ${ $class."::VERSION" } ) {
-            return ${ $class."::VERSION" };
+        if ( defined ${ $class . "::VERSION" } ) {
+            return ${ $class . "::VERSION" };
         }
     }
     if ( defined $WebFetch::VERSION ) {
@@ -350,8 +346,7 @@ sub config
 {
     my ( $class, $key, $value ) = @_;
     if ( not $class->isa("WebFetch") ) {
-        throw_incompatible_class(
-            "invalid config() call for '$class': not in the WebFetch hierarchy");
+        throw_incompatible_class("invalid config() call for '$class': not in the WebFetch hierarchy");
     }
     return WebFetch::Data::Config->accessor( $key, $value );
 }
@@ -368,8 +363,7 @@ sub has_config
 {
     my ( $class, $key ) = @_;
     if ( not $class->isa("WebFetch") ) {
-        throw_incompatible_class(
-            "invalid has_config() call for '$class': not in the WebFetch hierarchy");
+        throw_incompatible_class("invalid has_config() call for '$class': not in the WebFetch hierarchy");
     }
     return WebFetch::Data::Config->contains($key);
 }
@@ -385,8 +379,7 @@ sub del_config
 {
     my ( $class, $key ) = @_;
     if ( not $class->isa("WebFetch") ) {
-        throw_incompatible_class(
-            "invalid del_config() call for '$class': not in the WebFetch hierarchy");
+        throw_incompatible_class("invalid del_config() call for '$class': not in the WebFetch hierarchy");
     }
     return WebFetch::Data::Config->del($key);
 }
@@ -401,8 +394,7 @@ sub import_config
 {
     my ( $class, $hashref ) = @_;
     if ( not $class->isa("WebFetch") ) {
-        throw_incompatible_class(
-            "invalid import_config() call for '$class': not in the WebFetch hierarchy");
+        throw_incompatible_class("invalid import_config() call for '$class': not in the WebFetch hierarchy");
     }
 
     # import config entries
@@ -423,8 +415,7 @@ sub keys_config
 {
     my ($class) = @_;
     if ( not $class->isa("WebFetch") ) {
-        throw_incompatible_class(
-            "invalid import_config() call for '$class': not in the WebFetch hierarchy");
+        throw_incompatible_class("invalid import_config() call for '$class': not in the WebFetch hierarchy");
     }
     my $instance = WebFetch::Data::Config->instance();
     return keys %$instance;
@@ -669,7 +660,7 @@ sub collect_cmdline
     if ( ( exists $modules{cmdline} ) and ( ref $modules{cmdline} eq "ARRAY" ) ) {
         foreach my $cli_mod ( @{ $modules{cmdline} } ) {
 
-   # obtain ref to module symbol table for backward compatibility with old @Options/$Usage interface
+            # obtain ref to module symbol table for backward compatibility with old @Options/$Usage interface
             my $symtab;
             {
                 ## no critic (TestingAndDebugging::ProhibitNoStrict)
@@ -677,7 +668,7 @@ sub collect_cmdline
                 $symtab = \%{ $cli_mod . "::" };
             }
 
-# get command line options - try WebFetch config first (preferred), otherwise module symtab (deprecated)
+            # get command line options - try WebFetch config first (preferred), otherwise module symtab (deprecated)
             if ( WebFetch->has_config("Options") ) {
                 push @mod_options, WebFetch->config("Options");
             } elsif ( ( exists $symtab->{Options} )
@@ -686,7 +677,7 @@ sub collect_cmdline
                 push @mod_options, @{ $symtab->{Options} };
             }
 
-# get command line usage - try WebFetch config first (preferred), otherwise module symtab (deprecated)
+            # get command line usage - try WebFetch config first (preferred), otherwise module symtab (deprecated)
             if ( WebFetch->has_config("Usage") ) {
                 push @mod_usage, WebFetch->config("Usage");
             } elsif ( ( exists $symtab->{Usage} )
@@ -716,9 +707,8 @@ sub fetch_main2
     my ( $options_result, %options );
     try {
         $options_result = GetOptions(
-            \%options,    "dir:s",           "group:s", "mode:s",
-            "source=s",   "source_format:s", "dest=s",  "dest_format:s",
-            "fetch_urls", "quiet",           "debug",   @mod_options
+            \%options, "dir:s",         "group:s",    "mode:s", "source=s", "source_format:s",
+            "dest=s",  "dest_format:s", "fetch_urls", "quiet",  "debug",    @mod_options
         )
     } catch {
         throw_getopt_error("command line processing failed: $_");
@@ -822,7 +812,7 @@ sub new
     $self->init(@args);
 
     # register WebFetch-provided formatters
-    WebFetch->module_register( @WebFetch_formatters );
+    WebFetch->module_register(@WebFetch_formatters);
 
     # go fetch the data
     # this function must be provided by a derived module
@@ -861,8 +851,8 @@ sub init
     my %params = @args;
 
     # set parameters into $self with the set_param() method
-    foreach my $key (keys %params) {
-        $self->set_param($key, $params{$key});
+    foreach my $key ( keys %params ) {
+        $self->set_param( $key, $params{$key} );
     }
     return;
 }
@@ -885,23 +875,26 @@ sub set_param
 {
     my ( $self, $key, $value ) = @_;
 
-    if (exists $redirect_params{$key}) {
+    if ( exists $redirect_params{$key} ) {
+
         # reorganize parameters known to belong in a sub-hash
         # configure this in %redirect_params constant
         my $hash_name = $redirect_params{$key};
 
         # make sure we can move the parameter to the sub-hash
-        if (not $self->{$hash_name}) {
+        if ( not $self->{$hash_name} ) {
             $self->{$hash_name} = {};
         } else {
-            if (reftype($self->{$hash_name}) ne "HASH") {
-                throw_param_error("unable to redirect '$key' parameter into '$hash_name' "
-                    ."because it already exists and is not a hash");
+            if ( reftype( $self->{$hash_name} ) ne "HASH" ) {
+                throw_param_error( "unable to redirect '$key' parameter into '$hash_name' "
+                        . "because it already exists and is not a hash" );
             }
         }
+
         # set the value in the destination sub-hash
         $self->{$hash_name}{$key} = $value;
     } else {
+
         # if not intercepted, set the value directly to the key name
         $self->{$key} = $value;
     }
@@ -1068,8 +1061,7 @@ sub run
             $test_probe_ref->{errors} = \@errors;
         }
         if (@errors) {
-            throw_save_error(
-                "error saving results in " . $obj->{dir} . "\n" . join( "\n", @errors ) . "\n" );
+            throw_save_error( "error saving results in " . $obj->{dir} . "\n" . join( "\n", @errors ) . "\n" );
         }
     }
 
@@ -1310,7 +1302,7 @@ sub do_actions
         my $action_handler = "fmt_handler_" . $action_spec;
         if ( exists $modules{output}{$action_spec} ) {
             foreach my $class ( @{ $modules{output}{$action_spec} }, ref $self ) {
-                if (my $func_ref = $class->can($action_handler) ) {
+                if ( my $func_ref = $class->can($action_handler) ) {
                     $handler_ref = $func_ref;
                     last;
                 }
@@ -1499,8 +1491,7 @@ sub get
 
     # abort on failure
     if ( $response->is_error ) {
-        WebFetch::Exception::NetworkGet->throw(
-            "The request received an error: " . $response->as_string );
+        WebFetch::Exception::NetworkGet->throw( "The request received an error: " . $response->as_string );
     }
 
     # return the content
@@ -1613,28 +1604,32 @@ sub wf_export
 sub _style_para    { my $self = shift; return ( exists $self->{style}{para} )    ? $self->{style}{para}    : 0; }
 sub _style_notable { my $self = shift; return ( exists $self->{style}{notable} ) ? $self->{style}{notable} : 0; }
 sub _style_ul      { my $self = shift; return ( exists $self->{style}{ul} )      ? $self->{style}{ul}      : 0; }
+
 sub _style_bullet
 {
     my $self = shift;
     return 1
-        if not exists $self->{style}{para} and not exists $self->{style}{ul} and not exists $self->{style}{bullet};
-    return ( exists $self->{style}{bullet} )  ? $self->{style}{bullet}  : 0;
+        if not exists $self->{style}{para}
+        and not exists $self->{style}{ul}
+        and not exists $self->{style}{bullet};
+    return ( exists $self->{style}{bullet} ) ? $self->{style}{bullet} : 0;
 }
+
 sub _html_gen_tag
 {
-    my ($self, $tag, %params) = @_;
+    my ( $self, $tag, %params ) = @_;
     my $close_tag = 0;
     if ( exists $params{_close} ) {
         $close_tag = $params{_close} ? 1 : 0;
         delete $params{_close};
     }
     my $css_class = exists $self->{css_class} ? $self->{css_class} : "webfetch";
-    return "<$tag class=\"$css_class-$tag\" "
-        .join( " ", grep { "$_=\"".$params{$_}."\"" } keys %params )
-        .($close_tag ? "/" : "")
-        .">";
+    return
+          "<$tag class=\"$css_class-$tag\" "
+        . join( " ", grep { "$_=\"" . $params{$_} . "\"" } keys %params )
+        . ( $close_tag ? "/" : "" ) . ">";
 }
-sub _html_gen_untag { my ($self, $tag) = @_; return "</$tag>"; }
+sub _html_gen_untag { my ( $self, $tag ) = @_; return "</$tag>"; }
 
 =item $obj->html_gen( $filename, $format_func, $links )
 
@@ -1725,9 +1720,9 @@ sub html_gen
         push @result, $self->_html_gen_tag("center");
         push @result, $self->_html_gen_tag("table");
         push @result, $self->_html_gen_tag("tr");
-        push @result, $self->_html_gen_tag("td", valign => 'top');
+        push @result, $self->_html_gen_tag( "td", valign => 'top' );
     }
-    if ($self->_style_ul() ) {
+    if ( $self->_style_ul() ) {
         push @result, $self->_html_gen_tag("ul");
     }
     $self->font_start( \@result );
@@ -1735,7 +1730,7 @@ sub html_gen
         foreach my $entry (@$links) {
             push @result,
                 (
-                $self->_style_ul()
+                  $self->_style_ul()
                 ? $self->_html_gen_tag("li")
                 : ( $self->_style_bullet() ? "&#149;&nbsp;" : "" )
                 ) . &$format_func(@$entry);
@@ -1749,13 +1744,13 @@ sub html_gen
             {
                 $self->font_end( \@result );
                 push @result, $self->_html_gen_untag("td");
-                push @result, $self->_html_gen_tag("td", width => '45%', valign => 'top');
+                push @result, $self->_html_gen_tag( "td", width => '45%', valign => 'top' );
                 $self->font_start( \@result );
             } else {
-                if ($self->_style_para()) {
-                    push @result, $self->_html_gen_tag("p", _close => 1);
-                } elsif ($self->_style_bullet()) {
-                    push @result, $self->_html_gen_tag("br", _close => 1);
+                if ( $self->_style_para() ) {
+                    push @result, $self->_html_gen_tag( "p", _close => 1 );
+                } elsif ( $self->_style_bullet() ) {
+                    push @result, $self->_html_gen_tag( "br", _close => 1 );
                 }
             }
         }
@@ -1766,7 +1761,7 @@ sub html_gen
             . "Please check again later.)</i>";
     }
     $self->font_end( \@result );
-    if ($self->_style_ul()) {
+    if ( $self->_style_ul() ) {
         push @result, $self->_html_gen_untag("ul");
     }
     if ( not $self->_style_notable() ) {
@@ -1789,8 +1784,7 @@ sub font_start
         push @$result,
               "<font"
             . ( ( defined $self->{font_size} ) ? " size=" . $self->{font_size}          : "" )
-            . ( ( defined $self->{font_face} ) ? " face=\"" . $self->{font_face} . "\"" : "" )
-            . ">";
+            . ( ( defined $self->{font_face} ) ? " face=\"" . $self->{font_face} . "\"" : "" ) . ">";
     }
     return;
 }
@@ -1831,12 +1825,16 @@ sub html_savable
 
     $self->raw_savable( $filename,
               "<!--- begin text generated by "
-            . "Perl5 WebFetch " . WebFetch->version() . " - do not manually edit --->\n"
+            . "Perl5 WebFetch "
+            . WebFetch->version()
+            . " - do not manually edit --->\n"
             . "<!--- WebFetch can be found at "
             . "http://www.webfetch.org/ --->\n"
             . $content
             . "<!--- end text generated by "
-            . "Perl5 WebFetch " . WebFetch->version() . " - do not manually edit --->\n" );
+            . "Perl5 WebFetch "
+            . WebFetch->version()
+            . " - do not manually edit --->\n" );
     return;
 }
 
@@ -2025,14 +2023,12 @@ sub _save_file_mode
         if ( $gid !~ /^[0-9]+$/ox ) {
             $gid = ( getgrnam($gid) )[2];
             if ( not defined $gid ) {
-                $savable->{error} =
-                    "cannot chgrp " . $new_content . ": " . $savable->{group} . " does not exist";
+                $savable->{error} = "cannot chgrp " . $new_content . ": " . $savable->{group} . " does not exist";
                 return 0;
             }
         }
         if ( not chown $>, $gid, $new_content ) {
-            $savable->{error} =
-                "cannot chgrp " . $new_content . " to " . $savable->{group} . ": $!";
+            $savable->{error} = "cannot chgrp " . $new_content . " to " . $savable->{group} . ": $!";
             return 0;
         }
     }
@@ -2059,9 +2055,7 @@ sub _save_check_index
     my $was_in_index = 0;
     if ( ( exists $savable->{url} ) and ( exists $savable->{index} ) ) {
         require DB_File;
-        tie %id_index, 'DB_File',
-            $self->{dir} . "/id_index.db",
-            &DB_File::O_CREAT | &DB_File::O_RDWR, oct(640);
+        tie %id_index, 'DB_File', $self->{dir} . "/id_index.db", &DB_File::O_CREAT | &DB_File::O_RDWR, oct(640);
         if ( exists $id_index{ $savable->{url} } ) {
             ( $timestamp, $filename ) =
                 split /#/x, $id_index{ $savable->{url} };
@@ -2109,9 +2103,7 @@ sub _save_report_errors
     my $err_count = 0;
     foreach my $savable ( @{ $self->{savable} } ) {
         if ( exists $savable->{error} ) {
-            print STDERR "WebFetch: failed to save "
-                . $savable->{file} . ": "
-                . $savable->{error} . "\n";
+            print STDERR "WebFetch: failed to save " . $savable->{file} . ": " . $savable->{error} . "\n";
             $err_count++;
         }
     }
@@ -2245,8 +2237,7 @@ sub save
         # move the new content to the main content - final install
         if ( -f $new_content ) {
             if ( not rename $new_content, $main_content ) {
-                $savable->{error} =
-                    "cannot rename " . $new_content . " to " . $main_content . ": $!";
+                $savable->{error} = "cannot rename " . $new_content . " to " . $main_content . ": $!";
                 next;
             }
         }
@@ -2288,20 +2279,20 @@ sub parse_date
 
     # use regular expressions to check simple date formats YYYY-MM-DD and YYYYMMDD
 
-# check YYYY-MM-DD date format
-# save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    # check YYYY-MM-DD date format
+    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
     if ( $stamp =~ /^ (\d{4}) - (\d{2}) - (\d{2}) \s* $/x ) {
         $result = [ year => int($1), month => int($2), day => int($3), %opts ];
 
-# check YYYYMMDD format for backward compatibility: no longer ISO 8601 compliant since 2004 update
-# save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+        # check YYYYMMDD format for backward compatibility: no longer ISO 8601 compliant since 2004 update
+        # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
     } elsif ( $stamp =~ /^ (\d{4}) (\d{2}) (\d{2}) \s* $/x ) {
         $result = [ year => int($1), month => int($2), day => int($3), %opts ];
     }
 
-# check ISO 8601
-# catch any exceptions thrown by the DateTime::Format::ISO8601 constructor and leave $result undefined
-# save it as a DateTime object
+    # check ISO 8601
+    # catch any exceptions thrown by the DateTime::Format::ISO8601 constructor and leave $result undefined
+    # save it as a DateTime object
     if ( not defined $result ) {
         try {
             $result = DateTime::Format::ISO8601->parse_datetime( $stamp, $opts{locale} );
@@ -2313,8 +2304,8 @@ sub parse_date
         };
     }
 
-# check Unix date format and other misc processing from Date::Calc's Parse_Date()
-# save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
+    # check Unix date format and other misc processing from Date::Calc's Parse_Date()
+    # save it as a date-only array which can be fed to DateTime->new(), so gen_timestamp() will only use the date
     if ( not defined $result ) {
         my @date;
         try {
@@ -2363,7 +2354,7 @@ sub gen_timestamp
             my %dt_opts = @{ $args[0] };
             foreach my $key ( keys %opts ) {
 
-        # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
+                # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
                 if ( not exists $dt_opts{$key} ) {
                     $dt_opts{$key} = $opts{$key};
                 }
@@ -2414,7 +2405,7 @@ sub anchor_timestr
             my %dt_opts = @{ $args[0] };
             foreach my $key ( keys %opts ) {
 
-        # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
+                # if provided, use %opts as DateTime defaults for locale, time_zone and any other keys found
                 if ( not exists $dt_opts{$key} ) {
                     $dt_opts{$key} = $opts{$key};
                 }
@@ -2601,12 +2592,12 @@ sub fmt_handler_wf
 {
     my ( $self, $filename ) = @_;
 
-    $self->wf_export( $filename, $self->{data}{fields}, $self->{data}{records},
-              "Exported from "
-            . ( ref $self ) . "\n"
-            . "fields are "
-            . join( ", ", @{ $self->{data}{fields} } )
-            . "\n" );
+    $self->wf_export(
+        $filename,
+        $self->{data}{fields},
+        $self->{data}{records},
+        "Exported from " . ( ref $self ) . "\n" . "fields are " . join( ", ", @{ $self->{data}{fields} } ) . "\n"
+    );
     return;
 }
 
@@ -2648,8 +2639,7 @@ sub fmt_handler_rdf
             push @$data, [ $entry->[$title_fnum], $entry->[$url_fnum] ];
         }
     }
-    $self->ns_export( $filename, $data, $site_title, $site_link, $site_desc, $image_title,
-        $image_url );
+    $self->ns_export( $filename, $data, $site_title, $site_link, $site_desc, $image_title, $image_url );
     return;
 }
 

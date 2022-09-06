@@ -34,7 +34,7 @@ Readonly::Scalar my $Usage  => "--short short-output-file --long long-output-fil
 
 # configuration parameters
 Readonly::Scalar my $num_links => 5;
-Readonly::Array my @dt_keys => qw(locale time_zone);
+Readonly::Array my @dt_keys    => qw(locale time_zone);
 
 # functions for access to internal data for testing
 ## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
@@ -91,14 +91,13 @@ sub fetch
 
     # set parameters for WebFetch routines
     if ( not defined $self->{num_links} ) {
-        $self->set_param("num_links", WebFetch->config("num_links"));
+        $self->set_param( "num_links", WebFetch->config("num_links") );
     }
-    $self->set_param("para", 1);
+    $self->set_param( "para", 1 );
 
     # set up Webfetch Embedding API data
     $self->{actions} = {};
-    $self->data->add_fields( "date", "title", "priority", "expired",
-        "position", "label", "url", "category", "text" );
+    $self->data->add_fields( "date", "title", "priority", "expired", "position", "label", "url", "category", "text" );
 
     # defined which fields match to which "well-known field names"
     $self->data->add_wk_names(
@@ -113,17 +112,18 @@ sub fetch
 
     # get local time for various date comparisons
     my %dt_opts;
-    if ( exists $self->{datetime_settings} and reftype($self->{datetime_settings}) eq "HASH" ) {
-        %dt_opts = %{$self->{datetime_settings}}; # get locale and time_zone settings if available
+    if ( exists $self->{datetime_settings} and reftype( $self->{datetime_settings} ) eq "HASH" ) {
+        %dt_opts = %{ $self->{datetime_settings} };    # get locale and time_zone settings if available
     }
-    if (exists $self->{testing_faketime}) {
+    if ( exists $self->{testing_faketime} ) {
+
         # use a pre-specified timestamp for testing purposes so news elements are same age as expected result
-        $now = DateTime::Format::ISO8601->parse_datetime($self->{testing_faketime}, %dt_opts);
-        if (exists $dt_opts{locale}) {
-            $now->set_locale($dt_opts{locale});
+        $now = DateTime::Format::ISO8601->parse_datetime( $self->{testing_faketime}, %dt_opts );
+        if ( exists $dt_opts{locale} ) {
+            $now->set_locale( $dt_opts{locale} );
         }
-        if (exists $dt_opts{time_zone}) {
-            $now->set_time_zone($dt_opts{time_zone});
+        if ( exists $dt_opts{time_zone} ) {
+            $now->set_time_zone( $dt_opts{time_zone} );
         }
     } else {
         $now = DateTime->now(%dt_opts);
@@ -234,7 +234,7 @@ sub parse_input_inner
                     }
                     next;
                 } elsif (/^(\w+):\s*(.*)/x) {
-                    $self->set_param($1, $2);
+                    $self->set_param( $1, $2 );
                 }
             }
             if ( $state == initial_state or $state == text_state ) {
@@ -304,17 +304,17 @@ sub parse_input
         # This is usually set by SiteNews file's global settings at the top
         my ( %dt_opts, $time_str, $anchor_time );
         if ( exists $self->{datetime_settings} and reftype $self->{datetime_settings} eq "HASH" ) {
-            %dt_opts = %{$self->{datetime_settings}}; # get locale and time_zone settings if available
+            %dt_opts = %{ $self->{datetime_settings} };    # get locale and time_zone settings if available
         }
         if ($posted) {
-            my $date_ref    = WebFetch::parse_date( \%dt_opts, $posted );
-            if (defined $date_ref) {
-                my $dt = (ref $date_ref eq "DateTime") ? $date_ref : DateTime->new(@$date_ref, %dt_opts);
+            my $date_ref = WebFetch::parse_date( \%dt_opts, $posted );
+            if ( defined $date_ref ) {
+                my $dt = ( ref $date_ref eq "DateTime" ) ? $date_ref : DateTime->new( @$date_ref, %dt_opts );
                 $time_str    = WebFetch::gen_timestamp( \%dt_opts, $dt );
                 $anchor_time = WebFetch::anchor_timestr( \%dt_opts, $dt );
             }
         }
-        if (not defined $time_str or not defined $anchor_time) {
+        if ( not defined $time_str or not defined $anchor_time ) {
             $time_str    = "undated";
             $anchor_time = "0000-undated";
         }
@@ -330,9 +330,11 @@ sub parse_input
         $label_hash{$label} = 1;
 
         # generate data record for output
-        $self->data->add_record( $time_str, $title, $self->priority($item),
-            expired($item), $pos, $label, $url_prefix . "#" . $label,
-            $category,      $text );
+        $self->data->add_record(
+            $time_str,      $title, $self->priority($item),
+            expired($item), $pos,   $label, $url_prefix . "#" . $label,
+            $category,      $text
+        );
         $pos++;
     }
     return;
@@ -430,7 +432,7 @@ sub expired
 # function to compute a priority value which decays with age
 sub priority
 {
-    my ($self, $entry) = @_;
+    my ( $self, $entry ) = @_;
 
     return 999 if not exists $entry->{posted};
     return 999 if not defined $entry->{posted};
@@ -439,12 +441,12 @@ sub priority
     return 999 if not defined $date_ref;
 
     my %dt_opts;
-    if ( exists $self->{datetime_settings} and reftype($self->{datetime_settings}) eq "HASH" ) {
-        %dt_opts = %{$self->{datetime_settings}}; # get locale and time_zone settings if available
+    if ( exists $self->{datetime_settings} and reftype( $self->{datetime_settings} ) eq "HASH" ) {
+        %dt_opts = %{ $self->{datetime_settings} };    # get locale and time_zone settings if available
     }
-    my $dt = (ref $date_ref eq "DateTime") ? $date_ref : DateTime->new(@$date_ref, %dt_opts);
-    my $age      = ( $now->subtract_datetime($dt) )->delta_days();
-    my $bonus    = 0;
+    my $dt    = ( ref $date_ref eq "DateTime" ) ? $date_ref : DateTime->new( @$date_ref, %dt_opts );
+    my $age   = ( $now->subtract_datetime($dt) )->delta_days();
+    my $bonus = 0;
 
     if ( $age <= 2 ) {
         $bonus -= 2 - $age;

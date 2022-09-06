@@ -321,8 +321,7 @@ sub wk2fname
     my $self = shift;
     my $wk   = shift;
 
-    WebFetch::debug "wk2fname $wk => "
-        . ( ( exists $self->{wk_names}{$wk} ) ? $self->{wk_names}{$wk} : "undef" );
+    WebFetch::debug "wk2fname $wk => " . ( ( exists $self->{wk_names}{$wk} ) ? $self->{wk_names}{$wk} : "undef" );
     return ( exists $self->{wk_names}{$wk} )
         ? $self->{wk_names}{$wk}
         : undef;
@@ -365,8 +364,7 @@ sub wk2fnum
     my $self = shift;
     my $wk   = shift;
 
-    WebFetch::debug "wk2fnum $wk => "
-        . ( ( exists $self->{wkindex}{$wk} ) ? $self->{wkindex}{$wk} : "undef" );
+    WebFetch::debug "wk2fnum $wk => " . ( ( exists $self->{wkindex}{$wk} ) ? $self->{wkindex}{$wk} : "undef" );
     return ( exists $self->{wkindex}{$wk} )
         ? $self->{wkindex}{$wk}
         : undef;

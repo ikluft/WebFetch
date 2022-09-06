@@ -41,9 +41,9 @@ sub _class_or_obj
     # instance method if it got an object reference
     return $coo if ref $coo;
 
-# class method: return the instance via the instance() class method
-# if the singleton object wasn't already instantiated, this will take care of it
-# assumption: it must be string name of class WebFetch::Data::Config or subclass of it - so it has instance()
+    # class method: return the instance via the instance() class method
+    # if the singleton object wasn't already instantiated, this will take care of it
+    # assumption: it must be string name of class WebFetch::Data::Config or subclass of it - so it has instance()
     return $coo->instance();
 }
 
