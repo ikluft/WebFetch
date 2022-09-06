@@ -12,7 +12,7 @@ use File::Temp;
 use File::Basename;
 use File::Compare;
 use Readonly;
-use Params::Util qw(_ARRAYLIKE _HASHLIKE);
+use Scalar::Util qw(reftype);
 use YAML::XS;
 
 use Test::More;
@@ -124,8 +124,8 @@ sub op_value_recurse
     WebFetch::debug "op_value_recurse at $head_path depth=$depth";
 
     # check hash
-    if (_HASHLIKE $data_root ) {
-        WebFetch::debug "op_value_recurse hash has ".join(" ", keys %$data_root);
+    if ( reftype($data_root) eq "HASH" ) {
+        WebFetch::debug "op_value_recurse hash has ".join(" ", sort keys %$data_root);
         if (not exists $data_root->{$head_path}) {
             die "op_value_recurse: $head_path does not exist (depth $depth)";
         }
@@ -136,8 +136,8 @@ sub op_value_recurse
     }
 
     # check array
-    if (_ARRAYLIKE $data_root) {
-        WebFetch::debug "op_value_recurse array has ".join(" ", @$data_root);
+    if ( reftype($data_root) eq "ARRAY" ) {
+        WebFetch::debug "op_value_recurse array has ".join(" ", sort @$data_root);
         if (not exists $data_root->[$head_path]) {
             die "op_value_recurse: $head_path does not exist (depth $depth)";
         }
@@ -300,14 +300,14 @@ foreach my $file (sort keys %{$test_data->{files}}) {
     # set parameters per test-file or from defaults: locale, time zone
     # optional parameter: testing_faketime
     my %dt_params;
-    foreach my $dt_key (keys %dt_param_defaults) {
-        # parameters with default values
-        if (exists $test_data->{$dt_key}) {
-            $dt_params{$dt_key} = $test_data->{$dt_key};
-        } else {
-            $dt_params{$dt_key} = $dt_param_defaults{$dt_key};
-        }
-    }
+    #    foreach my $dt_key (keys %dt_param_defaults) {
+    #    # parameters with default values
+    #    if (exists $test_data->{$dt_key}) {
+    #        $dt_params{$dt_key} = $test_data->{$dt_key};
+    #    } else {
+    #        $dt_params{$dt_key} = $dt_param_defaults{$dt_key};
+    #    }
+    #}
     foreach my $dt_key (@dt_param_optional) {
         # optional parameters only used if provided in object data
         if (exists $test_data->{$dt_key}) {

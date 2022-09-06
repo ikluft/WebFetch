@@ -9,13 +9,13 @@ files:
     - {op: output_cmp, file: 00-basic-sitenews-short.out}
     - {op: output_cmp, file: 00-basic-sitenews-long.out}
     - {op: value, expected: 0, path: [result], name: "exit code value"}
-    - {op: value, expected: "US/Pacific", path: [webfetch, time_zone], name: "time_zone value"}
-    - {op: value, expected: "en-US", path: [webfetch, locale], name: "locale value"}
+    - {op: value, expected: "US/Pacific", path: [webfetch, datetime_settings, time_zone], name: "tz value"}
+    - {op: value, expected: "en-US", path: [webfetch, datetime_settings, locale], name: "locale value"}
   01-webfetch-releases.webfetch:
     - {op: autopass, name: "%{file} found"}
     - {op: record_count, count: 7, name: "%{file} record count"}
     - {op: output_cmp, file: 01-webfetch-releases-short.out}
     - {op: output_cmp, file: 01-webfetch-releases-long.out}
     - {op: value, expected: 0, path: [result], name: "exit code value"}
-    - {op: value, expected: "America/Los Angeles", path: [webfetch, time_zone], name: "time_zone value"}
-    - {op: value, expected: "en-US", path: [webfetch, locale], name: "locale value"}
+    - {op: value, expected: "America/Los Angeles", path: [webfetch, datetime_settings, time_zone], name: "tz value"}
+    - {op: value, expected: "en-US", path: [webfetch, datetime_settings, locale], name: "locale value"}

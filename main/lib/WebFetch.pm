@@ -109,6 +109,7 @@ reference to a module that is derived from (inherits from) WebFetch.
 use Carp qw(croak);
 use Getopt::Long;
 use Readonly;
+use Scalar::Util qw(reftype);
 use LWP::UserAgent;
 use HTTP::Request;
 use DateTime;
@@ -117,10 +118,44 @@ use DateTime::Locale;
 use Date::Calc;
 use WebFetch::Data::Config;
 
+#
 # constants
+#
+
+# defualt supported output formats
+# more may be added by plugin modules
 Readonly::Array my @WebFetch_formatters => qw( output:html output:xml output:wf );
 
-# define exceptions/errors
+# defualy modules for input and output
+Readonly::Hash my %default_modules => (
+    "input" => {
+        "rss"        => "WebFetch::Input::RSS",
+        "sitenews"   => "WebFetch::Input::SiteNews",
+        "perlstruct" => "WebFetch::Input::PerlStruct",
+        "atom"       => "WebFetch::Input::Atom",
+        "dump"       => "WebFetch::Input::Dump",
+    },
+    "output" => {
+        "rss"        => "WebFetch::Output:RSS",
+        "atom"       => "WebFetch::Output:Atom",
+        "tt"         => "WebFetch::Output:TT",
+        "perlstruct" => "WebFetch::Output::PerlStruct",
+        "dump"       => "WebFetch::Output::Dump",
+    }
+);
+
+# parameters which are redirected into a sub-hash
+Readonly::Hash my %redirect_params => (
+    locale => "datetime_settings",
+    time_zone => "datetime_settings",
+    notable => "style",
+    para => "style",
+    ul => "style",
+);
+
+#
+# exceptions/errors
+#
 use Try::Tiny;
 use Exception::Class (
     'WebFetch::Exception',
@@ -150,6 +185,12 @@ use Exception::Class (
         isa         => 'WebFetch::Exception',
         alias       => 'throw_cli_usage',
         description => "command line processing failed",
+    },
+
+    'WebFetch::Exception::ParameterError' => {
+        isa         => 'WebFetch::Exception',
+        alias       => 'throw_param_error',
+        description => "parameter error",
     },
 
     'WebFetch::Exception::Save' => {
@@ -209,22 +250,6 @@ use Exception::Class (
 );
 
 # initialize class variables
-my %default_modules = (
-    "input" => {
-        "rss"        => "WebFetch::Input::RSS",
-        "sitenews"   => "WebFetch::Input::SiteNews",
-        "perlstruct" => "WebFetch::Input::PerlStruct",
-        "atom"       => "WebFetch::Input::Atom",
-        "dump"       => "WebFetch::Input::Dump",
-    },
-    "output" => {
-        "rss"        => "WebFetch::Output:RSS",
-        "atom"       => "WebFetch::Output:Atom",
-        "tt"         => "WebFetch::Output:TT",
-        "perlstruct" => "WebFetch::Output::PerlStruct",
-        "dump"       => "WebFetch::Output::Dump",
-    }
-);
 my %modules;
 our $AUTOLOAD;
 
@@ -280,8 +305,8 @@ Return the version number of WebFetch, or for any subclass which inherits the me
 
 When running code within a source-code development workspace, it returns "00-dev" to avoid warnings
 about undefined values.
-Release version numbers are assigned and added by the build system upon installation,
-and are not available when running directly from source code.
+Release version numbers are assigned and added by the build system upon release,
+and are not available when running directly from a source code repository.
 
 =cut
 
@@ -830,9 +855,55 @@ attributes in C<$obj>.
 sub init
 {
     my ( $self, @args ) = @_;
-    if (@args) {
-        my %params = @args;
-        @$self{ keys %params } = values %params;
+    return if not @args;
+
+    # convert parameter list to hash
+    my %params = @args;
+
+    # set parameters into $self with the set_param() method
+    foreach my $key (keys %params) {
+        $self->set_param($key, $params{$key});
+    }
+    return;
+}
+
+=item $obj->set_param(key, value)
+
+This sets a value under the given key in the WebFetch object.
+
+Some keys are intercepted to be grouped into a sub hierarchy.
+The keys "locale" and "time_zone" are placed in a "datetime_settings" hash under the object.
+
+If the parameter is one of the intercepted values but the destination hierarchy already exists as a
+non-hash value, then it throws an exception.
+
+The method does not return a value. If it doens't throw an exception, other outcomes are success.
+
+=cut
+
+sub set_param
+{
+    my ( $self, $key, $value ) = @_;
+
+    if (exists $redirect_params{$key}) {
+        # reorganize parameters known to belong in a sub-hash
+        # configure this in %redirect_params constant
+        my $hash_name = $redirect_params{$key};
+
+        # make sure we can move the parameter to the sub-hash
+        if (not $self->{$hash_name}) {
+            $self->{$hash_name} = {};
+        } else {
+            if (reftype($self->{$hash_name}) ne "HASH") {
+                throw_param_error("unable to redirect '$key' parameter into '$hash_name' "
+                    ."because it already exists and is not a hash");
+            }
+        }
+        # set the value in the destination sub-hash
+        $self->{$hash_name}{$key} = $value;
+    } else {
+        # if not intercepted, set the value directly to the key name
+        $self->{$key} = $value;
     }
     return;
 }
