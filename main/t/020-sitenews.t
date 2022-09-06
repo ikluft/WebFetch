@@ -12,6 +12,7 @@ use File::Temp;
 use File::Basename;
 use File::Compare;
 use Readonly;
+use Params::Util qw(_ARRAYLIKE _HASHLIKE);
 use YAML::XS;
 
 use Test::More;
@@ -116,30 +117,38 @@ sub op_value_recurse
 {
     my ($data_root, $depth, $path) = @_;
     my $head_path = shift @$path;
-    my $empty_path = int @$path == 0; # flag: true if remainder of path is empty
+    my $empty_path = (int @$path) == 0; # flag: true if remainder of path is empty
 
     # increment depth
     $depth++;
+    WebFetch::debug "op_value_recurse at $head_path depth=$depth";
 
     # check hash
-    if (ref $data_root eq "HASH") {
+    if (_HASHLIKE $data_root ) {
+        WebFetch::debug "op_value_recurse hash has ".join(" ", keys %$data_root);
         if (not exists $data_root->{$head_path}) {
             die "op_value_recurse: $head_path does not exist (depth $depth)";
         }
-        $empty_path and return $data_root->{$head_path};
+        if ( $empty_path ) {
+            return $data_root->{$head_path};
+        }
         return op_value_recurse($data_root->{$head_path}, $depth, $path);
     }
 
     # check array
-    if (ref $data_root eq "ARRAY") {
+    if (_ARRAYLIKE $data_root) {
+        WebFetch::debug "op_value_recurse array has ".join(" ", @$data_root);
         if (not exists $data_root->[$head_path]) {
             die "op_value_recurse: $head_path does not exist (depth $depth)";
         }
-        $empty_path and return $data_root->[$head_path];
+        if ( $empty_path ) {
+            return $data_root->[$head_path];
+        }
         return op_value_recurse($data_root->[$head_path], $depth, $path);
     }
 
     # error if we got here - no container object to descend into for remaining path items
+    WebFetch::debug "op_value_recurse unknown: ref:".(ref $data_root)." raw:$data_root";
     die "path attempts to descend below available data at $head_path (depth $depth)";
 }
 
@@ -150,17 +159,23 @@ sub op_value
     my $valid_path = ((exists $item->{path}) and (ref $item->{path} eq "ARRAY"));
     my $path_name = $valid_path ? join("-",@{$item->{path}}) : "";
     my $test_name = "path: ($path_name) / expect $expected_value ($test_index)";
+    WebFetch::debug "op_value path=$path_name";
     if (not $valid_path) {
         fail($test_name . " - fail: no path");
         return;
     }
-    my $value;
+    my ($value, $error);
     try {
         $value = op_value_recurse($data, 0, $item->{path});
     } catch {
-        fail($test_name . " - fail: $_");
+        $error = $_;
     };
-    is($value, $expected_value, $test_name);
+    WebFetch::debug "op_value value=" . ( $value // "undef") . " error=" . ( $error // "undef");
+    if ( defined $error ) {
+        fail($test_name . " - fail: $error");
+    } else {
+        is($value, $expected_value, $test_name);
+    }
     return;
 }
 
