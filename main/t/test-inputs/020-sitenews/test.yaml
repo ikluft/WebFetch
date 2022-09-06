@@ -4,18 +4,30 @@ files:
   00-basic-sitenews.webfetch:
     - {name: "empty test"}
     - {op: autofail, skip: "intentional skip", name: "skip test"}
-    - {op: autopass, name: "%{file} found"}
-    - {op: record_count, count: 26, name: "%{file} record count"}
+    - {op: value, path: [webfetch, datetime_settings, time_zone], expected: "US/Pacific"}
+    - {op: value, path: [webfetch, datetime_settings, locale], expected: "en-US"}
+    - {op: record_count, count: 26, name: "%{file}"}
     - {op: output_cmp, file: 00-basic-sitenews-short.out}
     - {op: output_cmp, file: 00-basic-sitenews-long.out}
-    - {op: value, expected: 0, path: [result], name: "exit code value"}
-    - {op: value, expected: "US/Pacific", path: [webfetch, datetime_settings, time_zone], name: "tz value"}
-    - {op: value, expected: "en-US", path: [webfetch, datetime_settings, locale], name: "locale value"}
+    - {op: value, path: [webfetch, dest], expected: "capture"}
+    - {op: value, path: [webfetch, num_links], expected: 5}
+    - {op: value, path: [webfetch, long_path], expected: "00-basic-sitenews-long.out"}
+    - {op: value, path: [webfetch, short_path], expected: "00-basic-sitenews-short.out"}
+    - {op: value, path: [webfetch, source], expected: "t/test-inputs/020-sitenews/00-basic-sitenews.webfetch"}
+    - {op: value, path: [webfetch, source_format], expected: "sitenews"}
+    - {op: value, path: [webfetch, testing_faketime], expected: "2022-08-30T21:28:00"}
+    - {op: value, path: [webfetch, url_prefix], expected: "https://example.net/webfetch-news/"}
   01-webfetch-releases.webfetch:
-    - {op: autopass, name: "%{file} found"}
-    - {op: record_count, count: 7, name: "%{file} record count"}
+    - {op: value, path: [webfetch, datetime_settings, time_zone], expected: "America/Los Angeles"}
+    - {op: value, path: [webfetch, datetime_settings, locale], expected: "en-US"}
+    - {op: record_count, count: 7, name: "%{file}"}
     - {op: output_cmp, file: 01-webfetch-releases-short.out}
     - {op: output_cmp, file: 01-webfetch-releases-long.out}
-    - {op: value, expected: 0, path: [result], name: "exit code value"}
-    - {op: value, expected: "America/Los Angeles", path: [webfetch, datetime_settings, time_zone], name: "tz value"}
-    - {op: value, expected: "en-US", path: [webfetch, datetime_settings, locale], name: "locale value"}
+    - {op: value, path: [webfetch, dest], expected: "capture"}
+    - {op: value, path: [webfetch, num_links], expected: 5}
+    - {op: value, path: [webfetch, long_path], expected: "01-webfetch-releases-long.out", path: [webfetch, long_path]}
+    - {op: value, path: [webfetch, short_path], expected: "01-webfetch-releases-short.out"}
+    - {op: value, path: [webfetch, source], expected: "t/test-inputs/020-sitenews/01-webfetch-releases.webfetch"}
+    - {op: value, path: [webfetch, source_format], expected: "sitenews"}
+    - {op: value, path: [webfetch, testing_faketime], expected: "2022-08-30T21:28:00"}
+    - {op: value, path: [webfetch, url_prefix], expected: "https://example.net/webfetch-releases/"}

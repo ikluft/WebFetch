@@ -27,7 +27,7 @@ Readonly::Scalar my $debug_mode => (exists $ENV{WEBFETCH_TEST_DEBUG} and $ENV{WE
 Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
 Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
-Readonly::Scalar my $file_init_tests => 2;
+Readonly::Scalar my $file_init_tests => 3;
 Readonly::Scalar my $tmpdir_template => "WebFetch-XXXXXXXXXX";
 Readonly::Array my @dt_param_optional => qw(testing_faketime);
 Readonly::Hash my %dt_param_defaults => (
@@ -157,8 +157,8 @@ sub op_value
     my ($test_index, $name, $item, $news, $data) = @_;
     my $expected_value = $item->{expected};
     my $valid_path = ((exists $item->{path}) and (ref $item->{path} eq "ARRAY"));
-    my $path_name = $valid_path ? join("-",@{$item->{path}}) : "";
-    my $test_name = "path: ($path_name) / expect $expected_value ($test_index)";
+    my $path_name = $valid_path ? join(" ",@{$item->{path}}) : "";
+    my $test_name = "path[$path_name] expect '$expected_value' ($test_index)";
     WebFetch::debug "op_value path=$path_name";
     if (not $valid_path) {
         fail($test_name . " - fail: no path");
@@ -326,6 +326,8 @@ foreach my $file (sort keys %{$test_data->{files}}) {
     ok(not (exists $capture_data->{webfetch}{data}{exception}), "no exceptions in $file ($test_index)");
     $test_index++;
     is($capture_data->{result}, 0, "success result expected from $file ($test_index)");
+    $test_index++;
+    isa_ok($capture_data->{webfetch}, $classname, "WebFetch instance ($test_index)");
     $test_index++;
 
     # run tests specified in YAML
