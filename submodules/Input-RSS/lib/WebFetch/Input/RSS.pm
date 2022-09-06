@@ -53,8 +53,7 @@ sub fetch
     my ($self) = @_;
 
     # set up Webfetch Embedding API data
-    $self->data->add_fields( "pubDate", "title", "link", "category",
-        "description", "author", "id" );
+    $self->data->add_fields( "pubDate", "title", "link", "category", "description", "author", "id" );
 
     # defined which fields match to which "well-known field names"
     $self->data->add_wk_names(

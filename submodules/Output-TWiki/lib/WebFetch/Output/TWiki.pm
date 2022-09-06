@@ -51,8 +51,7 @@ use Exception::Class (
     "WebFetch::Output::TWiki::Exception::Oops" => {
         isa         => "WebFetch::Exception",
         alias       => "throw_twiki_oops",
-        description => "WebFetch::Output::TWiki returned errors from "
-            . "saving one or more entries",
+        description => "WebFetch::Output::TWiki returned errors from " . "saving one or more entries",
     },
     "WebFetch::Output::TWiki::Exception::FieldNotSpecified" => {
         isa         => "WebFetch::Exception",
@@ -66,8 +65,8 @@ use Exception::Class (
 =cut
 
 # defaults
-my @Options = ( "twiki_root=s", "config_topic=s", "config_key=s" );
-my $Usage   = "--twiki_root path-to-twiki --config_topic web.topic " . "--config_key keyword";
+my @Options             = ( "twiki_root=s", "config_topic=s", "config_key=s" );
+my $Usage               = "--twiki_root path-to-twiki --config_topic web.topic " . "--config_key keyword";
 my @default_field_names = (
     qw( key web parent prefix template form
         options )
@@ -186,8 +185,7 @@ sub get_twiki_config
     my ( $web, $topic ) = split /\./x, $self->{config_topic};
     WebFetch::debug "config_topic: " . $self->{config_topic} . " -> $web, $topic";
     if ( ( !defined $web ) or ( !defined $topic ) ) {
-        throw_twiki_no_config(
-            "TWiki configuration page for WebFetch " . "must be defined in the format web.topic" );
+        throw_twiki_no_config( "TWiki configuration page for WebFetch " . "must be defined in the format web.topic" );
     }
 
     # check if a config_key was specified before we read the configuration
@@ -368,9 +366,7 @@ sub write_to_twiki_topics
         $meta->put( "FORM",        { name => $config->{form} } );
         my $fnum;
         for ( $fnum = 0 ; $fnum <= $self->data->num_fields ; $fnum++ ) {
-            WebFetch::debug "meta: "
-                . $self->data->field_bynum($fnum) . " = "
-                . $entry->bynum($fnum);
+            WebFetch::debug "meta: " . $self->data->field_bynum($fnum) . " = " . $entry->bynum($fnum);
             ( defined $self->data->field_bynum($fnum) ) or next;
             ( $self->data->field_bynum($fnum) eq "xml" ) and next;
             ( defined $entry->bynum($fnum) ) or next;

@@ -80,8 +80,7 @@ sub fetch
     my ($self) = @_;
 
     # set up Webfetch Embedding API data
-    $self->data->add_fields( "id", "updated", "title", "author",
-        "link", "summary", "content", "xml" );
+    $self->data->add_fields( "id", "updated", "title", "author", "link", "summary", "content", "xml" );
 
     # defined which fields match to which "well-known field names"
     $self->data->add_wk_names(

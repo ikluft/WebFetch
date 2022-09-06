@@ -89,8 +89,7 @@ sub fmt_handler_tt
     my $template = Template->new( \%tt_config );
 
     # process template
-    $template->process( $self->{template}, { data => $self->{data} },
-        \$output, { binmode => ':utf8' } )
+    $template->process( $self->{template}, { data => $self->{data} }, \$output, { binmode => ':utf8' } )
         or throw_template $template->error();
 
     $self->raw_savable( $filename, $output );
