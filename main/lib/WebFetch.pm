@@ -2494,13 +2494,12 @@ sub fmt_handler_html
     # function iterates over every data item
     my (
         $title_fnum,    $url_fnum,    $date_fnum,     $summary_fnum,
-        $comments_fnum, $author_fnum, $category_fnum, $location_fnum
+        $comments_fnum
         )
         = (
         $self->wk2fnum("title"),    $self->wk2fnum("url"),
         $self->wk2fnum("date"),     $self->wk2fnum("summary"),
-        $self->wk2fnum("comments"), $self->wk2fnum("author"),
-        $self->wk2fnum("category"), $self->wk2fnum("location")
+        $self->wk2fnum("comments"),
         );
 
     # generate the html and formatting function

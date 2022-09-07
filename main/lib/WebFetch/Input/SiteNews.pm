@@ -345,7 +345,7 @@ sub fmt_handler_sitenews_long
 {
     # TODO move sort block to separate function and remove the no-critic exemption
     ## no critic ( BuiltinFunctions::RequireSimpleSortBlock )
-    my ( $self, $filename ) = @_;
+    my ( $self ) = @_;
 
     # sort events for long display
     my @long_news = sort {
@@ -401,8 +401,9 @@ sub fmt_handler_sitenews_long
         push @long_text,
               "<a name=\""
             . $news->[$lbl_fnum] . "\">"
-            . $news->[$txt_fnum]
+            . $news->[$title_fnum]
             . "</a>\n"
+            . $news->[$txt_fnum]
             . "<!--- priority: "
             . $news->[$pri_fnum]
             . ( $news->[$exp_fnum] ? " expired" : "" ) . " --->";
