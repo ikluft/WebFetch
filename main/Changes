@@ -4,6 +4,8 @@ Revision history for WebFetch
  [API CHANGE]
 
  [BUG FIXES]
+ - misc bugs found & fixed while adding test cases
+ - use new version() method instead of $VERSION global (assigned by Dist::Zilla build system) to fix undefined value errors (affected author mode only, when run in code repository)
 
  [DOCS]
 
@@ -16,11 +18,12 @@ Revision history for WebFetch
  - submodules now use Config store to add CLI/API options & usage to WebFetch
  - keep backward compatibility with older modules use of package variables to add CLI/API options & usage
  - upgrade timestamp handling from original YYYYMMDD & YYYY-MM-DD to include ISO8601
+ - time_zone and locale parameters now recognized by WebFetch->new() and if provided are passed to DateTime
 
  [REVISION]
  - code modernization: update Perl Best Practices conformance to Perl::Critic's "harsh" warning level
  - code modernization: formatting with perltidy
- - 100+ new unit test cases
+ - 200+ new unit test cases
 
  [SECURITY]
 

@@ -861,7 +861,7 @@ sub init
 
 This sets a value under the given key in the WebFetch object.
 
-Some keys are intercepted to be grouped into a sub hierarchy.
+Some keys are intercepted to be grouped into their own sub-hierarchy.
 The keys "locale" and "time_zone" are placed in a "datetime_settings" hash under the object.
 
 If the parameter is one of the intercepted values but the destination hierarchy already exists as a
