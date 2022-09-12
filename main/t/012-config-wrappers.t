@@ -26,7 +26,8 @@ plan tests => 17 + int(keys %samples) * 6;
 # test debugging on or off
 sub test_debug
 {
-    my $debug_flag = shift ? 1 : 0;
+    my $raw_debug = shift;
+    my $debug_flag = $raw_debug ? 1 : 0;
 
     # set up to capture STDERR
     my $capture = IO::Capture::Stderr->new();
@@ -44,6 +45,7 @@ sub test_debug
     } else {
         ok((scalar @lines) == 0, "no STDERR output when debug is off");
     }
+    return;
 }
 
 # test reading and writing configuration data
