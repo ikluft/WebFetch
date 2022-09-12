@@ -14,6 +14,7 @@ Revision history for WebFetch
  [MINOR]
 
  [REVISION]
+ - move ad-hoc WebFetch::Output::Capture from tests to its own module
 
  [SECURITY]
 

@@ -1047,6 +1047,10 @@ sub run
 
     debug "run before save";
     my $result = $obj->save();
+    my $result_code = $result ? 0 : 1;
+    if ($test_probe_ref) {
+        $test_probe_ref->{result} = $result_code;
+    }
 
     # check for errors, throw exception to report errors per savable item
     if ( not $result ) {
@@ -1065,7 +1069,7 @@ sub run
         }
     }
 
-    return $result ? 0 : 1;
+    return $result_code;
 }
 
 =item $obj->do_actions

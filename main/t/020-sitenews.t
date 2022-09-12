@@ -14,11 +14,13 @@ use File::Compare;
 use Readonly;
 use Scalar::Util qw(reftype);
 use YAML::XS;
+use Try::Tiny;
 
 use Test::More;
 use Test::Exception;
-use WebFetch;
+use WebFetch "0.15.1";
 use WebFetch::Input::SiteNews;
+use WebFetch::Output::Capture;
 
 # configuration & constants
 Readonly::Scalar my $classname => "WebFetch::Input::SiteNews";
@@ -36,42 +38,9 @@ Readonly::Hash my %dt_param_defaults => (
 );
 
 #
-# internal WebFetch::Output::Capture class captures SiteNews data read by WebFetch
-#
-package WebFetch::Output::Capture;
-use base 'WebFetch';
-use Try::Tiny;
-use Data::Dumper;
-
-__PACKAGE__->module_register( "output:capture" );
-my @news_items;
-
-# "capture" format handler
-# capture function stashes all the received data records from SiteNews for inspection
-sub fmt_handler_capture
-{
-    my ( $self, $filename ) = @_;
-
-    WebFetch::debug "fetch: ".Dumper($self->{data});
-    if (exists $self->{data}{records}) {
-        push @news_items, @{$self->{data}{records}};
-    }
-    return 1;
-}
-
-# return the file list
-sub news_items
-{
-    return @news_items;
-}
-
-#
 # main
 #
 
-# back to main package
-package main;
-use Try::Tiny;
 
 #
 # test operations functions op_* used for tests specified in YAML data
@@ -229,7 +198,6 @@ sub capture_feed
     # run WebFetch
     try {
         my $result = $classname->run(\%Options);
-        $test_probe{result} = $result;
     } catch {
         WebFetch::debug "capture_feed: $classname->run() threw exception: ".Dumper($_);
         $test_probe{exception} = $_;
@@ -319,7 +287,7 @@ foreach my $file (sort keys %{$test_data->{files}}) {
     WebFetch::debug "capture_feed($temp_dir, $input_dir/$file, ".(grep {$_."=".$dt_params{$_}} keys %dt_params).")";
     my $capture_data = capture_feed($temp_dir, "$input_dir/$file", \%dt_params);
     WebFetch::debug "WebFetch run: ".Dumper($capture_data);
-    my @news_items = WebFetch::Output::Capture::news_items();
+    my @news_items = WebFetch::Output::Capture::data_records();
     WebFetch::debug "news items: ".Dumper(\@news_items);
 
     # per-file initial tests
