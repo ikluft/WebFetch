@@ -94,6 +94,7 @@ sub fmt_handler_capture
     my ( $self ) = @_;
 
     WebFetch::debug "fetch: ".Dumper($self->{data});
+    $self->no_savables_ok(); # rather than let WebFetch save the data, we'll take it here
     if (exists $self->{data}{records}) {
         if (defined $grep_func and ref $grep_func eq "CODE") {
             push @data_records, grep { $grep_func->($_) } @{$self->{data}{records}};
