@@ -219,7 +219,9 @@ use Exception::Class (
 
     'WebFetch::Exception::NetworkGet' => {
         isa         => 'WebFetch::Exception',
-        description => "Failed to access RSS feed",
+        alias       => 'throw_network_get',
+        fields      => qw(description client),
+        description => "Failed to access feed source",
     },
 
     'WebFetch::Exception::ModLoadFailure' => {

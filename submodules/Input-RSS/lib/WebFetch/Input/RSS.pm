@@ -17,7 +17,10 @@ package WebFetch::Input::RSS;
 
 use base "WebFetch";
 
+use WebFetch "0.15.2";
+use Readonly;
 use Carp;
+use Try::Tiny;
 use Scalar::Util qw( blessed );
 use XML::RSS;
 
@@ -28,6 +31,7 @@ use Exception::Class ();
 =cut
 
 # configuration parameters
+Readonly::Scalar my $default_rss_version => "2.0";
 
 # no user-servicable parts beyond this point
 
@@ -106,9 +110,19 @@ sub extract_value
 # parse RSS feed into hash structure
 sub parse_rss
 {
-    my $text = shift;
+    my @args = @_;
+    my $version = $default_rss_version;
+    my %params;
+    if (ref $_[0] eq "HASH") {
+        %params = %{shift @_};
+    }
+    my $text = shift @args;
     my $rss  = XML::RSS->new( version => "2.0" );
-    $rss->parse($text);
+    try {
+        $rss->parse($text);
+    } catch {
+        WebFetch::throw_network_get(description => "".$_, client => $rss);
+    };
     my ( %feed, @buckets );
 
     # copy RSS channel data to WebFetch feed data
@@ -186,7 +200,16 @@ sub parse_input
 
     # parse data file
     my $raw_rss = $self->get();
-    my $feed    = parse_rss($$raw_rss);
+    my %params;
+    if (exists $self->{rss_version}) {
+        $params{version} = $self->{rss_version};
+    }
+    my $feed;
+    try {
+        $feed    = parse_rss(\%params, $$raw_rss);
+    } catch {
+        $self->{exception} = $_;
+    };
 
     # copy channel info if present
     if ( exists $feed->{info} ) {
@@ -219,7 +242,7 @@ __END__
 
 This module reads news items from an RSS feed.
 
-This module used WebFetch's I<--source> parameter to specify the URL of an RSS feed or a local file
+This module uses WebFetch's I<--source> parameter to specify the URL of an RSS feed or a local file
 containing RSS XML text.
 
 =head1 RSS FORMAT
@@ -228,6 +251,8 @@ RSS is an XML format defined at http://www.rssboard.org/rss-specification
 
 WebFetch::Input::RSS uses Perl's XML::RSS to parse RSS "Really Simple
 Syndication" version 0.9, 0.91, 1.0 or 2.0, whichever is provided by the server.
+An optional "--rss_version" command-line parameter or "rss_version" initialization parameter
+can set the RSS version number for the parser. If not specified, it defaults to RSS 2.0.
 
 =head1 SEE ALSO
 
