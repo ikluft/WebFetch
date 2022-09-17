@@ -23,6 +23,7 @@ use Carp;
 use Try::Tiny;
 use Scalar::Util qw( blessed );
 use XML::RSS;
+use Data::Dumper;
 
 use Exception::Class ();
 
@@ -114,14 +115,14 @@ sub parse_rss
     my $version = $default_rss_version;
     my %params;
     if (ref $_[0] eq "HASH") {
-        %params = %{shift @_};
+        %params = %{shift @args};
     }
     my $text = shift @args;
-    my $rss  = XML::RSS->new( version => "2.0" );
+    my $rss  = XML::RSS->new( version => $version );
     try {
         $rss->parse($text);
     } catch {
-        WebFetch::throw_network_get(description => "".$_, client => $rss);
+        WebFetch::throw_network_get(error => "".$_, client => $rss);
     };
     my ( %feed, @buckets );
 
@@ -204,12 +205,7 @@ sub parse_input
     if (exists $self->{rss_version}) {
         $params{version} = $self->{rss_version};
     }
-    my $feed;
-    try {
-        $feed    = parse_rss(\%params, $$raw_rss);
-    } catch {
-        $self->{exception} = $_;
-    };
+    my $feed    = parse_rss(\%params, $$raw_rss);
 
     # copy channel info if present
     if ( exists $feed->{info} ) {
@@ -217,7 +213,6 @@ sub parse_input
     }
 
     # translate parsed RSS feed into the WebFetch Embedding API data table
-    my $pos = 0;
     foreach my $item ( @{ $feed->{items} } ) {
 
         # save the data record
@@ -229,7 +224,6 @@ sub parse_input
         my $author      = get_first( $item, qw(author dc:creator) );
         my $id          = get_first( $item, qw(id identifier dc:identifier) );
         $self->{data}->add_record( $date, $title, $link, $category, $description, $author, $id );
-        $pos++;
     }
     return;
 }

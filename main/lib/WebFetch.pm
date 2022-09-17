@@ -220,7 +220,7 @@ use Exception::Class (
     'WebFetch::Exception::NetworkGet' => {
         isa         => 'WebFetch::Exception',
         alias       => 'throw_network_get',
-        fields      => qw(description client),
+        fields      => [ qw( client )],
         description => "Failed to access feed source",
     },
 
