@@ -114,7 +114,7 @@ sub parse_rss
     my @args = @_;
     my $version = $default_rss_version;
     my %params;
-    if (ref $_[0] eq "HASH") {
+    if (ref $args[0] eq "HASH") {
         %params = %{shift @args};
     }
     my $text = shift @args;
