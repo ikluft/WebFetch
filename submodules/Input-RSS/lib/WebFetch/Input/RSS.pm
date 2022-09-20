@@ -23,7 +23,6 @@ use Carp;
 use Try::Tiny;
 use Scalar::Util qw( blessed );
 use XML::RSS;
-use Data::Dumper;
 
 use Exception::Class ();
 
