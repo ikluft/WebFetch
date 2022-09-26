@@ -22,11 +22,14 @@ use Readonly;
 use Carp;
 use Try::Tiny;
 use XML::RSS;
+use Data::Dumper; # TODO remove after troubleshooting
 
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register( { Options => \@Options, Usage => \$Usage }, "cmdline", "output:rss_out" );
+WebFetch->config("Options", []);
+WebFetch->config("Usage", "");
+__PACKAGE__->module_register( "cmdline", "output:rss" );
 
 =encoding utf8
 
@@ -40,7 +43,7 @@ From the command line:
 
 C<perl -w -MWebFetch::Output::RSS -e "&fetch_main" --
      [...WebFetch input options...] --dir directory
-     --dest_format rss_out --dest dest-path >
+     --dest_format rss --dest dest-path >
 
 =head1 DESCRIPTION
 
@@ -48,7 +51,7 @@ This module saves output via the Perl Template Toolkit.
 
 =over 4
 
-=item $obj->fmt_handler_rss_out( $filename )
+=item $obj->fmt_handler_rss( $filename )
 
 This function formats the data according to the Perl Template Toolkit
 template provided in the --template parameter.
@@ -58,13 +61,15 @@ template provided in the --template parameter.
 =cut
 
 # RSS-output format handler
-sub fmt_handler_rss_out
+sub fmt_handler_rss
 {
     my $self     = shift;
     my $filename = shift;
 
-    # TODO
-    WebFetch::Exception->throw( error => "unreleased code - function not implemented" );
+    # generate RSS
+    # TODO remove Data::Dumper after troubleshooting
+    WebFetch::debug "self: ".Dumper($self);
+    return;
 }
 
 1;
