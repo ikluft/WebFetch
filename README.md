@@ -4,22 +4,28 @@ The main module:
 
 - [WebFetch](main/) - Perl module to download and save information from the Web
 
+  - MetaCPAN: [https://metacpan.org/pod/WebFetch](https://metacpan.org/pod/WebFetch)  
+
 Subsidiary modules which were separated into their own modules due to external dependencies:
 
-- [WebFetch::Input::Atom](submodules/Atom/) - get headlines for WebFetch from Atom feeds
+- [WebFetch::Input::Atom](submodules/Input-Atom/) - get headlines for WebFetch from Atom feeds
   
+  - MetaCPAN: [https://metacpan.org/pod/WebFetch::Input::Atom](https://metacpan.org/pod/WebFetch::Input::Atom)
   - depends on [XML::Atom](https://metacpan.org/pod/XML::Atom)
 
-- [WebFetch::Input::RSS](submodules/RSS/) - get headlines for WebFetch from RSS feed
+- [WebFetch::Input::RSS](submodules/Input-RSS/) - get headlines for WebFetch from RSS feed
   
+  - MetaCPAN: [https://metacpan.org/pod/WebFetch::Input::RSS](https://metacpan.org/pod/WebFetch::Input::RSS)
   - depends on [XML::RSS](https://metacpan.org/pod/XML::RSS)
 
-- [WebFetch::Output::TT](submodules/TT) - save data from WebFetch via the Perl Template Toolkit
+- [WebFetch::Output::TT](submodules/Output-TT) - save data from WebFetch via the Perl Template Toolkit
   
+  - [https://metacpan.org/pod/WebFetch::Output::TT](https://metacpan.org/pod/WebFetch::Output::TT)
   - depends on [Template Toolkit](https://metacpan.org/pod/Template)
 
-- [WebFetch::Output::TWiki](submodules/TWiki) - save data from WebFetch into a TWiki web site
+- [WebFetch::Output::TWiki](submodules/Output-TWiki) - save data from WebFetch into a TWiki web site
   
+  - MetaCPAN: [https://metacpan.org/pod/WebFetch::Output::TWiki](https://metacpan.org/pod/WebFetch::Output::TWiki)
   - depends on [TWiki](https://twiki.org/)
 
 # Description
