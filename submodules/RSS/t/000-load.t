@@ -8,6 +8,7 @@ use Try::Tiny;
 # always test these modules can load
 my @modules = qw(
     WebFetch::Input::RSS
+    WebFetch::Output::RSS
 );
 
 # count tests

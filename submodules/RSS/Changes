@@ -12,6 +12,7 @@ Revision history for WebFetch::Input::RSS
  [MAJOR]
 
  [MINOR]
+ - new module WebFetch::Output::RSS, packaged with WebFetch::Input::RSS because they share the dependency on XML::RSS
 
  [REVISION]
 
