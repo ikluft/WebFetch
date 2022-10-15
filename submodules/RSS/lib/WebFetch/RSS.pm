@@ -1,5 +1,5 @@
-# WebFetch::Input::RSS
-# ABSTRACT: get headlines for WebFetch from RSS feed
+# WebFetch::RSS
+# ABSTRACT: generate or read an RSS feed for WebFetch
 #
 # Copyright (c) 1998-2022 Ian Kluft. This program is free software; you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -13,7 +13,7 @@ use warnings;
 use utf8;
 ## use critic (Modules::RequireExplicitPackage)
 
-package WebFetch::Input::RSS;
+package WebFetch::RSS;
 
 use base "WebFetch";
 
@@ -23,7 +23,7 @@ use Carp;
 use Try::Tiny;
 use Scalar::Util qw( blessed );
 use XML::RSS;
-
+use Data::Dumper; # TODO remove after troubleshooting
 use Exception::Class ();
 
 =encoding utf8
@@ -36,18 +36,23 @@ Readonly::Scalar my $default_rss_version => "2.0";
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-__PACKAGE__->module_register("input:rss");
+WebFetch->config("Options", []);
+WebFetch->config("Usage", "");
+__PACKAGE__->module_register("input:rss", "output:rss");
 
 =head1 SYNOPSIS
 
 In perl scripts:
 
-C<use WebFetch::Input::RSS;>
+  C<use WebFetch::RSS;>
 
 From the command line:
 
-C<perl -w -MWebFetch::Input::RSS -e "&fetch_main" -- --dir directory
-     --source rss-feed-url [...WebFetch output options...]>
+  C<perl -w -MWebFetch::RSS -e "&fetch_main" -- --dir directory --source rss-feed-url [...output options...]>
+
+or
+
+  C<perl -w -MWebFetch::RSS -e "&fetch_main" -- --dir directory [...input options...]> --dest_format=rss --dest=file
 
 =cut
 
@@ -227,6 +232,18 @@ sub parse_input
     return;
 }
 
+# RSS-output format handler
+sub fmt_handler_rss
+{
+    my $self     = shift;
+    my $filename = shift;
+
+    # generate RSS
+    # TODO remove Data::Dumper after troubleshooting
+    WebFetch::debug "self: ".Dumper($self);
+    return;
+}
+
 1;
 __END__
 # POD docs follow
@@ -242,7 +259,7 @@ containing RSS XML text.
 
 RSS is an XML format defined at http://www.rssboard.org/rss-specification
 
-WebFetch::Input::RSS uses Perl's XML::RSS to parse RSS "Really Simple
+WebFetch::RSS uses Perl's XML::RSS to generate or parse RSS "Really Simple
 Syndication" version 0.9, 0.91, 1.0 or 2.0, whichever is provided by the server.
 An optional "--rss_version" command-line parameter or "rss_version" initialization parameter
 can set the RSS version number for the parser. If not specified, it defaults to RSS 2.0.
