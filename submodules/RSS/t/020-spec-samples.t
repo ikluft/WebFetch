@@ -15,6 +15,7 @@ use Try::Tiny;
 use YAML::XS;
 use WebFetch "0.15.1";
 use WebFetch::Input::RSS;
+use WebFetch::RSS;
 use WebFetch::Output::Capture;
 use Test::More;
 
@@ -27,6 +28,7 @@ Readonly::Scalar my $base_dir        => dirname( $FindBin::Bin );
 Readonly::Scalar my $input_dir       => $base_dir . "/t/test-inputs/020-spec-samples";
 Readonly::Scalar my $tmpdir_template => "WebFetch-XXXXXXXXXX";
 Readonly::Array my @rss_versions     => qw(0.9 0.91 1.0 2.0);
+Readonly::Array my @test_classes     => qw(WebFetch::RSS WebFetch::Input::RSS);
 Readonly::Array my @test_files       => qw(
     00-notfound-skip.xml rss-0.91-complete.xml rss-0.91-from-2.0-spec.xml rss-0.91-simple.xml
     rss-0.92-from-2.0-spec.xml rss-1.0-modules.xml rss-1.0-simple.xml rss-2.0-sample.xml
@@ -35,7 +37,7 @@ Readonly::Array my @test_files       => qw(
 # count tests from entries in @test_files array
 sub count_tests
 {
-    return (( int @test_files ) * ( int @rss_versions ));
+    return (( int @test_classes ) * ( int @test_files ) * ( int @rss_versions ));
 }
 
 # read and return input data from RSS/XML file
@@ -53,7 +55,7 @@ sub read_in_data
         debug         => $debug_mode,
     );
     try {
-        WebFetch::Input::RSS->run( \%Options );
+        $params->{class}->run( \%Options );
     } catch {
         # return exception as string
         return "$_";
@@ -82,11 +84,14 @@ SKIP: {
             skip $params->{in} . ": expected output data file not found - nothing to compare", int @rss_versions;
         }
         my $exp_data = read_exp_data($params);
-        foreach my $version ( @rss_versions ) {
-            $params->{rss_version} = $version;
-            my $in_data = read_in_data($params);
-            is_deeply( $in_data, $exp_data->{$version}, "compare " . $params->{in} . " vs " . $params->{exp}
-                . " (RSS $version)" );
+        foreach my $test_class (@test_classes) {
+            $params->{class} = $test_class;
+            foreach my $version ( @rss_versions ) {
+                $params->{rss_version} = $version;
+                my $in_data = read_in_data($params);
+                is_deeply( $in_data, $exp_data->{$version}, $params->{class} . ": compare " . $params->{in} . " vs "
+                    . $params->{exp} . " (RSS $version)" );
+            }
         }
     }
 }
@@ -95,10 +100,10 @@ SKIP: {
 sub do_tests
 {
     my $temp_dir = shift;
-    foreach my $in_file (sort @test_files) {
-        my %test_params = ( temp_dir => $temp_dir, in => $in_file );
-        do_test_file( \%test_params );
-    }
+        foreach my $in_file (sort @test_files) {
+            my %test_params = ( temp_dir => $temp_dir, in => $in_file );
+            do_test_file( \%test_params );
+        }
 }
 
 #
