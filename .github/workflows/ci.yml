@@ -46,6 +46,8 @@ jobs:
     - name: Install Listdeps Modules
       run: |
         cd main
+        pwd
+        ls -l
         dzil listdeps --missing | cpanm --notest
 
     - name: Show Errors on Windows
