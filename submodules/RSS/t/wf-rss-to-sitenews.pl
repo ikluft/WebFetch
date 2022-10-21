@@ -14,12 +14,12 @@ use Data::Dumper;
 use DateTime::Format::ISO8601;
 
 use WebFetch;
-use WebFetch::Input::RSS;
+use WebFetch::RSS;
 
 # configuration
 Readonly::Scalar my $progname        => basename($0);
 Readonly::Scalar my $release_cutoff  => "2000-01-01T00:00:00-00:00";   # only use WebFetch releases since 2000
-Readonly::Scalar my $date_num        => 0;                             # field number for date from WebFetch::Input::RSS
+Readonly::Scalar my $date_num        => 0;                             # field number for date from WebFetch::RSS
 Readonly::Scalar my $title_num       => 1;                             # field number for title
 Readonly::Scalar my $link_num        => 1;                             # field number for link
 Readonly::Scalar my $creator_num     => 5;                             # field number for creator
@@ -114,7 +114,7 @@ sub process_feed
         dest          => "capture",
         dest_format   => "capture",
     );
-    WebFetch::Input::RSS->run( \%Options );
+    WebFetch::RSS->run( \%Options );
     return;
 }
 

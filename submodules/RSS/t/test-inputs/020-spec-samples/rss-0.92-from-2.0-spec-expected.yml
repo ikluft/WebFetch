@@ -1,263 +1,6 @@
 ---
 '0.9':
-- &1
-  - ''
-  - stuff
-  - http://bar
-  - ''
-  - This is an article about some stuff
-  - ''
-  - ''
-- &2
-  - ''
-  - stuff
-  - http://bar
-  - ''
-  - This is an article about some stuff
-  - ''
-  - ''
-- &3
-  - ''
-  - stuff
-  - http://bar
-  - ''
-  - This is an article about some stuff
-  - ''
-  - ''
-- &4
-  - ''
-  - stuff
-  - http://bar
-  - ''
-  - This is an article about some stuff
-  - ''
-  - ''
-- &5
-  - ''
-  - Giving the world a pluggable Gnutella
-  - http://writetheweb.com/read.php?item=24
-  - ''
-  - WorldOS is a framework on which to build programs that work like Freenet or Gnutella
-    -allowing distributed applications using peer-to-peer routing.
-  - ''
-  - ''
-- &6
-  - ''
-  - Syndication discussions hot up
-  - http://writetheweb.com/read.php?item=23
-  - ''
-  - After a period of dormancy, the Syndication mailing list has become active again,
-    with contributions from leaders in traditional media and Web syndication.
-  - ''
-  - ''
-- &7
-  - ''
-  - Personal web server integrates file sharing and messaging
-  - http://writetheweb.com/read.php?item=22
-  - ''
-  - The Magi Project is an innovative project to create a combined personal web server
-    and messaging system that enables the sharing and synchronization of information
-    across desktop, laptop and palmtop devices.
-  - ''
-  - ''
-- &8
-  - ''
-  - Syndication and Metadata
-  - http://writetheweb.com/read.php?item=21
-  - ''
-  - RSS is probably the best known metadata format around. RDF is probably one of
-    the least understood. In this essay, published on my O'Reilly Network weblog,
-    I argue that the next generation of RSS should be based on RDF.
-  - ''
-  - ''
-- &9
-  - ''
-  - UK bloggers get organised
-  - http://writetheweb.com/read.php?item=20
-  - ''
-  - Looks like the weblogs scene is gathering pace beyond the shores of the US. There's
-    now a UK-specific page on weblogs.com, and a mailing list at egroups.
-  - ''
-  - ''
-- &10
-  - ''
-  - Yournamehere.com more important than anything
-  - http://writetheweb.com/read.php?item=19
-  - ''
-  - Whatever you're publishing on the web, your site name is the most valuable asset
-    you have, according to Carl Steadman.
-  - ''
-  - ''
-- &11
-  - ''
-  - Giving the world a pluggable Gnutella
-  - http://writetheweb.com/read.php?item=24
-  - ''
-  - WorldOS is a framework on which to build programs that work like Freenet or Gnutella
-    -allowing distributed applications using peer-to-peer routing.
-  - ''
-  - ''
-- &12
-  - ''
-  - Syndication discussions hot up
-  - http://writetheweb.com/read.php?item=23
-  - ''
-  - After a period of dormancy, the Syndication mailing list has become active again,
-    with contributions from leaders in traditional media and Web syndication.
-  - ''
-  - ''
-- &13
-  - ''
-  - Personal web server integrates file sharing and messaging
-  - http://writetheweb.com/read.php?item=22
-  - ''
-  - The Magi Project is an innovative project to create a combined personal web server
-    and messaging system that enables the sharing and synchronization of information
-    across desktop, laptop and palmtop devices.
-  - ''
-  - ''
-- &14
-  - ''
-  - Syndication and Metadata
-  - http://writetheweb.com/read.php?item=21
-  - ''
-  - RSS is probably the best known metadata format around. RDF is probably one of
-    the least understood. In this essay, published on my O'Reilly Network weblog,
-    I argue that the next generation of RSS should be based on RDF.
-  - ''
-  - ''
-- &15
-  - ''
-  - UK bloggers get organised
-  - http://writetheweb.com/read.php?item=20
-  - ''
-  - Looks like the weblogs scene is gathering pace beyond the shores of the US. There's
-    now a UK-specific page on weblogs.com, and a mailing list at egroups.
-  - ''
-  - ''
-- &16
-  - ''
-  - Yournamehere.com more important than anything
-  - http://writetheweb.com/read.php?item=19
-  - ''
-  - Whatever you're publishing on the web, your site name is the most valuable asset
-    you have, according to Carl Steadman.
-  - ''
-  - ''
-- &17
-  - ''
-  - Giving the world a pluggable Gnutella
-  - http://writetheweb.com/read.php?item=24
-  - ''
-  - WorldOS is a framework on which to build programs that work like Freenet or Gnutella
-    -allowing distributed applications using peer-to-peer routing.
-  - ''
-  - ''
-- &18
-  - ''
-  - Syndication discussions hot up
-  - http://writetheweb.com/read.php?item=23
-  - ''
-  - After a period of dormancy, the Syndication mailing list has become active again,
-    with contributions from leaders in traditional media and Web syndication.
-  - ''
-  - ''
-- &19
-  - ''
-  - Personal web server integrates file sharing and messaging
-  - http://writetheweb.com/read.php?item=22
-  - ''
-  - The Magi Project is an innovative project to create a combined personal web server
-    and messaging system that enables the sharing and synchronization of information
-    across desktop, laptop and palmtop devices.
-  - ''
-  - ''
-- &20
-  - ''
-  - Syndication and Metadata
-  - http://writetheweb.com/read.php?item=21
-  - ''
-  - RSS is probably the best known metadata format around. RDF is probably one of
-    the least understood. In this essay, published on my O'Reilly Network weblog,
-    I argue that the next generation of RSS should be based on RDF.
-  - ''
-  - ''
-- &21
-  - ''
-  - UK bloggers get organised
-  - http://writetheweb.com/read.php?item=20
-  - ''
-  - Looks like the weblogs scene is gathering pace beyond the shores of the US. There's
-    now a UK-specific page on weblogs.com, and a mailing list at egroups.
-  - ''
-  - ''
-- &22
-  - ''
-  - Yournamehere.com more important than anything
-  - http://writetheweb.com/read.php?item=19
-  - ''
-  - Whatever you're publishing on the web, your site name is the most valuable asset
-    you have, according to Carl Steadman.
-  - ''
-  - ''
-- &23
-  - ''
-  - Giving the world a pluggable Gnutella
-  - http://writetheweb.com/read.php?item=24
-  - ''
-  - WorldOS is a framework on which to build programs that work like Freenet or Gnutella
-    -allowing distributed applications using peer-to-peer routing.
-  - ''
-  - ''
-- &24
-  - ''
-  - Syndication discussions hot up
-  - http://writetheweb.com/read.php?item=23
-  - ''
-  - After a period of dormancy, the Syndication mailing list has become active again,
-    with contributions from leaders in traditional media and Web syndication.
-  - ''
-  - ''
-- &25
-  - ''
-  - Personal web server integrates file sharing and messaging
-  - http://writetheweb.com/read.php?item=22
-  - ''
-  - The Magi Project is an innovative project to create a combined personal web server
-    and messaging system that enables the sharing and synchronization of information
-    across desktop, laptop and palmtop devices.
-  - ''
-  - ''
-- &26
-  - ''
-  - Syndication and Metadata
-  - http://writetheweb.com/read.php?item=21
-  - ''
-  - RSS is probably the best known metadata format around. RDF is probably one of
-    the least understood. In this essay, published on my O'Reilly Network weblog,
-    I argue that the next generation of RSS should be based on RDF.
-  - ''
-  - ''
-- &27
-  - ''
-  - UK bloggers get organised
-  - http://writetheweb.com/read.php?item=20
-  - ''
-  - Looks like the weblogs scene is gathering pace beyond the shores of the US. There's
-    now a UK-specific page on weblogs.com, and a mailing list at egroups.
-  - ''
-  - ''
-- &28
-  - ''
-  - Yournamehere.com more important than anything
-  - http://writetheweb.com/read.php?item=19
-  - ''
-  - Whatever you're publishing on the web, your site name is the most valuable asset
-    you have, according to Carl Steadman.
-  - ''
-  - ''
-- &29
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -270,8 +13,7 @@
     on Scripting News. <i>A little change, the wind and rain.</i>'
   - ''
   - ''
-- &30
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -280,8 +22,7 @@
     <i>A Frontier 7 feature.</i>
   - ''
   - ''
-- &31
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -290,16 +31,14 @@
     it many times, and enjoy something new every time.
   - ''
   - ''
-- &32
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - This is a test of a change I just made. Still diggin..
   - ''
   - ''
-- &33
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -309,8 +48,7 @@
     If you're blind send me an email if u cn rd ths.
   - ''
   - ''
-- &34
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -318,8 +56,7 @@
     Tower</a>, a live version from One From The Vault.
   - ''
   - ''
-- &35
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -329,8 +66,7 @@
     about The Other One? "Spanish lady come to me.."
   - ''
   - ''
-- &36
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -341,8 +77,7 @@
     <i>You win again!</i>
   - ''
   - ''
-- &37
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -352,8 +87,7 @@
     have blown away. Now what remains? The wind and rain."'
   - ''
   - ''
-- &38
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -361,8 +95,7 @@
     pouring its light into ashes.
   - ''
   - ''
-- &39
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -370,8 +103,7 @@
     Blues</a>.'
   - ''
   - ''
-- &40
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -381,8 +113,7 @@
     Blues."</i>
   - ''
   - ''
-- &41
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -397,16 +128,14 @@
     but man I love my country and I love Jerry and the band. <i>I truly do!</i>
   - ''
   - ''
-- &42
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - 'Grateful Dead: "Tennessee, Tennessee, ain''t no place I''d rather be."'
   - ''
   - ''
-- &43
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -420,8 +149,7 @@
     of Bertha."'
   - ''
   - ''
-- &44
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -429,8 +157,7 @@
     I get home before daylight I just might get some sleep tonight."'
   - ''
   - ''
-- &45
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -439,8 +166,7 @@
     beside the rising tide."'
   - ''
   - ''
-- &46
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -450,8 +176,7 @@
     ass there by the side of the road."'
   - ''
   - ''
-- &47
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -459,8 +184,7 @@
     cards ain't worth a dime, if you don't lay em down.
   - ''
   - ''
-- &48
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -470,16 +194,14 @@
     it."'
   - ''
   - ''
-- &49
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - A touch of gray, kinda suits you anyway..
   - ''
   - ''
-- &50
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -495,58 +217,7 @@
   - ''
   - ''
 '0.91':
-- *1
-- *2
-- *3
-- *4
-- *5
-- *6
-- *7
-- *8
-- *9
-- *10
-- *11
-- *12
-- *13
-- *14
-- *15
-- *16
-- *17
-- *18
-- *19
-- *20
-- *21
-- *22
-- *23
-- *24
-- *25
-- *26
-- *27
-- *28
-- *29
-- *30
-- *31
-- *32
-- *33
-- *34
-- *35
-- *36
-- *37
-- *38
-- *39
-- *40
-- *41
-- *42
-- *43
-- *44
-- *45
-- *46
-- *47
-- *48
-- *49
-- *50
-- &51
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -559,8 +230,7 @@
     on Scripting News. <i>A little change, the wind and rain.</i>'
   - ''
   - ''
-- &52
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -569,8 +239,7 @@
     <i>A Frontier 7 feature.</i>
   - ''
   - ''
-- &53
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -579,16 +248,14 @@
     it many times, and enjoy something new every time.
   - ''
   - ''
-- &54
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - This is a test of a change I just made. Still diggin..
   - ''
   - ''
-- &55
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -598,8 +265,7 @@
     If you're blind send me an email if u cn rd ths.
   - ''
   - ''
-- &56
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -607,8 +273,7 @@
     Tower</a>, a live version from One From The Vault.
   - ''
   - ''
-- &57
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -618,8 +283,7 @@
     about The Other One? "Spanish lady come to me.."
   - ''
   - ''
-- &58
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -630,8 +294,7 @@
     <i>You win again!</i>
   - ''
   - ''
-- &59
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -641,8 +304,7 @@
     have blown away. Now what remains? The wind and rain."'
   - ''
   - ''
-- &60
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -650,8 +312,7 @@
     pouring its light into ashes.
   - ''
   - ''
-- &61
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -659,8 +320,7 @@
     Blues</a>.'
   - ''
   - ''
-- &62
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -670,8 +330,7 @@
     Blues."</i>
   - ''
   - ''
-- &63
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -686,16 +345,14 @@
     but man I love my country and I love Jerry and the band. <i>I truly do!</i>
   - ''
   - ''
-- &64
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - 'Grateful Dead: "Tennessee, Tennessee, ain''t no place I''d rather be."'
   - ''
   - ''
-- &65
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -709,8 +366,7 @@
     of Bertha."'
   - ''
   - ''
-- &66
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -718,8 +374,7 @@
     I get home before daylight I just might get some sleep tonight."'
   - ''
   - ''
-- &67
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -728,8 +383,7 @@
     beside the rising tide."'
   - ''
   - ''
-- &68
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -739,8 +393,7 @@
     ass there by the side of the road."'
   - ''
   - ''
-- &69
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -748,8 +401,7 @@
     cards ain't worth a dime, if you don't lay em down.
   - ''
   - ''
-- &70
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -759,16 +411,14 @@
     it."'
   - ''
   - ''
-- &71
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - A touch of gray, kinda suits you anyway..
   - ''
   - ''
-- &72
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -784,80 +434,7 @@
   - ''
   - ''
 '1.0':
-- *1
-- *2
-- *3
-- *4
-- *5
-- *6
-- *7
-- *8
-- *9
-- *10
-- *11
-- *12
-- *13
-- *14
-- *15
-- *16
-- *17
-- *18
-- *19
-- *20
-- *21
-- *22
-- *23
-- *24
-- *25
-- *26
-- *27
-- *28
-- *29
-- *30
-- *31
-- *32
-- *33
-- *34
-- *35
-- *36
-- *37
-- *38
-- *39
-- *40
-- *41
-- *42
-- *43
-- *44
-- *45
-- *46
-- *47
-- *48
-- *49
-- *50
-- *51
-- *52
-- *53
-- *54
-- *55
-- *56
-- *57
-- *58
-- *59
-- *60
-- *61
-- *62
-- *63
-- *64
-- *65
-- *66
-- *67
-- *68
-- *69
-- *70
-- *71
-- *72
-- &73
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -870,8 +447,7 @@
     on Scripting News. <i>A little change, the wind and rain.</i>'
   - ''
   - ''
-- &74
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -880,8 +456,7 @@
     <i>A Frontier 7 feature.</i>
   - ''
   - ''
-- &75
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -890,16 +465,14 @@
     it many times, and enjoy something new every time.
   - ''
   - ''
-- &76
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - This is a test of a change I just made. Still diggin..
   - ''
   - ''
-- &77
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -909,8 +482,7 @@
     If you're blind send me an email if u cn rd ths.
   - ''
   - ''
-- &78
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -918,8 +490,7 @@
     Tower</a>, a live version from One From The Vault.
   - ''
   - ''
-- &79
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -929,8 +500,7 @@
     about The Other One? "Spanish lady come to me.."
   - ''
   - ''
-- &80
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -941,8 +511,7 @@
     <i>You win again!</i>
   - ''
   - ''
-- &81
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -952,8 +521,7 @@
     have blown away. Now what remains? The wind and rain."'
   - ''
   - ''
-- &82
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -961,8 +529,7 @@
     pouring its light into ashes.
   - ''
   - ''
-- &83
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -970,8 +537,7 @@
     Blues</a>.'
   - ''
   - ''
-- &84
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -981,8 +547,7 @@
     Blues."</i>
   - ''
   - ''
-- &85
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -997,16 +562,14 @@
     but man I love my country and I love Jerry and the band. <i>I truly do!</i>
   - ''
   - ''
-- &86
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - 'Grateful Dead: "Tennessee, Tennessee, ain''t no place I''d rather be."'
   - ''
   - ''
-- &87
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -1020,8 +583,7 @@
     of Bertha."'
   - ''
   - ''
-- &88
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -1029,8 +591,7 @@
     I get home before daylight I just might get some sleep tonight."'
   - ''
   - ''
-- &89
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -1039,8 +600,7 @@
     beside the rising tide."'
   - ''
   - ''
-- &90
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -1050,8 +610,7 @@
     ass there by the side of the road."'
   - ''
   - ''
-- &91
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -1059,8 +618,7 @@
     cards ain't worth a dime, if you don't lay em down.
   - ''
   - ''
-- &92
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -1070,16 +628,14 @@
     it."'
   - ''
   - ''
-- &93
-  - ''
+- - ''
   - ''
   - ''
   - ''
   - A touch of gray, kinda suits you anyway..
   - ''
   - ''
-- &94
-  - ''
+- - ''
   - ''
   - ''
   - ''
@@ -1095,100 +651,6 @@
   - ''
   - ''
 '2.0':
-- *1
-- *2
-- *3
-- *4
-- *5
-- *6
-- *7
-- *8
-- *9
-- *10
-- *11
-- *12
-- *13
-- *14
-- *15
-- *16
-- *17
-- *18
-- *19
-- *20
-- *21
-- *22
-- *23
-- *24
-- *25
-- *26
-- *27
-- *28
-- *29
-- *30
-- *31
-- *32
-- *33
-- *34
-- *35
-- *36
-- *37
-- *38
-- *39
-- *40
-- *41
-- *42
-- *43
-- *44
-- *45
-- *46
-- *47
-- *48
-- *49
-- *50
-- *51
-- *52
-- *53
-- *54
-- *55
-- *56
-- *57
-- *58
-- *59
-- *60
-- *61
-- *62
-- *63
-- *64
-- *65
-- *66
-- *67
-- *68
-- *69
-- *70
-- *71
-- *72
-- *73
-- *74
-- *75
-- *76
-- *77
-- *78
-- *79
-- *80
-- *81
-- *82
-- *83
-- *84
-- *85
-- *86
-- *87
-- *88
-- *89
-- *90
-- *91
-- *92
-- *93
-- *94
 - - ''
   - ''
   - ''

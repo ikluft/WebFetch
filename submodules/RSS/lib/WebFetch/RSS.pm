@@ -17,7 +17,7 @@ package WebFetch::RSS;
 
 use base "WebFetch";
 
-use WebFetch "0.15.2";
+use WebFetch "0.15.4";
 use Readonly;
 use Carp;
 use Try::Tiny;
@@ -236,7 +236,7 @@ sub parse_input
 sub fmt_handler_rss
 {
     my $self     = shift;
-    my $filename = shift;
+    #my $filename = shift;
 
     # generate RSS
     # TODO remove Data::Dumper after troubleshooting

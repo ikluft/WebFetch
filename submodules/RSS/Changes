@@ -12,9 +12,12 @@ Revision history for WebFetch::Input::RSS
  [MAJOR]
 
  [MINOR]
- - new module WebFetch::Output::RSS, packaged with WebFetch::Input::RSS because they share the dependency on XML::RSS
+ - renamed WebFetch::Input::RSS to WebFetch::RSS since it's getting output code
+ - add WebFetch::Input::RSS as an alias for WebFetch::RSS for backward compatibility
 
  [REVISION]
+ - update tests against RSS spec samples to test usage as WebFetch::RSS and WebFetch::Input::RSS
+ - update test data to follow WebFetch::Output::Capture fix in WebFetch 0.15.4
 
  [SECURITY]
 

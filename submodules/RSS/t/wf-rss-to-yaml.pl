@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# wf-rss-to-yaml.pl - generate YAML files for WebFetch::Input::RSS tests
+# wf-rss-to-yaml.pl - generate YAML files for WebFetch::RSS tests
 #===============================================================================
 
 use strict;
@@ -12,8 +12,8 @@ use File::Temp;
 use File::Basename qw(basename dirname);
 use Try::Tiny;
 use YAML::XS;
-use WebFetch "0.15.1";
-use WebFetch::Input::RSS;
+use WebFetch "0.15.4";
+use WebFetch::RSS;
 use WebFetch::Output::Capture;
 use Data::Dumper;
 
@@ -24,7 +24,7 @@ Readonly::Scalar my $src_format      => "rss";
 Readonly::Scalar my $dest_format     => "capture";
 Readonly::Scalar my $base_dir        => dirname( $FindBin::Bin );
 Readonly::Scalar my $input_dir       => $base_dir . "/t/test-inputs/020-spec-samples";
-Readonly::Scalar my $date_num        => 0;                       # field number for date from WebFetch::Input::RSS
+Readonly::Scalar my $date_num        => 0;                       # field number for date from WebFetch::RSS
 Readonly::Scalar my $title_num       => 1;                       # field number for title
 Readonly::Scalar my $link_num        => 1;                       # field number for link
 Readonly::Scalar my $creator_num     => 5;                       # field number for creator
@@ -54,9 +54,9 @@ sub rss2yaml
         );
         my $ok = 1;
         try {
-            WebFetch::Input::RSS->run( \%Options );
+            WebFetch::RSS->run( \%Options );
         } catch {
-            $results{$version} = "$_";
+            $results{$version} = $_;
             $ok = 0;
             WebFetch::debug "RSS $version run -> exception: $_";
         };

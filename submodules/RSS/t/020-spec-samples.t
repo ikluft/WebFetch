@@ -13,11 +13,12 @@ use File::Basename qw(basename dirname);
 use File::Compare;
 use Try::Tiny;
 use YAML::XS;
-use WebFetch "0.15.1";
+use WebFetch "0.15.4";
 use WebFetch::Input::RSS;
 use WebFetch::RSS;
 use WebFetch::Output::Capture;
 use Test::More;
+use Data::Dumper;
 
 # configuration & constants
 Readonly::Scalar my $classname       => "WebFetch::Input::SiteNews";
@@ -58,7 +59,7 @@ sub read_in_data
         $params->{class}->run( \%Options );
     } catch {
         # return exception as string
-        return "$_";
+        return $_;
     };
     return [ WebFetch::Output::Capture::data_records() ];
 }
@@ -78,10 +79,11 @@ sub do_test_file
     $params->{exp} = basename( $params->{in}, ".xml" ) . "-expected.yml";
 SKIP: {
         if ( not -f $input_dir . "/" . $params->{in} ) {
-            skip $params->{in} . ": test data file not found", int @rss_versions;
+            skip $params->{in} . ": test data file not found", (int @rss_versions) * (int @test_classes);
         }
         if ( not -f $input_dir . "/" . $params->{exp} ) {
-            skip $params->{in} . ": expected output data file not found - nothing to compare", int @rss_versions;
+            skip $params->{in} . ": expected output data file not found - nothing to compare",
+            (int @rss_versions) * (int @test_classes);
         }
         my $exp_data = read_exp_data($params);
         foreach my $test_class (@test_classes) {
@@ -89,8 +91,11 @@ SKIP: {
             foreach my $version ( @rss_versions ) {
                 $params->{rss_version} = $version;
                 my $in_data = read_in_data($params);
-                is_deeply( $in_data, $exp_data->{$version}, $params->{class} . ": compare " . $params->{in} . " vs "
-                    . $params->{exp} . " (RSS $version)" );
+                my $deep_ok = is_deeply( $in_data, $exp_data->{$version}, $params->{class} . ": compare "
+                    . $params->{in} . " vs " . $params->{exp} . " (RSS $version)" );
+                if ($debug_mode and not $deep_ok) {
+                    print STDERR "deep compare failed: ".Dumper($in_data);
+                }
             }
         }
     }

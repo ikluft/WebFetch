@@ -15,9 +15,40 @@ use utf8;
 
 package WebFetch::Input::RSS;
 
-use feature qw(say);
-
-# inherit everything as a derived class
+# inherit everything as a derived class - this exists just for backward compatibility
 use base "WebFetch::RSS";
 
 1;
+__END__
+# POD docs follow
+
+=head1 SYNOPSIS
+
+In perl scripts:
+
+  C<use WebFetch::Input::RSS;>
+
+From the command line:
+
+  C<perl -w -MWebFetch::Input::RSS -e "&fetch_main" -- --dir directory --source rss-feed-url [...output options...]>
+
+or
+
+  C<perl -w -MWebFetch::Input::RSS -e "&fetch_main" -- --dir directory [...input options...]> --dest_format=rss --dest=file
+
+=head1 DESCRIPTION
+
+I<WebFetch::Input::RSS> is an alias for L<WebFetch::RSS> to provide backward compatibility under its previous name.
+
+=head1 SEE ALSO
+
+L<WebFetch>
+L<https://github.com/ikluft/WebFetch>
+
+=head1 BUGS AND LIMITATIONS
+
+Please report bugs via GitHub at L<https://github.com/ikluft/WebFetch/issues>
+
+Patches and enhancements may be submitted via a pull request at L<https://github.com/ikluft/WebFetch/pulls>
+
+=cut
