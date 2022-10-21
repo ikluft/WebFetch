@@ -36,11 +36,16 @@ jobs:
       run: |
         cpanm -v
         cpanm --notest Dist::Zilla
+        dzil --version
 
-    - name: Install Modules
+    - name: Install Authordeps Modules
       run: |
         cd main
         dzil authordeps --missing | cpanm --notest
+
+    - name: Install Listdeps Modules
+      run: |
+        cd main
         dzil listdeps --missing | cpanm --notest
 
     - name: Show Errors on Windows
