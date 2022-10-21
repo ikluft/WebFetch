@@ -121,7 +121,9 @@ When using the capture method, you receive the raw data records.
 # return the file list
 sub data_records
 {
-    return @data_records;
+    my @ret_records = @data_records; # save data for return
+    @data_records = (); # clear saved records list because tests use this more than once
+    return @ret_records;
 }
 
 1;

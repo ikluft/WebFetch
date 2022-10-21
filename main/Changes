@@ -4,6 +4,7 @@ Revision history for WebFetch
  [API CHANGE]
 
  [BUG FIXES]
+ - clear WebFetch::Output::Capture buffer after reading it, to support tests which run it more than once
 
  [DOCS]
 
