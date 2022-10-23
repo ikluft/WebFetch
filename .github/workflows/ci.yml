@@ -44,6 +44,7 @@ jobs:
         cpanm -v
         cpanm --notest Dist::Zilla
         dzil --version
+        cpanm --notest Test::Pod
 
     - name: Install Authordeps Modules
       run: |
