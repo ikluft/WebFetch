@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-latest, macos-latest] #, windows-latest]
+        runner: [ubuntu-latest] #, macos-latest, windows-latest]
         perl: [ '5.36' ]
         exclude:
           - runner: windows-latest
@@ -38,9 +38,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libdb-dev
 
-    - name: Install dependency for OSX
-      if:  ${{ matrix.runner == 'macos-latest' }}
-      run: brew install berkeley-db
+    #- name: Install dependency for OSX
+    #  if:  ${{ matrix.runner == 'macos-latest' }}
+    #  run: brew install berkeley-db
 
 
     - name: Install Dist::Zilla
