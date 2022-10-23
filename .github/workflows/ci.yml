@@ -32,12 +32,18 @@ jobs:
       run: |
         perl -v
 
+    - name: Install external dependency
+      if:  ${{ matrix.runner == 'ubuntu-latest' }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libdb-dev
+
+
     - name: Install Dist::Zilla
       run: |
         cpanm -v
         cpanm --notest Dist::Zilla
         dzil --version
-        cpanm --notest inc::latest Module::Implementation Test::Fatal Test::Requires
 
     - name: Install Authordeps Modules
       run: |
