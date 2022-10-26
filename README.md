@@ -13,9 +13,9 @@ Subsidiary modules which were separated into their own modules due to external d
   - MetaCPAN: https://metacpan.org/pod/WebFetch::Input::Atom
   - depends on [XML::Atom](https://metacpan.org/pod/XML::Atom)
 
-- [WebFetch::Input::RSS](submodules/Input-RSS/) - get headlines for WebFetch from RSS feed
+- [WebFetch::RSS](submodules/RSS/) - WebFetch input and output handlers for RSS
   
-  - MetaCPAN: https://metacpan.org/pod/WebFetch::Input::RSS
+  - MetaCPAN: https://metacpan.org/pod/WebFetch::RSS
   - depends on [XML::RSS](https://metacpan.org/pod/XML::RSS)
 
 - [WebFetch::Output::TT](submodules/Output-TT) - save data from WebFetch via the Perl Template Toolkit
