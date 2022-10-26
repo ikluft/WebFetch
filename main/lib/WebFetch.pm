@@ -129,15 +129,15 @@ Readonly::Array my @WebFetch_formatters => qw( output:html output:xml output:wf 
 # defualy modules for input and output
 Readonly::Hash my %default_modules => (
     "input" => {
-        "rss"        => "WebFetch::Input::RSS",
+        "rss"        => "WebFetch::RSS",
         "sitenews"   => "WebFetch::Input::SiteNews",
         "perlstruct" => "WebFetch::Input::PerlStruct",
         "atom"       => "WebFetch::Input::Atom",
         "dump"       => "WebFetch::Input::Dump",
     },
     "output" => {
-        "rss"        => "WebFetch::Output:RSS",
-        "atom"       => "WebFetch::Output:Atom",
+        "rss"        => "WebFetch::RSS",
+        "atom"       => "WebFetch::Atom",
         "tt"         => "WebFetch::Output:TT",
         "perlstruct" => "WebFetch::Output::PerlStruct",
         "dump"       => "WebFetch::Output::Dump",
@@ -2785,7 +2785,7 @@ L<WebFetch::Data::Store>
 
 Modules separated to contain external module dependencies:
 L<WebFetch::Input::Atom>,
-L<WebFetch::Input::RSS>,
+L<WebFetch::RSS>,
 L<WebFetch::Output::TT>,
 L<WebFetch::Output::TWiki>,
 

@@ -30,7 +30,7 @@ my $grep_func;
 
 In perl scripts:
 
-    use WebFetch::Input::RSS; # or another WebFetch input - this example shows RSS
+    use WebFetch::RSS; # or another WebFetch input - this example shows RSS
     use WebFetch::Output::Capture;
     # ... fill in $params hashref
     my %Options = (
@@ -40,7 +40,7 @@ In perl scripts:
         dest_format => "capture",
         dest => "", # unused
     );
-    WebFetch::Input::RSS->run(\%Options);
+    WebFetch::RSS->run(\%Options);
     my @data_records = WebFetch::Output::Capture::data_records();
 
 =head1 DESCRIPTION
