@@ -23,7 +23,7 @@ use Carp;
 use Try::Tiny;
 use Scalar::Util qw( blessed );
 use XML::RSS;
-use Data::Dumper; # TODO remove after troubleshooting
+#use Data::Dumper; # TODO remove after troubleshooting
 use Exception::Class ();
 
 =encoding utf8
@@ -36,8 +36,8 @@ Readonly::Scalar my $default_rss_version => "2.0";
 # no user-servicable parts beyond this point
 
 # register capabilities with WebFetch
-WebFetch->config("Options", []);
-WebFetch->config("Usage", "");
+WebFetch->config("Options", [ qw(rss_config:s) ]);
+WebFetch->config("Usage", "--rss_config=filename");
 __PACKAGE__->module_register("input:rss", "output:rss");
 
 =head1 SYNOPSIS
@@ -235,13 +235,17 @@ sub parse_input
 # RSS-output format handler
 sub fmt_handler_rss
 {
-    my $self     = shift;
-    #my $filename = shift;
+    my ( $self, $filename ) = @_;
+
+    # this is not implemented yet - you'll get an empty RSS structure from it right now
 
     # generate RSS
     # TODO remove Data::Dumper after troubleshooting
-    WebFetch::debug "self: ".Dumper($self);
-    return;
+    my $rss = XML::RSS->new (version => '2.0');
+
+    #WebFetch::debug "self: ".Dumper($self);
+    $self->raw_savable( $filename, $rss->as_string() );
+    return 1;
 }
 
 1;
@@ -250,10 +254,13 @@ __END__
 
 =head1 DESCRIPTION
 
-This module reads news items from an RSS feed.
+This module reads news items from an RSS feed, or writes previously-fetched data to an RSS file.
 
-This module uses WebFetch's I<--source> parameter to specify the URL of an RSS feed or a local file
+For input it uses WebFetch's I<--source> parameter to specify the URL of an RSS feed or a local file
 containing RSS XML text.
+
+For output it uses WebFetch's I<--dest> parameter to specify the RSS output file.
+(RSS output is not complete yet as of this release.)
 
 =head1 RSS FORMAT
 
