@@ -13,7 +13,7 @@ use File::Basename qw(basename dirname);
 use File::Compare;
 use Try::Tiny;
 use YAML::XS;
-use WebFetch "0.15.4";
+use WebFetch "0.15.5";
 use WebFetch::Input::RSS;
 use WebFetch::RSS;
 use WebFetch::Output::Capture;
