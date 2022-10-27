@@ -41,9 +41,9 @@ jobs:
       - name: Install Dist::Zilla
         run: |
           cpanm -v
-          cpanm --notest Dist::Zilla
+          cpanm --notest Sys::OsPackage
+          fetch-reqs.pl Dist::Zilla Test::Pod Pod::Markdown
           dzil --version
-          cpanm --notest Test::Pod
       - name: Install Authordeps Modules
         run: |
           cd main
