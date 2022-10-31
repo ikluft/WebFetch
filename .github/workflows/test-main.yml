@@ -42,18 +42,18 @@ jobs:
         run: |
           cpanm -v
           cpanm --notest Sys::OsPackage
-          sudo fetch-reqs.pl --notest Dist::Zilla Test::Pod Pod::Markdown
+          sudo $(which fetch-reqs.pl) --notest Dist::Zilla Test::Pod Pod::Markdown
           dzil --version
       - name: Install Authordeps Modules
         run: |
           cd main
-          dzil authordeps --missing | sudo fetch-reqs.pl --notest
+          dzil authordeps --missing | sudo $(which fetch-reqs.pl) --notest
       - name: Install Listdeps Modules
         run: |
           cd main
           pwd
           ls -l
-          dzil listdeps --missing | sudo fetch-reqs.pl --notest
+          dzil listdeps --missing | sudo $(which fetch-reqs.pl) --notest
       - name: Show Errors on Windows
         if: ${{ failure() && startsWith( matrix.runner, 'windows-')}}
         run: |
