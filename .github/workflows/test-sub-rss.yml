@@ -2,9 +2,13 @@
 name: Perl_WebFetch_RSS
 on:
   push:
-    paths: 'submodules/RSS/**'
+    paths:
+      - 'submodules/RSS/**'
+      - 'main/**'
   pull_request:
-    paths: 'submodules/RSS/**'
+    paths:
+      - 'submodules/RSS/**'
+      - 'main/**'
   workflow_dispatch:
 jobs:
   test:
@@ -33,27 +37,27 @@ jobs:
       - name: Install external dependency
         if: ${{ matrix.runner == 'ubuntu-latest' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libdb-dev
+          sudo apt update
+          sudo apt install -y libdb-dev
       # - name: Install dependency for OSX
       #   if:  ${{ matrix.runner == 'macos-latest' }}
       #   run: brew install berkeley-db
       - name: Install Dist::Zilla
         run: |
           cpanm -v
-          cpanm --notest Dist::Zilla
+          cpanm --notest Sys::OsPackage
+          fetch-reqs.pl --sudo --notest Dist::Zilla
           dzil --version
-          cpanm --notest Test::Pod
       - name: Install Authordeps Modules
         run: |
           cd submodules/RSS
-          dzil authordeps --missing | cpanm --notest
+          dzil authordeps --missing | fetch-reqs.pl --sudo --notest
       - name: Install Listdeps Modules
         run: |
           cd submodules/RSS
           pwd
           ls -l
-          dzil listdeps --missing | cpanm --notest
+          dzil listdeps --missing | fetch-reqs.pl --sudo --notest
       - name: Show Errors on Windows
         if: ${{ failure() && startsWith( matrix.runner, 'windows-')}}
         run: |

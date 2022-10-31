@@ -33,8 +33,8 @@ jobs:
       - name: Install external dependency
         if: ${{ matrix.runner == 'ubuntu-latest' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libdb-dev make
+          sudo apt update
+          sudo apt install -y libdb-dev
       # - name: Install dependency for OSX
       #   if:  ${{ matrix.runner == 'macos-latest' }}
       #   run: brew install berkeley-db
@@ -42,18 +42,18 @@ jobs:
         run: |
           cpanm -v
           cpanm --notest Sys::OsPackage
-          sudo $(which fetch-reqs.pl) --notest Dist::Zilla Test::Pod Pod::Markdown
+          fetch-reqs.pl --sudo --notest Dist::Zilla
           dzil --version
       - name: Install Authordeps Modules
         run: |
           cd main
-          dzil authordeps --missing | sudo $(which fetch-reqs.pl) --notest
+          dzil authordeps --missing | fetch-reqs.pl --sudo --notest
       - name: Install Listdeps Modules
         run: |
           cd main
           pwd
           ls -l
-          dzil listdeps --missing | sudo $(which fetch-reqs.pl) --notest
+          dzil listdeps --missing | fetch-reqs.pl --sudo --notest
       - name: Show Errors on Windows
         if: ${{ failure() && startsWith( matrix.runner, 'windows-')}}
         run: |
