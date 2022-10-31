@@ -34,7 +34,7 @@ jobs:
         if: ${{ matrix.runner == 'ubuntu-latest' }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdb-dev
+          sudo apt-get install -y libdb-dev make
       # - name: Install dependency for OSX
       #   if:  ${{ matrix.runner == 'macos-latest' }}
       #   run: brew install berkeley-db
