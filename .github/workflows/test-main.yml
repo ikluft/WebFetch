@@ -34,7 +34,7 @@ jobs:
         if: ${{ matrix.runner == 'ubuntu-latest' }}
         run: |
           sudo apt update
-          sudo apt install -y libdb-dev
+          sudo apt install -y libdb-dev libwww-perl
       # - name: Install dependency for OSX
       #   if:  ${{ matrix.runner == 'macos-latest' }}
       #   run: brew install berkeley-db
@@ -42,6 +42,8 @@ jobs:
         run: |
           cpanm -v
           cpanm --notest Sys::OsPackage
+          fetch-reqs.pl --sudo --notest Moose Test::Inter Test::Pod \
+            liblog-log4perl-perl XML::DOM SQL::Statement Test::More
           fetch-reqs.pl --sudo --notest Dist::Zilla
           dzil --version
       - name: Install Authordeps Modules
