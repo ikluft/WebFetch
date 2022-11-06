@@ -42,8 +42,8 @@ jobs:
         run: |
           cpanm -v
           cpanm --notest Sys::OsPackage
-          fetch-reqs.pl --sudo --notest Moose Test::Inter Test::Pod \
-            liblog-log4perl-perl XML::DOM SQL::Statement Test::More
+          fetch-reqs.pl --sudo --notest Moose Test::Inter Test::Pod Test::More \
+            Log::Log4perl XML::DOM SQL::Statement XML::Parser HTML::Parser
           fetch-reqs.pl --sudo --notest Dist::Zilla
           dzil --version
       - name: Install Authordeps Modules
