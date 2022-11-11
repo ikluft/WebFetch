@@ -30,10 +30,10 @@ jobs:
       - name: Show Perl Version
         run: |
           perl -v
-          perl -Mfeature=say -e 'say "INC: ".join " ", @INC;'
       - name: Install external dependency
         if: ${{ matrix.runner == 'ubuntu-latest' }}
         run: |
+          perl -Mfeature=say -MConfig -e 'say "PERL5LIB=".join(":",@INC,@Config{qw(installarchlib installprivlib installvendorlib installsitelib)})' >> $GITHUB_ENV  # set env so PERL5LIB covers apt-get installed Perl modules
           sudo apt update
           sudo apt install -y libdb-dev libwww-perl
       # - name: Install dependency for OSX
