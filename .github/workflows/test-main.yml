@@ -41,6 +41,7 @@ jobs:
       - name: Install Dist::Zilla
         run: |
           cpanm -v
+          cpanm --dev --notest ExtUtils::MakeMaker~'>= 7.65_02'  # use dev release with fix for spurious errors
           cpanm --notest Sys::OsPackage
           fetch-reqs.pl --sudo --notest XML::Parser HTML::Parser Moose Math::Base::Convert XML::DOM SQL::Statement Test::Inter Test::Pod Test::More Log::Log4perl
           fetch-reqs.pl --sudo --notest Dist::Zilla
