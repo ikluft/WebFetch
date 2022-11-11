@@ -33,9 +33,6 @@ jobs:
       - name: Install external dependency
         if: ${{ matrix.runner == 'ubuntu-latest' }}
         run: |
-          perl -Mfeature=say -MConfig -e 'say "PERL5LIB=".join(":",@INC,@Config{qw(installarchlib installprivlib installvendorlib installsitelib)})' >> $GITHUB_ENV  # set env so PERL5LIB covers apt-get installed Perl modules
-          sudo apt update
-          sudo apt install -y libdb-dev libwww-perl
       # - name: Install dependency for OSX
       #   if:  ${{ matrix.runner == 'macos-latest' }}
       #   run: brew install berkeley-db
@@ -43,20 +40,18 @@ jobs:
         run: |
           cpanm -v
           cpanm --dev --notest ExtUtils::MakeMaker~'>= 7.65_02'  # use dev release with fix for spurious errors
-          cpanm --notest Sys::OsPackage
-          fetch-reqs.pl --sudo --notest XML::Parser HTML::Parser Moose Math::Base::Convert XML::DOM SQL::Statement Test::Inter Test::Pod Test::More Log::Log4perl
-          fetch-reqs.pl --sudo --notest Dist::Zilla
+          cpanm --notest Dist::Zilla
           dzil --version
       - name: Install Authordeps Modules
         run: |
           cd main
-          dzil authordeps --missing | fetch-reqs.pl --sudo --notest
+          dzil authordeps --missing | cpanm --notest
       - name: Install Listdeps Modules
         run: |
           cd main
           pwd
           ls -l
-          dzil listdeps --missing | fetch-reqs.pl --sudo --notest
+          dzil listdeps --missing | cpanm --notest
       - name: Show Errors on Windows
         if: ${{ failure() && startsWith( matrix.runner, 'windows-')}}
         run: |
