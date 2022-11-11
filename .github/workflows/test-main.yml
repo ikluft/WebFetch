@@ -30,6 +30,7 @@ jobs:
       - name: Show Perl Version
         run: |
           perl -v
+          perl -Mfeature=say -e 'say "INC: ".join " ", @INC;'
       - name: Install external dependency
         if: ${{ matrix.runner == 'ubuntu-latest' }}
         run: |
