@@ -1,6 +1,7 @@
 ---
 name: Perl_WebFetch
-on:
+# yamllint disable rule:line-length
+on:  # yamllint disable-line rule:truthy
   push:
     paths: 'main/**'
   pull_request:
@@ -25,8 +26,7 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           distribution: >
-            ${{ ( startsWith( matrix.runner, 'windows-' )
-            && 'strawberry' ) || 'default' }}
+            ${{ ( startsWith( matrix.runner, 'windows-' ) && 'strawberry' ) || 'default' }}
       - name: Show Perl Version
         run: |
           perl -v
@@ -42,8 +42,7 @@ jobs:
         run: |
           cpanm -v
           cpanm --notest Sys::OsPackage
-          fetch-reqs.pl --sudo --notest Moose Test::Inter Test::Pod Test::More \
-            Log::Log4perl XML::DOM SQL::Statement XML::Parser HTML::Parser
+          fetch-reqs.pl --sudo --notest XML::Parser HTML::Parser Moose Math::Base::Convert XML::DOM SQL::Statement Test::Inter Test::Pod Test::More Log::Log4perl
           fetch-reqs.pl --sudo --notest Dist::Zilla
           dzil --version
       - name: Install Authordeps Modules
