@@ -13,7 +13,6 @@ use File::Basename;
 use File::Compare;
 use Readonly;
 use Scalar::Util qw(reftype);
-use YAML::XS;
 use Try::Tiny;
 
 use Test::More;
@@ -27,6 +26,7 @@ Readonly::Scalar my $classname => "WebFetch::Input::SiteNews";
 Readonly::Scalar my $service_name => "sitenews";
 Readonly::Scalar my $debug_mode => (exists $ENV{WEBFETCH_TEST_DEBUG} and $ENV{WEBFETCH_TEST_DEBUG}) ? 1 : 0;
 Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
+Readonly::Array my @yaml_class => qw(YAML::XS YAML YAML::PP YAML::Tiny YAML::Syck);
 Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
 Readonly::Scalar my $file_init_tests => 3;
@@ -212,6 +212,24 @@ sub capture_feed
 WebFetch::debug_mode($debug_mode);
 my $temp_dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => ($debug_mode ? 0 : 1), TMPDIR => 1);
 
+# check if YAML module is available
+my $yaml_loaded;
+foreach my $classname ( @yaml_class ) {
+    try {
+        ## no critic (BuiltinFunctions::ProhibitStringyEval)
+        eval "require $classname" or croak $@;
+        $classname->import( qw(LoadFile DumpFile) );
+        $yaml_loaded = $classname;
+    };
+    last if $yaml_loaded;
+}
+
+# skip test if no YAML classes loaded
+if ( not $yaml_loaded ) {
+    plan skip_all => "no suitable YAML class found on system";
+    exit 0;
+}
+
 # locate YAML file with test data
 if (! -d $input_dir) {
         BAIL_OUT("can't find test inputs directory: expected $input_dir");
@@ -222,7 +240,7 @@ if ( not -e $yaml_path) {
 }
 
 # load test data from YAML
-my @yaml_docs = YAML::XS::LoadFile($yaml_path);
+my @yaml_docs = LoadFile($yaml_path);
 my $test_data = $yaml_docs[0];
 my $total_tests = $basic_tests + count_tests($test_data);
 plan tests =>  $total_tests;
