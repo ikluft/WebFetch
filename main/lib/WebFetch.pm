@@ -116,6 +116,8 @@ use DateTime;
 use DateTime::Format::ISO8601;
 use DateTime::Locale;
 use Date::Calc;
+use Paranoid::IO qw(pclose);
+use Paranoid::IO::Lockfile qw(pexclock pshlock punlock);
 use WebFetch::Data::Config;
 
 #
@@ -151,6 +153,13 @@ Readonly::Hash my %redirect_params => (
     notable   => "style",
     para      => "style",
     ul        => "style",
+);
+
+# file paths
+Readonly::Hash my %index_file => (
+    db => "id_index.db",
+    lock => "id_index.lock",
+    yaml => "id_index.yaml",
 );
 
 #
@@ -2056,22 +2065,78 @@ sub _save_check_index
     my ( $self, $savable ) = @_;
 
     # if a URL was provided and index flag is set, use index file
-    my %id_index;
     my ( $timestamp, $filename );
     my $was_in_index = 0;
-    if ( ( exists $savable->{url} ) and ( exists $savable->{index} ) ) {
-        require DB_File;
-        tie %id_index, 'DB_File', $self->{dir} . "/id_index.db", &DB_File::O_CREAT | &DB_File::O_RDWR, oct(640);
-        if ( exists $id_index{ $savable->{url} } ) {
-            ( $timestamp, $filename ) =
-                split /#/x, $id_index{ $savable->{url} };
-            $was_in_index = 1;
-        } else {
-            $timestamp = time;
-            $id_index{ $savable->{url} } =
-                $timestamp . "#" . $savable->{file};
+    my $index_lock_path = $self->{dir} . "/" . $index_file{lock};
+    my $index_db_path = $self->{dir} . "/" . $index_file{db};
+    my $index_yaml_path = $self->{dir} . "/" . $index_file{yaml};
+
+    # use backward-compatible DB_File index if DB index file exists and YAML index does not
+    if ( -f $index_db_path and not -f $index_yaml_path ) {
+        # check if DB_File module is available
+        my $db_available = 0;
+        try {
+            require DB_File;
+            $db_available = 1;
+        };
+
+        # look up content in DB index
+        if ( $db_available and ( exists $savable->{url} ) and ( exists $savable->{index} ) ) {
+            tie my %id_index, 'DB_File', $index_db_path, &DB_File::O_CREAT | &DB_File::O_RDWR;
+            if ( exists $id_index{ $savable->{url} } ) {
+                ( $timestamp, $filename ) =
+                    split /#/x, $id_index{ $savable->{url} };
+                $was_in_index = 1;
+            } else {
+                $timestamp = time;
+                $id_index{ $savable->{url} } =
+                    $timestamp . "#" . $savable->{file};
+            }
+            untie %id_index;
         }
-        untie %id_index;
+
+    # otherwise use YAML file
+    } else {
+        # check if YAML module is available
+        my $yaml_available = 0;
+        try {
+            require YAML::XS;
+            $yaml_available = 1;
+        };
+        if ( not $yaml_available ) {
+            try {
+                require YAML;
+                $yaml_available = 1;
+            };
+        }
+
+        # look up content in YAML index
+        if ( $yaml_available and ( exists $savable->{url} ) and ( exists $savable->{index} ) ) {
+            my $id_index_ref = {};
+
+            # lock and read index YAML if it exists
+            if ( -f $index_lock_path and pshlock($index_lock_path)) {
+                ( $id_index_ref ) = YAML::LoadFile( $index_yaml_path );
+                punlock($index_lock_path);
+                pclose($index_lock_path);
+            }
+            if ( exists $id_index_ref->{ $savable->{url} } ) {
+                ( $timestamp, $filename ) =
+                    split /#/x, $id_index_ref->{ $savable->{url} };
+                $was_in_index = 1;
+            } else {
+                $timestamp = time;
+                $id_index_ref->{ $savable->{url} } =
+                    $timestamp . "#" . $savable->{file};
+            }
+
+            # save index if modified
+            if ( not $was_in_index and pexclock($index_lock_path)) {
+                YAML::DumpFile( $index_yaml_path, $id_index_ref );
+                punlock($index_lock_path);
+                pclose($index_lock_path);
+            }
+        }
     }
 
     # For now, we consider it done if the file was in the index.
