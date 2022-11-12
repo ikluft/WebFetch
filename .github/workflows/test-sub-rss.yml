@@ -1,14 +1,13 @@
 ---
 name: Perl_WebFetch_RSS
-on:
+# yamllint disable rule:line-length
+on:  # yamllint disable-line rule:truthy
   push:
     paths:
       - 'submodules/RSS/**'
-      - 'main/**'
   pull_request:
     paths:
       - 'submodules/RSS/**'
-      - 'main/**'
   workflow_dispatch:
 jobs:
   test:
@@ -45,19 +44,19 @@ jobs:
       - name: Install Dist::Zilla
         run: |
           cpanm -v
-          cpanm --notest Sys::OsPackage
-          fetch-reqs.pl --sudo --notest Dist::Zilla
+          cpanm --dev --notest ExtUtils::MakeMaker~'>= 7.65_02'  # use dev release with fix for spurious errors
+          cpanm --notest Dist::Zilla Test::Pod
           dzil --version
       - name: Install Authordeps Modules
         run: |
           cd submodules/RSS
-          dzil authordeps --missing | fetch-reqs.pl --sudo --notest
+          dzil authordeps --missing | cpanm --notest
       - name: Install Listdeps Modules
         run: |
           cd submodules/RSS
           pwd
           ls -l
-          dzil listdeps --missing | fetch-reqs.pl --sudo --notest
+          dzil listdeps --missing | cpanm --notest
       - name: Show Errors on Windows
         if: ${{ failure() && startsWith( matrix.runner, 'windows-')}}
         run: |

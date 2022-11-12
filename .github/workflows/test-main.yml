@@ -40,7 +40,7 @@ jobs:
         run: |
           cpanm -v
           cpanm --dev --notest ExtUtils::MakeMaker~'>= 7.65_02'  # use dev release with fix for spurious errors
-          cpanm --notest Dist::Zilla
+          cpanm --notest Dist::Zilla Test::Pod
           dzil --version
       - name: Install Authordeps Modules
         run: |
