@@ -4,6 +4,7 @@ The main module:
 
 - [WebFetch](main/) - Perl module to download and save information from the Web
 
+  - [![Perl_WebFetch](https://github.com/ikluft/WebFetch/actions/workflows/test-main.yml/badge.svg)](https://github.com/ikluft/WebFetch/actions/workflows/test-main.yml)
   - MetaCPAN: https://metacpan.org/pod/WebFetch
 
 Subsidiary modules which were separated into their own modules due to external dependencies:
@@ -15,6 +16,7 @@ Subsidiary modules which were separated into their own modules due to external d
 
 - [WebFetch::RSS](submodules/RSS/) - WebFetch input and output handlers for RSS
   
+  - [![Perl_WebFetch_RSS](https://github.com/ikluft/WebFetch/actions/workflows/test-sub-rss.yml/badge.svg)](https://github.com/ikluft/WebFetch/actions/workflows/test-sub-rss.yml)
   - MetaCPAN: https://metacpan.org/pod/WebFetch::RSS
   - depends on [XML::RSS](https://metacpan.org/pod/XML::RSS)
 

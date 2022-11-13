@@ -30,12 +30,6 @@ jobs:
       - name: Show Perl Version
         run: |
           perl -v
-      - name: Install external dependency
-        if: ${{ matrix.runner == 'ubuntu-latest' }}
-        run: |
-      # - name: Install dependency for OSX
-      #   if:  ${{ matrix.runner == 'macos-latest' }}
-      #   run: brew install berkeley-db
       - name: Install Dist::Zilla
         run: |
           cpanm -v
