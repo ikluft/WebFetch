@@ -44,7 +44,6 @@ jobs:
         run: |
           cd main
           pwd
-          ls -l
           dzil listdeps --missing | cpanm --notest
       - name: Show Errors on Windows
         if: ${{ failure() && startsWith( matrix.runner, 'windows-')}}
