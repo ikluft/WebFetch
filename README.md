@@ -4,7 +4,7 @@ The main module:
 
 - [WebFetch](main/) - Perl module to download and save information from the Web
 
-  - [![Perl_WebFetch](https://github.com/ikluft/WebFetch/actions/workflows/test-main.yml/badge.svg)](https://github.com/ikluft/WebFetch/actions/workflows/test-main.yml)
+  - [![Perl_WebFetch](https://github.com/ikluft/WebFetch/actions/workflows/test-main.yml/badge.svg)](https://github.com/ikluft/WebFetch/actions/workflows/test-main.yml)
   - MetaCPAN: https://metacpan.org/pod/WebFetch
 
 Subsidiary modules which were separated into their own modules due to external dependencies:

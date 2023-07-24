@@ -17,7 +17,7 @@ use Try::Tiny;
 
 use Test::More;
 use Test::Exception;
-use WebFetch "0.15.1";
+use WebFetch v0.15.1;
 use WebFetch::Input::SiteNews;
 use WebFetch::Output::Capture;
 

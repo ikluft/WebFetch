@@ -4,6 +4,7 @@ Revision history for WebFetch
  [API CHANGE]
 
  [BUG FIXES]
+ - update version numbers in 'use' statements to v-notation due to incompatible change in 5.39.1 import()
 
  [DOCS]
 
