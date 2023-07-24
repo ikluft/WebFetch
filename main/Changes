@@ -4,7 +4,6 @@ Revision history for WebFetch
  [API CHANGE]
 
  [BUG FIXES]
- - update version numbers in 'use' statements to v-notation due to incompatible change in 5.39.1 import()
 
  [DOCS]
 
@@ -15,9 +14,16 @@ Revision history for WebFetch
  [MINOR]
 
  [REVISION]
- - minimum Perl version to 5.10 for version object dependency
 
  [SECURITY]
+
+0.15.6 2023-07-24T09:08:44-07:00 America/Los_Angeles
+ [BUG FIXES]
+ - update version numbers in 'use' statements to v-notation due to
+   incompatible change in 5.39.1 import()
+
+ [REVISION]
+ - minimum Perl version to 5.10 for version object dependency
 
 0.15.5 2022-10-25T23:39:44-07:00 America/Los_Angeles
  [REVISION]
@@ -135,7 +141,8 @@ Revision history for WebFetch
  - updated WebFetch::CNNsearch to allow keyword-only searches. This became
    necessary when a Linux story got on all the
  - "in other news" pages at CNN and suddenly all pages on CNN
- - matched a search for Linux.		    This release also fixed a bug
+ - matched a search for Linux.		       This release also fixed a
+   bug
  - with non-Linux searches, reported by Jamie Heilman.
  - New --style command line option was added to control the internal HTML
    style parameter.  Some new style strings were added
