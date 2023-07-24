@@ -17,7 +17,7 @@ package WebFetch::RSS;
 
 use base "WebFetch";
 
-use WebFetch "0.15.5";
+use WebFetch v0.15.5;
 use Readonly;
 use Carp;
 use Try::Tiny;

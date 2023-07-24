@@ -12,7 +12,7 @@ use File::Temp;
 use File::Basename qw(basename dirname);
 use Try::Tiny;
 use YAML::XS;
-use WebFetch "0.15.5";
+use WebFetch v0.15.5;
 use WebFetch::RSS;
 use WebFetch::Output::Capture;
 use Data::Dumper;
