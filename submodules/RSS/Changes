@@ -14,9 +14,12 @@ Revision history for WebFetch::Input::RSS
  [MINOR]
 
  [REVISION]
- - undo minimum Perl 5.10: conditionally use 'version' on older Perls
 
  [SECURITY]
+
+0.3.2 2023-07-30T23:56:13-07:00 America/Los_Angeles
+ [REVISION]
+ - undo minimum Perl 5.10: conditionally use 'version' on older Perls
 
 0.3.1 2023-07-24T09:13:08-07:00 America/Los_Angeles
  [BUG FIXES]
