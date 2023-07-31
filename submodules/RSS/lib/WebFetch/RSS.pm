@@ -17,6 +17,7 @@ package WebFetch::RSS;
 
 use base "WebFetch";
 
+use if $] < 5.010, "version";
 use WebFetch v0.15.5;
 use Readonly;
 use Carp;

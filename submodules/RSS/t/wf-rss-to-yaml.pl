@@ -12,6 +12,7 @@ use File::Temp;
 use File::Basename qw(basename dirname);
 use Try::Tiny;
 use YAML::XS;
+use if $] < 5.010, "version";
 use WebFetch v0.15.5;
 use WebFetch::RSS;
 use WebFetch::Output::Capture;
