@@ -14,9 +14,12 @@ Revision history for WebFetch
  [MINOR]
 
  [REVISION]
-  - undo minimum Perl 5.10: conditionally use 'version' on older Perls
 
  [SECURITY]
+
+0.15.7 2023-07-30T23:55:03-07:00 America/Los_Angeles
+ [REVISION]
+ - undo minimum Perl 5.10: conditionally use 'version' on older Perls
 
 0.15.6 2023-07-24T09:08:44-07:00 America/Los_Angeles
  [BUG FIXES]
@@ -142,7 +145,7 @@ Revision history for WebFetch
  - updated WebFetch::CNNsearch to allow keyword-only searches. This became
    necessary when a Linux story got on all the
  - "in other news" pages at CNN and suddenly all pages on CNN
- - matched a search for Linux.		       This release also fixed a
+ - matched a search for Linux.			  This release also fixed a
    bug
  - with non-Linux searches, reported by Jamie Heilman.
  - New --style command line option was added to control the internal HTML
