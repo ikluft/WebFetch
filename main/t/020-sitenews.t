@@ -27,7 +27,6 @@ Readonly::Scalar my $classname => "WebFetch::Input::SiteNews";
 Readonly::Scalar my $service_name => "sitenews";
 Readonly::Scalar my $debug_mode => (exists $ENV{WEBFETCH_TEST_DEBUG} and $ENV{WEBFETCH_TEST_DEBUG}) ? 1 : 0;
 Readonly::Scalar my $input_dir => "t/test-inputs/".basename($0, ".t");
-Readonly::Array my @yaml_class => qw(YAML::XS YAML YAML::PP YAML::Tiny YAML::Syck);
 Readonly::Scalar my $yaml_file => "test.yaml";
 Readonly::Scalar my $basic_tests => 9;
 Readonly::Scalar my $file_init_tests => 3;
@@ -214,19 +213,13 @@ WebFetch::debug_mode($debug_mode);
 my $temp_dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => ($debug_mode ? 0 : 1), TMPDIR => 1);
 
 # check if YAML module is available
-my $yaml_loaded;
-foreach my $classname ( @yaml_class ) {
-    try {
-        ## no critic (BuiltinFunctions::ProhibitStringyEval)
-        eval "require $classname" or croak $@;
-        $classname->import( qw(LoadFile DumpFile) );
-        $yaml_loaded = $classname;
-    };
-    last if $yaml_loaded;
-}
+## no critic (Subroutines::ProtectPrivateSubs)
+my $yaml_class = WebFetch::_load_yaml();
+## critic (Subroutines::ProtectPrivateSubs)
+$yaml_class->import( qw(LoadFile) );
 
 # skip test if no YAML classes loaded
-if ( not $yaml_loaded ) {
+if ( not $yaml_class ) {
     plan skip_all => "no suitable YAML class found on system";
     exit 0;
 }

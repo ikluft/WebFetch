@@ -155,9 +155,11 @@ Readonly::Hash my %redirect_params => (
     ul        => "style",
 );
 
-# file paths
+# file paths and class names
 Readonly::Scalar my $db_class => "DB_File";
-Readonly::Array my @yaml_class => qw(YAML::XS YAML YAML::PP YAML::Tiny YAML::Syck);
+Readonly::Array my @yaml_class => ((exists $ENV{WEBFETCH_YAML_CLASS} )
+    ? (split " ", $ENV{WEBFETCH_YAML_CLASS})
+    : qw(YAML::XS YAML::Syck YAML::PP YAML));
 Readonly::Hash my %index_file => (
     db => "id_index.db",
     lock => "id_index.lock",
@@ -309,6 +311,22 @@ sub _module_registry
     return;
 }
 ## critic (Subroutines::ProhibitUnusedPrivateSubroutines)
+
+# load a YAML parser class from allowed list
+sub _load_yaml
+{
+    my $yaml_loaded;
+    foreach my $classname ( @yaml_class ) {
+        try {
+            ## no critic (BuiltinFunctions::ProhibitStringyEval)
+            eval "require $classname" or croak $@;
+            $classname->import( qw(LoadFile DumpFile) );
+            $yaml_loaded = $classname;
+        };
+        last if $yaml_loaded;
+    }
+    return $yaml_loaded;
+}
 
 =item WebFetch->version()
 
@@ -2106,16 +2124,7 @@ sub _save_check_index_yaml
     my $index_yaml_path = $self->{dir} . "/" . $index_file{yaml};
 
     # check if YAML module is available
-    my $yaml_loaded;
-    foreach my $classname ( @yaml_class ) {
-        try {
-            ## no critic (BuiltinFunctions::ProhibitStringyEval)
-            eval "require $classname" or croak $@;
-            $classname->import( qw(LoadFile DumpFile) );
-            $yaml_loaded = $classname;
-        };
-        last if $yaml_loaded;
-    }
+    my $yaml_loaded = _load_yaml();
 
     # look up content in YAML index
     if ( $yaml_loaded and ( exists $savable->{url} ) and ( exists $savable->{index} ) ) {
