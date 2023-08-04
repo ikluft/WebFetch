@@ -4,6 +4,7 @@ Revision history for WebFetch
  [API CHANGE]
 
  [BUG FIXES]
+ - fix test: import from YAML parser class after checking YAML parser was found
 
  [DOCS]
 

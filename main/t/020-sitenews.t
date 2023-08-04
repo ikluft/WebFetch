@@ -216,13 +216,13 @@ my $temp_dir = File::Temp->newdir(TEMPLATE => $tmpdir_template, CLEANUP => ($deb
 ## no critic (Subroutines::ProtectPrivateSubs)
 my $yaml_class = WebFetch::_load_yaml();
 ## critic (Subroutines::ProtectPrivateSubs)
-$yaml_class->import( qw(LoadFile) );
 
 # skip test if no YAML classes loaded
 if ( not $yaml_class ) {
     plan skip_all => "no suitable YAML class found on system";
     exit 0;
 }
+$yaml_class->import( qw(LoadFile) );
 
 # locate YAML file with test data
 if (! -d $input_dir) {
