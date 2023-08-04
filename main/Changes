@@ -17,6 +17,11 @@ Revision history for WebFetch
 
  [SECURITY]
 
+0.15.8 2023-08-03T20:50:37-07:00 America/Los_Angeles
+ [BUG FIXES]
+ - remove YAML::Tiny from YAML parser list after CPAN Testers found it
+   broke tests for lack of support for flow-style mappings
+
 0.15.7 2023-07-30T23:55:03-07:00 America/Los_Angeles
  [REVISION]
  - undo minimum Perl 5.10: conditionally use 'version' on older Perls
@@ -145,8 +150,8 @@ Revision history for WebFetch
  - updated WebFetch::CNNsearch to allow keyword-only searches. This became
    necessary when a Linux story got on all the
  - "in other news" pages at CNN and suddenly all pages on CNN
- - matched a search for Linux.			  This release also fixed a
-   bug
+ - matched a search for Linux.			     This release also
+   fixed a bug
  - with non-Linux searches, reported by Jamie Heilman.
  - New --style command line option was added to control the internal HTML
    style parameter.  Some new style strings were added
