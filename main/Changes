@@ -4,7 +4,6 @@ Revision history for WebFetch
  [API CHANGE]
 
  [BUG FIXES]
- - fix test: import from YAML parser class after checking YAML parser was found
 
  [DOCS]
 
@@ -17,6 +16,11 @@ Revision history for WebFetch
  [REVISION]
 
  [SECURITY]
+
+0.15.9 2023-08-04T07:37:34-07:00 America/Los_Angeles
+ [BUG FIXES]
+ - fix test: import from YAML parser class after checking YAML parser was
+   found
 
 0.15.8 2023-08-03T20:50:37-07:00 America/Los_Angeles
  [BUG FIXES]
@@ -151,7 +155,7 @@ Revision history for WebFetch
  - updated WebFetch::CNNsearch to allow keyword-only searches. This became
    necessary when a Linux story got on all the
  - "in other news" pages at CNN and suddenly all pages on CNN
- - matched a search for Linux.			     This release also
+ - matched a search for Linux.				This release also
    fixed a bug
  - with non-Linux searches, reported by Jamie Heilman.
  - New --style command line option was added to control the internal HTML
