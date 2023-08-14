@@ -106,6 +106,7 @@ reference to a module that is derived from (inherits from) WebFetch.
 
 =cut
 
+use feature qw(say);
 use Carp qw(croak);
 use Getopt::Long;
 use Readonly;
@@ -291,7 +292,7 @@ sub debug
     my @args       = @_;
     my $debug_mode = debug_mode();
     if ($debug_mode) {
-        print STDERR "debug: " . join( " ", @args ) . "\n";
+        say STDERR "debug: " . join( " ", @args );
     }
     return $debug_mode;
 }
@@ -357,10 +358,7 @@ sub version
             return ${ $class . "::VERSION" };
         }
     }
-    if ( defined $WebFetch::VERSION ) {
-        return $WebFetch::VERSION;
-    }
-    return "00-dev";
+    return $WebFetch::VERSION // "00-dev";
 }
 
 =item WebFetch->config( $key, [$value])
@@ -804,7 +802,7 @@ sub fetch_main2
         try {
             &WebFetch::run( $pkgname, \%options )
         } catch {
-            print STDERR "WebFetch: run exception: $_\n";
+            say STDERR "WebFetch: run exception: $_";
         } finally {
             if ( not @_ ) {
                 $run_count++;
@@ -2209,7 +2207,7 @@ sub _save_report_errors
     my $err_count = 0;
     foreach my $savable ( @{ $self->{savable} } ) {
         if ( exists $savable->{error} ) {
-            print STDERR "WebFetch: failed to save " . $savable->{file} . ": " . $savable->{error} . "\n";
+            say STDERR "WebFetch: failed to save " . $savable->{file} . ": " . $savable->{error};
             $err_count++;
         }
     }

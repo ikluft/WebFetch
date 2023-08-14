@@ -14,6 +14,7 @@ Revision history for WebFetch
  [MINOR]
 
  [REVISION]
+ - reinstate minimum Perl version 5.10: feature, say & defined-or (//) now allowed
 
  [SECURITY]
 
